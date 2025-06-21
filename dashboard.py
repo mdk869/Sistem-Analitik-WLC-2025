@@ -69,11 +69,67 @@ if os.path.exists(FILE_EXCEL):
     purata_penurunan = df_tapis["% Penurunan"].mean().round(2)
     purata_kg = df_tapis["PenurunanKg"].mean().round(2)
 
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Jumlah Peserta", total_peserta)
-    col2.metric("Purata BMI", purata_bmi)
-    col3.metric("Purata % Penurunan", f"{purata_penurunan}%")
-    col4.metric("Purata Penurunan Berat", f"{purata_kg}kg")
+    # Gaya CSS untuk kad metrik utama
+card_style = """
+<style>
+.metric-box {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 1rem;
+}
+.metric-title {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+.metric-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #0074D9;
+}
+</style>
+"""
+st.markdown(card_style, unsafe_allow_html=True)
+
+# Paparan metrik korporat
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.markdown(f"""
+    <div class="metric-box">
+        <div class="metric-title">Jumlah Peserta</div>
+        <div class="metric-value">{total_peserta}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.markdown(f"""
+    <div class="metric-box">
+        <div class="metric-title">Purata BMI</div>
+        <div class="metric-value">{purata_bmi}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col3:
+    st.markdown(f"""
+    <div class="metric-box">
+        <div class="metric-title">Purata % Penurunan</div>
+        <div class="metric-value">{purata_penurunan}%</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col4:
+    st.markdown(f"""
+    <div class="metric-box">
+        <div class="metric-title">Purata Penurunan Berat</div>
+        <div class="metric-value">{purata_kg} kg</div>
+    </div>
+    """, unsafe_allow_html=True)
+
 
     tab1, tab2, tab3 = st.tabs(["📉 Penurunan Berat", "🏆 Leaderboard", "🧍‍♂️ BMI"])
 
