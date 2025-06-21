@@ -69,10 +69,10 @@ if os.path.exists(FILE_EXCEL):
     purata_penurunan = df_tapis["% Penurunan"].mean().round(2)
     purata_kg = df_tapis["PenurunanKg"].mean().round(2)
 
-    # Gaya CSS untuk kad metrik utama
+# Gaya CSS untuk kad metrik utama (diprefiks supaya tidak ganggu komponen lain)
 card_style = """
 <style>
-.metric-box {
+.wlc-metric-box {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     padding: 1rem;
@@ -81,15 +81,26 @@ card_style = """
     box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
     margin-bottom: 1rem;
 }
-.metric-title {
-    font-size: 0.9rem;
-    color: #555;
-    margin-bottom: 0.5rem;
+.wlc-metric-title {
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 0.4rem;
 }
-.metric-value {
-    font-size: 1.8rem;
+.wlc-metric-value {
+    font-size: 1.9rem;
     font-weight: bold;
     color: #0074D9;
+}
+@media screen and (max-width: 768px) {
+    .wlc-metric-box {
+        padding: 0.8rem;
+    }
+    .wlc-metric-title {
+        font-size: 0.8rem;
+    }
+    .wlc-metric-value {
+        font-size: 1.4rem;
+    }
 }
 </style>
 """
@@ -100,40 +111,41 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.markdown(f"""
-    <div class="metric-box">
-        <div class="metric-title">Jumlah Peserta</div>
-        <div class="metric-value">{total_peserta}</div>
+    <div class="wlc-metric-box">
+        <div class="wlc-metric-title">👥 Jumlah Peserta</div>
+        <div class="wlc-metric-value">{total_peserta}</div>
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
     st.markdown(f"""
-    <div class="metric-box">
-        <div class="metric-title">Purata BMI</div>
-        <div class="metric-value">{purata_bmi}</div>
+    <div class="wlc-metric-box">
+        <div class="wlc-metric-title">📉 Purata BMI</div>
+        <div class="wlc-metric-value">{purata_bmi}</div>
     </div>
     """, unsafe_allow_html=True)
 
 with col3:
     st.markdown(f"""
-    <div class="metric-box">
-        <div class="metric-title">Purata % Penurunan</div>
-        <div class="metric-value">{purata_penurunan}%</div>
+    <div class="wlc-metric-box">
+        <div class="wlc-metric-title">🏆 % Penurunan</div>
+        <div class="wlc-metric-value">{purata_penurunan}%</div>
     </div>
     """, unsafe_allow_html=True)
 
 with col4:
     st.markdown(f"""
-    <div class="metric-box">
-        <div class="metric-title">Purata Penurunan Berat</div>
-        <div class="metric-value">{purata_kg} kg</div>
+    <div class="wlc-metric-box">
+        <div class="wlc-metric-title">⚖️ Berat Turun (kg)</div>
+        <div class="wlc-metric-value">{purata_kg} kg</div>
     </div>
     """, unsafe_allow_html=True)
 
 
-    tab1, tab2, tab3 = st.tabs(["📉 Penurunan Berat", "🏆 Leaderboard", "🧍‍♂️ BMI"])
-
-    with tab1:
+# ===== TAB DI LUAR COLUMN (BEBAS DARI GAYA METRIK) =====
+tab1, tab2, tab3 = st.tabs(["📉 Penurunan Berat", "🏆 Leaderboard", "🧍‍♂️ BMI"])
+    
+with tab1:
         st.subheader("Perbandingan Berat Setiap Peserta")
         df_plot = df_tapis.sort_values("PenurunanKg", ascending=False)
         fig = px.bar(df_plot,
@@ -144,7 +156,7 @@ with col4:
                      labels={"value": "Berat (kg)", "variable": "Kategori Berat"})
         st.plotly_chart(fig, use_container_width=True)
 
-    with tab2:
+with tab2:
         st.subheader("🏆 Leaderboard: % Penurunan Berat")
         df_leaderboard = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
         df_leaderboard["Ranking"] = df_leaderboard.index + 1
@@ -198,7 +210,7 @@ with col4:
                 else:
                     st.info("Tiada rekod sejarah berat untuk peserta ini.")
 
-    with tab3:
+with tab3:
         st.subheader("📊 Analisis BMI Peserta")
 
         col1, col2, col3, col4, col5, col6 = st.columns(6)
@@ -227,7 +239,7 @@ st.markdown(f"""
 <div style='font-size:15px;'>
     <strong>📊 Sistem Analitik WLC 2025</strong>
     <a href='{URL_CHANGELOG}' target='_blank' style='text-decoration:none;'>&nbsp;&nbsp;<span style='color:#1f77b4;'>v2.0</span></a><br>
-    Kemaskini terakhir: {footer_date} | Dibangunkan oleh <strong>Mr.K</strong><br>
+    Kemaskini terakhir: {footer_date} | Dibangunkan oleh <strong>MKR</strong><br>
     &copy; 2025 Semua Hak Cipta Terpelihara
 </div>
 """, unsafe_allow_html=True)
