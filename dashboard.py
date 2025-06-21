@@ -18,10 +18,6 @@ FILE_REKOD_BERAT = os.path.join(DIR_SEMASA, "rekod_berat.xlsx")
 st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
 st.title("📊 Dashboard Weight Loss Challenge 2025")
 
-# ==== Papar Tarikh & Masa Terkini Berdasarkan Waktu Malaysia ====
-local_tz = pytz.timezone("Asia/Kuala_Lumpur")
-st.caption(f"🕒 Sistem dikemaskini pada: {datetime.now(local_tz).strftime('%d/%m/%Y %I:%M %p')}")
-
 # ==== Cipta Fail Sejarah Berat jika belum ada ====
 if not os.path.exists(FILE_REKOD_BERAT):
     df_dummy = pd.DataFrame({"Nama": [], "Tarikh": [], "Berat": [], "BMI": []})
@@ -173,4 +169,9 @@ st.markdown("""
     Versi: v1.0 | Dibangunkan oleh <strong>Mr.K</strong><br>
     &copy; 2025 Semua Hak Cipta Terpelihara
 </div>
+
+# ==== Papar Tarikh & Masa Terkini Berdasarkan Waktu Malaysia ====
+local_tz = pytz.timezone("Asia/Kuala_Lumpur")
+st.caption(f"🕒 Sistem dikemaskini pada: {datetime.now(local_tz).strftime('%d/%m/%Y %I:%M %p')}")
+
 """, unsafe_allow_html=True)
