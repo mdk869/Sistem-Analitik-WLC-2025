@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import os
 from datetime import datetime
-import time
+import pytz
 
 # Laluan changelog
 FILE_CHANGELOG = os.path.join(os.path.dirname(__file__), "changelog_wlc2025.html")
@@ -17,13 +17,6 @@ FILE_REKOD_BERAT = os.path.join(DIR_SEMASA, "rekod_berat.xlsx")
 # ==== Setup Page ====
 st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
 st.title("📊 Dashboard Weight Loss Challenge 2025")
-
-# ==== Auto Refresh Manual ====
-if st.button("🔄 Refresh Data"):
-    st.experimental_rerun()
-
-# ==== Masa Kemaskini Terakhir ====
-st.caption(f"⏱️ Kemaskini terakhir: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
 # ==== Cipta Fail Sejarah Berat jika belum ada ====
 if not os.path.exists(FILE_REKOD_BERAT):
@@ -166,36 +159,26 @@ if os.path.exists(FILE_EXCEL):
             df_bmi_table.index = df_bmi_table.index + 1
             st.dataframe(df_bmi_table, use_container_width=True)
 
-    # ==== Footer / Copyright ====
-
-import pytz
-
-# === Footer ===
+# Garis pemisah
 st.markdown("---")
 
-# Waktu tempatan (Asia/Kuala_Lumpur)
-tz = pytz.timezone("Asia/Kuala_Lumpur")
-local_time = datetime.now(tz).strftime("%d %B %Y, %I:%M %p")
-
-# Gaya footer
+# Gaya footer responsif
 footer_col1, footer_col2 = st.columns([0.7, 0.3])
 
 with footer_col1:
-    st.markdown(f"""
-    <div style='font-size:14px;'>
-        📊 <strong>Sistem Analitik WLC 2025</strong><br>
-        <a href='#' onclick="window.open('', 'popup', 'width=800,height=700').document.write(`{open(FILE_CHANGELOG, 'r', encoding='utf-8').read()}`);" style="text-decoration:none;">
-            Versi: <span style='color:#3366cc;'>v1.0</span>
-        </a><br>
-        &copy; 2025 Semua Hak Cipta Terpelihara · Dibangunkan oleh <strong>Mr.K</strong>
+    st.markdown("""
+    <div style='font-size:15px;'>
+        <strong>📊 Sistem Analitik WLC 2025</strong><br>
+        <span style='cursor:pointer;color:#2c7be5;' onclick="window.open('changelog_wlc2025.html')">Versi: <code>v1.0</code></span> | Dibangunkan oleh <strong>Mr.K</strong><br>
+        &copy; 2025 Semua Hak Cipta Terpelihara
     </div>
     """, unsafe_allow_html=True)
 
 with footer_col2:
-    with st.expander("📄 Lihat Log Perubahan", expanded=False):
+    with st.expander("📄 Lihat Log Perubahan"):
         if os.path.exists(FILE_CHANGELOG):
             with open(FILE_CHANGELOG, "r", encoding="utf-8") as f:
                 changelog_html = f.read()
-            st.components.v1.html(changelog_html, height=450, scrolling=True)
+            st.components.v1.html(changelog_html, height=500, scrolling=True)
         else:
             st.warning("❗ Fail changelog tidak dijumpai.")
