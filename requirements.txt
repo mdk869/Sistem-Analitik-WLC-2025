@@ -7,3 +7,4 @@ watchdog
 plotly
 flet
 plotly.express
+pytz
