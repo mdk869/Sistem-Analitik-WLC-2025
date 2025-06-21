@@ -172,5 +172,4 @@ Dibangunkan oleh Mr.K | © 2025 Semua Hak Cipta Terpelihara
 if st.button("📄 Lihat Log Perubahan"):
     with open(FILE_CHANGELOG, "r", encoding="utf-8") as f:
         changelog_html = f.read()
-    st.components.v1.html(changelog_html, height=800, scrolling=True) | [💬 Hubungi Pembangun](mailto:techbitemy@gmail.com)
-
+    st.components.v1.html(changelog_html, height=800, scrolling=True)
