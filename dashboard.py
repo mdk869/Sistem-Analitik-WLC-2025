@@ -170,7 +170,7 @@ st.markdown("---")
 st.markdown("""
 <div style='font-size:15px;'>
     <strong>📊 Sistem Analitik WLC 2025</strong><br>
-    Versi: <code>v1.0</code> | Dibangunkan oleh <strong>Mr.K</strong><br>
+    Versi: v1.0 | Dibangunkan oleh <strong>Mr.K</strong><br>
     &copy; 2025 Semua Hak Cipta Terpelihara
 </div>
 """, unsafe_allow_html=True)
