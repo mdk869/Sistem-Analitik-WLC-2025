@@ -167,20 +167,11 @@ st.markdown("---")
 
 # Gaya footer ringkas
 footer_date = datetime.now(local_tz).strftime("%d/%m/%Y")
-col_left, col_right = st.columns([0.85, 0.15])
-with col_left:
-    st.markdown(f"""
-    <div style='font-size:15px;'>
-        <strong>📊 Sistem Analitik WLC 2025</strong><br>
-        Kemaskini terakhir: {footer_date} | Dibangunkan oleh <strong>Mr.K</strong><br>
-        &copy; 2025 Semua Hak Cipta Terpelihara
-    </div>
-    """, unsafe_allow_html=True)
-with col_right:
-    if st.button("🔍 Versi: v1.1"):
-        if os.path.exists(FILE_CHANGELOG):
-            with open(FILE_CHANGELOG, "r", encoding="utf-8") as f:
-                changelog_html = f.read()
-            st.components.v1.html(changelog_html, height=600, scrolling=True)
-        else:
-            st.warning("❗ Fail changelog tidak dijumpai.")
+st.markdown(f"""
+<div style='font-size:15px;'>
+    <strong>📊 Sistem Analitik WLC 2025</strong>
+    <a href='{FILE_CHANGELOG}' target='_blank' style='text-decoration:none;'>&nbsp;&nbsp;<span style='color:#1f77b4;'>v1.1</span></a><br>
+    Kemaskini terakhir: {footer_date} | Dibangunkan oleh <strong>Mr.K</strong><br>
+    &copy; 2025 Semua Hak Cipta Terpelihara
+</div>
+""", unsafe_allow_html=True)
