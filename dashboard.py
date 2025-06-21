@@ -170,8 +170,8 @@ st.markdown("""
     &copy; 2025 Semua Hak Cipta Terpelihara
 </div>
 
+""", unsafe_allow_html=True)
+
 # ==== Papar Tarikh & Masa Terkini Berdasarkan Waktu Malaysia ====
 local_tz = pytz.timezone("Asia/Kuala_Lumpur")
 st.caption(f"🕒 Sistem dikemaskini pada: {datetime.now(local_tz).strftime('%d/%m/%Y %I:%M %p')}")
-
-""", unsafe_allow_html=True)
