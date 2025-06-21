@@ -5,7 +5,8 @@ import os
 from datetime import datetime
 import time
 
-FILE_CHANGELOG = "changelog_wlc2025.html"
+# Laluan changelog
+FILE_CHANGELOG = os.path.join(os.path.dirname(__file__), "changelog_wlc2025.html")
 
 # ==== Laluan Fail Excel Secara Relatif Berdasarkan Lokasi Fail Ini ====
 DIR_SEMASA = os.path.dirname(os.path.abspath(__file__))
@@ -166,12 +167,29 @@ if os.path.exists(FILE_EXCEL):
             st.dataframe(df_bmi_table, use_container_width=True)
 
     # ==== Footer / Copyright ====
+# Garis pemisah
 st.markdown("---")
-st.markdown("""
-**Sistem Analitik WLC 2025 v1.0**  
-Dibangunkan oleh Mr.K | © 2025 Semua Hak Cipta Terpelihara  
-""")
-if st.button("📄 Lihat Log Perubahan"):
-    with open(FILE_CHANGELOG, "r", encoding="utf-8") as f:
-        changelog_html = f.read()
-    st.components.v1.html(changelog_html, height=800, scrolling=True)
+
+# Gaya footer responsif
+footer_col1, footer_col2 = st.columns([0.7, 0.3])
+
+with footer_col1:
+    st.markdown("""
+    <div style='font-size:15px;'>
+        <strong>📊 Sistem Analitik WLC 2025</strong> <br>
+        Versi: <code>v1.0</code> | Dibangunkan oleh <strong>Mr.K</strong> <br>
+        &copy; 2025 Semua Hak Cipta Terpelihara
+    </div>
+    """, unsafe_allow_html=True)
+
+with footer_col2:
+    if st.button("📄 Lihat Log Perubahan"):
+        if os.path.exists(FILE_CHANGELOG):
+            with open(FILE_CHANGELOG, "r", encoding="utf-8") as f:
+                changelog_html = f.read()
+            st.components.v1.html(changelog_html, height=800, scrolling=True)
+        else:
+            st.warning("❗ Fail changelog tidak dijumpai.")
+
+# Optional: Tarikh dan masa paparan terakhir
+st.markdown(f"<p style='text-align:right;font-size:12px;color:gray;'>📅 Dikemaskini pada: {datetime.datetime.now().strftime('%d %B %Y, %I:%M %p')}</p>", unsafe_allow_html=True)
