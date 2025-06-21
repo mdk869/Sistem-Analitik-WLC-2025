@@ -5,6 +5,8 @@ import os
 from datetime import datetime
 import time
 
+FILE_CHANGELOG = "changelog_wlc2025.html"
+
 # ==== Laluan Fail Excel Secara Relatif Berdasarkan Lokasi Fail Ini ====
 DIR_SEMASA = os.path.dirname(os.path.abspath(__file__))
 FILE_EXCEL = os.path.join(DIR_SEMASA, "peserta.xlsx")
