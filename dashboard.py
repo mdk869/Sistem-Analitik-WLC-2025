@@ -168,5 +168,9 @@ st.markdown("---")
 st.markdown("""
 **Sistem Analitik WLC 2025 v1.0**  
 Dibangunkan oleh Mr.K | © 2025 Semua Hak Cipta Terpelihara  
-[📄 Lihat Log Perubahan](https://github.com/mdk869/Sistem-Analitik-WLC-2025/blob/main/changelog_wlc2025.html) | [💬 Hubungi Pembangun](mailto:techbitemy@gmail.com)
 """)
+if st.button("📄 Lihat Log Perubahan"):
+    with open(FILE_CHANGELOG, "r", encoding="utf-8") as f:
+        changelog_html = f.read()
+    st.components.v1.html(changelog_html, height=800, scrolling=True) | [💬 Hubungi Pembangun](mailto:techbitemy@gmail.com)
+
