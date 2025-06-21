@@ -6,3 +6,4 @@ Pillow
 watchdog
 plotly
 flet
+plotly.express
