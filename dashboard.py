@@ -167,6 +167,7 @@ if os.path.exists(FILE_EXCEL):
             st.dataframe(df_bmi_table, use_container_width=True)
 
     # ==== Footer / Copyright ====
+
 # Garis pemisah
 st.markdown("---")
 
@@ -192,4 +193,4 @@ with footer_col2:
             st.warning("❗ Fail changelog tidak dijumpai.")
 
 # Optional: Tarikh dan masa paparan terakhir
-st.markdown(f"<p style='text-align:right;font-size:12px;color:gray;'>📅 Dikemaskini pada: {datetime.datetime.now().strftime('%d %B %Y, %I:%M %p')}</p>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align:right;font-size:12px;color:gray;'>📅 Dikemaskini pada: {datetime.now().strftime('%d %B %Y, %I:%M %p')}</p>", unsafe_allow_html=True)
