@@ -7,6 +7,7 @@ import pytz
 
 # Laluan changelog
 FILE_CHANGELOG = os.path.join(os.path.dirname(__file__), "changelog_wlc2025.html")
+URL_CHANGELOG = "https://mdk869.github.io/Sistem-Analitik-WLC-2025/changelog_wlc2025.html"
 
 # ==== Laluan Fail Excel Secara Relatif Berdasarkan Lokasi Fail Ini ====
 DIR_SEMASA = os.path.dirname(os.path.abspath(__file__))
@@ -170,7 +171,7 @@ footer_date = datetime.now(local_tz).strftime("%d/%m/%Y")
 st.markdown(f"""
 <div style='font-size:15px;'>
     <strong>📊 Sistem Analitik WLC 2025</strong>
-    <a href='{FILE_CHANGELOG}' target='_blank' style='text-decoration:none;'>&nbsp;&nbsp;<span style='color:#1f77b4;'>v1.1</span></a><br>
+    <a href='{URL_CHANGELOG}' target='_blank' style='text-decoration:none;'>&nbsp;&nbsp;<span style='color:#1f77b4;'>v1.1</span></a><br>
     Kemaskini terakhir: {footer_date} | Dibangunkan oleh <strong>Mr.K</strong><br>
     &copy; 2025 Semua Hak Cipta Terpelihara
 </div>
