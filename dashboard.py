@@ -18,6 +18,10 @@ FILE_REKOD_BERAT = os.path.join(DIR_SEMASA, "rekod_berat.xlsx")
 st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
 st.title("📊 Dashboard Weight Loss Challenge 2025")
 
+# ==== Papar Tarikh & Masa Terkini Berdasarkan Waktu Malaysia ====
+local_tz = pytz.timezone("Asia/Kuala_Lumpur")
+st.caption(f"🕒 Sistem dikemaskini pada: {datetime.now(local_tz).strftime('%d/%m/%Y %I:%M %p')}")
+
 # ==== Cipta Fail Sejarah Berat jika belum ada ====
 if not os.path.exists(FILE_REKOD_BERAT):
     df_dummy = pd.DataFrame({"Nama": [], "Tarikh": [], "Berat": [], "BMI": []})
@@ -162,23 +166,11 @@ if os.path.exists(FILE_EXCEL):
 # Garis pemisah
 st.markdown("---")
 
-# Gaya footer responsif
-footer_col1, footer_col2 = st.columns([0.7, 0.3])
-
-with footer_col1:
-    st.markdown("""
-    <div style='font-size:15px;'>
-        <strong>📊 Sistem Analitik WLC 2025</strong><br>
-        <span style='cursor:pointer;color:#2c7be5;' onclick="window.open('changelog_wlc2025.html')">Versi: <code>v1.0</code></span> | Dibangunkan oleh <strong>Mr.K</strong><br>
-        &copy; 2025 Semua Hak Cipta Terpelihara
-    </div>
-    """, unsafe_allow_html=True)
-
-with footer_col2:
-    with st.expander("📄 Lihat Log Perubahan"):
-        if os.path.exists(FILE_CHANGELOG):
-            with open(FILE_CHANGELOG, "r", encoding="utf-8") as f:
-                changelog_html = f.read()
-            st.components.v1.html(changelog_html, height=500, scrolling=True)
-        else:
-            st.warning("❗ Fail changelog tidak dijumpai.")
+# Gaya footer ringkas
+st.markdown("""
+<div style='font-size:15px;'>
+    <strong>📊 Sistem Analitik WLC 2025</strong><br>
+    Versi: <code>v1.0</code> | Dibangunkan oleh <strong>Mr.K</strong><br>
+    &copy; 2025 Semua Hak Cipta Terpelihara
+</div>
+""", unsafe_allow_html=True)
