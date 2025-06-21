@@ -6,7 +6,7 @@ from datetime import datetime
 import pytz
 
 # Laluan changelog
-URL_CHANGELOG = "https://mdk869.github.io/Sistem-Analitik-WLC-2025/changelog_wlc2025.html"
+URL_CHANGELOG = "https://mdk869.github.io/Sistem-Analitik-WLC-2025/changelog2.html"
 
 # ==== Laluan Fail Excel Secara Relatif Berdasarkan Lokasi Fail Ini ====
 DIR_SEMASA = os.path.dirname(os.path.abspath(__file__))
