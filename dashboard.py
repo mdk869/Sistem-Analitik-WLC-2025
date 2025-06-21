@@ -168,29 +168,34 @@ if os.path.exists(FILE_EXCEL):
 
     # ==== Footer / Copyright ====
 
-# Garis pemisah
+import pytz
+
+# === Footer ===
 st.markdown("---")
 
-# Gaya footer responsif
+# Waktu tempatan (Asia/Kuala_Lumpur)
+tz = pytz.timezone("Asia/Kuala_Lumpur")
+local_time = datetime.now(tz).strftime("%d %B %Y, %I:%M %p")
+
+# Gaya footer
 footer_col1, footer_col2 = st.columns([0.7, 0.3])
 
 with footer_col1:
-    st.markdown("""
-    <div style='font-size:15px;'>
-        <strong>📊 Sistem Analitik WLC 2025</strong> <br>
-        Versi: <code>v1.0</code> | Dibangunkan oleh <strong>Mr.K</strong> <br>
-        &copy; 2025 Semua Hak Cipta Terpelihara
+    st.markdown(f"""
+    <div style='font-size:14px;'>
+        📊 <strong>Sistem Analitik WLC 2025</strong><br>
+        <a href='#' onclick="window.open('', 'popup', 'width=800,height=700').document.write(`{open(FILE_CHANGELOG, 'r', encoding='utf-8').read()}`);" style="text-decoration:none;">
+            Versi: <span style='color:#3366cc;'>v1.0</span>
+        </a><br>
+        &copy; 2025 Semua Hak Cipta Terpelihara · Dibangunkan oleh <strong>Mr.K</strong>
     </div>
     """, unsafe_allow_html=True)
 
 with footer_col2:
-    if st.button("📄 Lihat Log Perubahan"):
+    with st.expander("📄 Lihat Log Perubahan", expanded=False):
         if os.path.exists(FILE_CHANGELOG):
             with open(FILE_CHANGELOG, "r", encoding="utf-8") as f:
                 changelog_html = f.read()
-            st.components.v1.html(changelog_html, height=800, scrolling=True)
+            st.components.v1.html(changelog_html, height=450, scrolling=True)
         else:
             st.warning("❗ Fail changelog tidak dijumpai.")
-
-# Optional: Tarikh dan masa paparan terakhir
-st.markdown(f"<p style='text-align:right;font-size:12px;color:gray;'>📅 Dikemaskini pada: {datetime.now().strftime('%d %B %Y, %I:%M %p')}</p>", unsafe_allow_html=True)
