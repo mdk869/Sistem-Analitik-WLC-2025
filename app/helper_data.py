@@ -3,6 +3,8 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 import streamlit as st
+import pytz
+from app.helper_logic import kira_bmi, kategori_bmi_asia
 
 # --- Setup sambungan Google Sheets
 scope = [
@@ -23,11 +25,17 @@ def load_data_cloud_or_local():
     df = pd.DataFrame(ws_peserta.get_all_records())
     return df
 
-# === Fungsi: Tambah Peserta Baru
-def tambah_peserta_google_sheet(nama, nostaf, tinggi, berat_awal):
-    tarikh = datetime.now().strftime("%Y-%m-%d")
-    row = [nama, nostaf, "", "", "", tinggi, berat_awal, tarikh, berat_awal, tarikh, "", ""]
-    ws_peserta.append_row(row)
+# === Fungsi: Tambah Peserta ===
+def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal):
+    tinggi_m = tinggi / 100
+    bmi = berat_awal / (tinggi_m ** 2)
+    kategori = kategori_bmi_asia(bmi)
+    tarikh_daftar = datetime.now(pytz.timezone("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
+
+    ws_peserta.append_row([
+        nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tarikh_daftar, berat_awal, tarikh_daftar, round(bmi, 2), kategori
+    ])
+
 
 # === Fungsi: Kemaskini Berat
 def kemaskini_berat_peserta(nama, berat_baru):
