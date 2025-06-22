@@ -2,8 +2,27 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+import json
 from datetime import datetime
 import pytz
+
+# Google Sheets Setup
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+
+if "GOOGLE_SHEETS_CREDS" in os.environ:
+    creds_dict = json.loads(os.environ["GOOGLE_SHEETS_CREDS"])
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+else:
+    cred_path = os.path.join(os.path.dirname(__file__), "credentials.json")
+    creds = ServiceAccountCredentials.from_json_keyfile_name(cred_path, scope)
+
+
+client = gspread.authorize(creds)
+sheet = client.open("peserta").worksheet("Sheet1")
+data = sheet.get_all_records()
+df = pd.DataFrame(data)
 
 # Laluan changelog
 URL_CHANGELOG = "https://mdk869.github.io/Sistem-Analitik-WLC-2025/changelog2.html"
@@ -26,10 +45,8 @@ if not os.path.exists(FILE_REKOD_BERAT):
     df_dummy = pd.DataFrame({"Nama": [], "Tarikh": [], "Berat": [], "BMI": []})
     df_dummy.to_excel(FILE_REKOD_BERAT, index=False)
 
-# ==== Semak Kewujudan Fail Excel ====
-if os.path.exists(FILE_EXCEL):
-    df = pd.read_excel(FILE_EXCEL)
-
+# ==== Gunakan Data dari Google Sheets ====
+if not df.empty:
     df["PenurunanKg"] = df["BeratAwal"] - df["BeratTerkini"]
     df["% Penurunan"] = (df["PenurunanKg"] / df["BeratAwal"] * 100).round(2)
 
@@ -68,6 +85,8 @@ if os.path.exists(FILE_EXCEL):
     purata_bmi = df_tapis["BMI"].mean().round(1)
     purata_penurunan = df_tapis["% Penurunan"].mean().round(2)
     purata_kg = df_tapis["PenurunanKg"].mean().round(2)
+else:
+    st.warning("Google Sheet kosong atau tiada data.")
 
 # Gaya CSS untuk kad metrik utama (diprefiks supaya tidak ganggu komponen lain)
 card_style = """

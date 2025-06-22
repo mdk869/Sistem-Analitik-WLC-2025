@@ -1,0 +1,39 @@
+# ========== FAIL SENSITIF ==========
+credentials.json
+*.key
+*.pem
+
+# ========== FAIL DATA ==========
+*.xlsx
+*.csv
+*.xlsm
+
+# ========== FAIL PYTHON CACHE ==========
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ========== VIRTUAL ENVIRONMENT ==========
+venv/
+env/
+
+# ========== SETTING EDITOR ==========
+.vscode/
+.idea/
+
+# ========== FAIL SISTEM ==========
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========== LAIN-LAIN (opsyenal) ==========
+# Fail log atau hasil eksport
+*.log
+*.bak
+*.tmp
+
+# Jupyter Notebook checkpoint
+.ipynb_checkpoints/
+
+# Fail build Streamlit Cloud
+.streamlit/
