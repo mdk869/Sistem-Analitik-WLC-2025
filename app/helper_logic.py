@@ -1,44 +1,36 @@
 # app/helper_logic.py
 import pandas as pd
 
-def kira_bmi(berat, tinggi):
-    """Kira BMI berdasarkan berat dan tinggi (dalam cm)."""
-    try:
-        return round(berat / ((tinggi / 100) ** 2), 1)
-    except:
-        return None
+def kira_bmi(berat: float, tinggi_cm: float) -> float:
+    tinggi_m = tinggi_cm / 100
+    return round(berat / (tinggi_m ** 2), 1)
 
-def kategori_bmi_asia(bmi):
-    """Pulangkan kategori BMI mengikut piawaian Asia."""
-    if pd.isna(bmi):
-        return None
-    elif bmi < 18.5:
+def kategori_bmi_asia(bmi: float) -> str:
+    if bmi < 18.5:
         return "Kurang Berat Badan"
-    elif 18.5 <= bmi <= 24.9:
+    elif 18.5 <= bmi <= 22.9:
         return "Normal"
-    elif 25 <= bmi <= 29.9:
+    elif 23 <= bmi <= 27.4:
         return "Lebih Berat Badan"
-    elif 30 <= bmi <= 34.9:
+    elif 27.5 <= bmi <= 34.9:
         return "Obesiti Tahap 1"
     elif 35 <= bmi <= 39.9:
         return "Obesiti Tahap 2"
     else:
         return "Obesiti Morbid"
 
-def kira_status_ranking(row):
-    """Tentukan status ranking peserta: Naik, Turun, Kekal atau Baru."""
-    if pd.isna(row["Ranking_Lama"]):
-        return "🆕 Baru"
-    elif row["Ranking"] < row["Ranking_Lama"]:
-        return "🔺 Naik"
-    elif row["Ranking"] > row["Ranking_Lama"]:
-        return "🔻 Turun"
-    else:
-        return "⏸️ Kekal"
+def tambah_kiraan_peserta(df):
+    """Tambah kolum pengiraan BMI dan penurunan berat ke dalam DataFrame."""
+    df["PenurunanKg"] = df["BeratAwal"] - df["BeratTerkini"]
+    df["% Penurunan"] = (df["PenurunanKg"] / df["BeratAwal"] * 100).round(2)
+    df["BMI"] = df.apply(lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]), axis=1)
+    df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
+    return df
+
 
 # Untuk import automatik dari modul
 __all__ = [
     "kira_bmi",
     "kategori_bmi_asia",
-    "kira_status_ranking"
+    "tambah_kiraan_peserta"
 ]
