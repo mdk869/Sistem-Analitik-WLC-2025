@@ -1,15 +1,25 @@
 # admin.py
 import streamlit as st
 import pandas as pd
+import os
 import io
 from datetime import datetime
 import pytz
 
 from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_auth import check_login
+from app.helper_data import (
+    load_data_cloud_or_local,
+    save_ranking_to_excel,
+    upload_file_to_drive,
+    tambah_peserta_google_sheet,
+    kemaskini_berat_peserta,
+    padam_peserta_dari_sheet
+)
 from app.helper_logic import (
     kira_bmi,
     kategori_bmi_asia,
+    tambah_kiraan_peserta,
     kira_status_ranking
 )
 
@@ -25,27 +35,50 @@ papar_header("🔐 Admin Panel - WLC 2025")
 if not check_login():
     st.stop()
 
-# === Google Sheet Setup ===
-sheet_id = "1K9JiK8FE1-Cd9fYnDU8Pzqj42TWOGi10wHzHt0avbJ0"
-gid_peserta = "0"            # GID untuk tab "peserta"
-gid_rekod_berat = "123456789"  # GID sebenar untuk tab "rekod_berat" (update manual jika tahu)
-gid_ranking_lama = "987654321"  # GID sebenar untuk tab "ranking" (update manual jika tahu)
+# === Data ===
+df = load_data_cloud_or_local()
 
-# === Data Peserta ===
-url_peserta = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid_peserta}"
-df = pd.read_csv(url_peserta)
-df["PenurunanKg"] = df["BeratAwal"] - df["BeratTerkini"]
-df["% Penurunan"] = (df["PenurunanKg"] / df["BeratAwal"] * 100).round(2)
-df["BMI"] = df.apply(lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]), axis=1)
-df["Kategori"] = df["BMI"].apply(kategori_bmi_asia)
+# === Tambah/Edit/Padam Peserta ===
+st.subheader("👤 Pengurusan Peserta")
+with st.expander("➕ Tambah Peserta Baru"):
+    with st.form("form_tambah"):
+        nama = st.text_input("Nama")
+        nostaf = st.text_input("No Staf")
+        tinggi = st.number_input("Tinggi (cm)", min_value=100.0, max_value=250.0, step=0.1)
+        berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=200.0, step=0.1)
+        if st.form_submit_button("Tambah Peserta"):
+            if nama and nostaf:
+                tambah_peserta_google_sheet(nama, nostaf, tinggi, berat_awal)
+                st.success("Peserta berjaya ditambah!")
+            else:
+                st.error("Sila lengkapkan semua maklumat!")
+
+with st.expander("✏️ Edit & Padam Peserta"):
+    peserta_list = df["Nama"].dropna().unique()
+    nama_dipilih = st.selectbox("Pilih Peserta", peserta_list)
+    if nama_dipilih:
+        kol1, kol2 = st.columns(2)
+        with kol1:
+            new_berat = st.number_input("Kemaskini Berat (kg)", value=float(df[df["Nama"] == nama_dipilih]["BeratTerkini"].values[0]))
+            if st.button("✅ Kemaskini Berat"):
+                kemaskini_berat_peserta(nama_dipilih, new_berat)
+                st.success("Berat peserta berjaya dikemaskini!")
+        with kol2:
+            if st.button("🗑️ Padam Peserta"):
+                padam_peserta_dari_sheet(nama_dipilih)
+                st.warning("Peserta dipadam dari senarai!")
 
 # === Leaderboard ===
 st.subheader("🏆 Leaderboard Semasa")
+df = tambah_kiraan_peserta(df)
 df_leaderboard = df.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
 df_leaderboard["Ranking"] = df_leaderboard.index + 1
 
+sheet_id_ranking = "1K9JiK8FE1-Cd9fYnDU8Pzqj42TWOGi10wHzHt0avbJ0"
+gid_ranking = "0"
+url_ranking = f"https://docs.google.com/spreadsheets/d/{sheet_id_ranking}/export?format=csv&gid={gid_ranking}"
+
 try:
-    url_ranking = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid_ranking_lama}"
     df_ranking_lama = pd.read_csv(url_ranking)
     if not df_ranking_lama.empty:
         df_leaderboard = df_leaderboard.merge(df_ranking_lama, on="Nama", how="left", suffixes=("", "_Lama"))
@@ -56,6 +89,11 @@ except:
     df_leaderboard["Status"] = "-"
 
 st.dataframe(df_leaderboard[["Ranking", "Nama", "% Penurunan", "Status"]], use_container_width=True)
+
+if st.button("💾 Simpan Ranking Semasa"):
+    rekod_df = df_leaderboard[["Nama", "Ranking"]]
+    save_ranking_to_excel(rekod_df)
+    st.success("✅ Ranking disimpan dan dimuat naik.")
 
 # === Carian Individu ===
 st.subheader("🔍 Carian Peserta")
@@ -70,7 +108,8 @@ if nama_dicari:
     st.markdown(f"**Kategori BMI:** {kategori_bmi_asia(bmi)}")
 
     try:
-        url_rekod_berat = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid_rekod_berat}"
+        gid_berat = "987654321"
+        url_rekod_berat = f"https://docs.google.com/spreadsheets/d/{sheet_id_ranking}/export?format=csv&gid={gid_berat}"
         df_rekod = pd.read_csv(url_rekod_berat)
         df_sejarah = df_rekod[df_rekod["Nama"] == nama_dicari]
         if not df_sejarah.empty:
@@ -78,13 +117,6 @@ if nama_dicari:
             st.line_chart(df_sejarah.set_index("Tarikh")["Berat"])
     except:
         st.warning("⚠️ Tiada rekod sejarah peserta.")
-
-# === Export Data ===
-st.subheader("🗃️ Export")
-excel_buffer = io.BytesIO()
-df.to_excel(excel_buffer, index=False)
-excel_buffer.seek(0)
-st.download_button("⬇️ Muat Turun Data Peserta", excel_buffer, file_name="data_peserta.xlsx")
 
 # === Statistik Ringkas ===
 st.subheader("📈 Statistik Ringkas")
