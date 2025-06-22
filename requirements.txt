@@ -8,3 +8,5 @@ plotly
 flet
 plotly.express
 pytz
+gspread
+oauth2client
