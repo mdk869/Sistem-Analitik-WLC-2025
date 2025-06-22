@@ -1,41 +1,53 @@
-# pages/admin.py
-
+# admin.py (Simple Version)
 import streamlit as st
-from app.styles import papar_header, papar_footer
-from components.widgets_admin import (
-    borang_tambah_peserta,
-    borang_edit_peserta,
-    borang_padam_peserta,
-    papar_senarai_peserta,
-    paparan_statistik_mini
-)
+import pandas as pd
+from datetime import datetime
+import pytz
 
-# ========== Header Halaman ==========
-papar_header("🛠️ Panel Admin - WLC 2025")
+from app.styles import paparkan_tema, papar_footer, papar_header
+from app.helper_auth import check_login
+from app.helper_data import load_data_cloud_or_local
+from app.helper_logic import kira_bmi, kategori_bmi_asia
 
-# ========== Tab Navigasi ==========
-tab1, tab2, tab3, tab4 = st.tabs([
-    "➕ Tambah Peserta", 
-    "✏️ Kemaskini Peserta", 
-    "🗑️ Padam Peserta", 
-    "👥 Senarai Peserta"
-])
+# === Setup Paparan ===
+st.set_page_config(page_title="Admin Panel", layout="wide")
+local_tz = pytz.timezone("Asia/Kuala_Lumpur")
 
-with tab1:
-    borang_tambah_peserta()
+# === Tema & Header ===
+paparkan_tema()
+papar_header("🔐 Admin Panel - WLC 2025")
 
-with tab2:
-    borang_edit_peserta()
+# === Login ===
+if not check_login():
+    st.stop()
 
-with tab3:
-    borang_padam_peserta()
+# === Data ===
+df = load_data_cloud_or_local()
 
-with tab4:
-    papar_senarai_peserta()
+# === Ringkasan Peserta ===
+st.subheader("📋 Senarai Peserta")
+st.dataframe(df, use_container_width=True)
 
-# ========== Statistik Ringkas ==========
-st.divider()
-paparan_statistik_mini()
+# === Carian Individu ===
+st.subheader("🔍 Carian Peserta")
+nama_dicari = st.selectbox("Pilih Peserta", df["Nama"].dropna().unique())
+if nama_dicari:
+    peserta = df[df["Nama"] == nama_dicari].iloc[0]
+    st.markdown(f"**Nama:** {nama_dicari}")
+    st.markdown(f"**Tinggi:** {peserta['Tinggi']} cm")
+    st.markdown(f"**Berat Terkini:** {peserta['BeratTerkini']} kg")
+    bmi = kira_bmi(peserta['BeratTerkini'], peserta['Tinggi'])
+    st.markdown(f"**BMI:** {bmi}")
+    st.markdown(f"**Kategori BMI:** {kategori_bmi_asia(bmi)}")
 
-# ========== Footer ==========
-papar_footer()
+# === Statistik Ringkas ===
+st.subheader("📈 Statistik Ringkas")
+total_peserta = df.shape[0]
+purata_bmi = df["BMI"].mean().round(1) if "BMI" in df.columns else 0
+col1, col2 = st.columns(2)
+col1.metric("Peserta Aktif", total_peserta)
+col2.metric("Purata BMI", purata_bmi)
+
+# === Footer ===
+footer_date = datetime.now(local_tz).strftime("%d/%m/%Y")
+papar_footer("MKR", footer_date)
