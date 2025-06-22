@@ -85,12 +85,25 @@ if not df.empty:
     with tab3:
         st.subheader("📊 Analisis BMI Peserta")
         col1, col2, col3, col4, col5, col6 = st.columns(6)
-        col1.metric("Kurang Berat Badan", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum())
-        col2.metric("Normal", (df_tapis["KategoriBMI"] == "Normal").sum())
-        col3.metric("Lebih Berat Badan", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum())
-        col4.metric("Obesiti Tahap 1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum())
-        col5.metric("Obesiti Tahap 2", (df_tapis["KategoriBMI"] == "Obesiti Tahap 2").sum())
-        col6.metric("Obesiti Morbid", (df_tapis["KategoriBMI"] == "Obesiti Morbid").sum())
+
+        # Paparan metrik kategori BMI dengan gaya mengikut warna
+        cols = st.columns(6)
+        kategori_bmi_data = [
+            ("Kurang Berat Badan", "kurang", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum()),
+            ("Normal", "normal", (df_tapis["KategoriBMI"] == "Normal").sum()),
+            ("Lebih Berat Badan", "lebih", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum()),
+            ("Obesiti Tahap 1", "obes1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum()),
+            ("Obesiti Tahap 2", "obes2", (df_tapis["KategoriBMI"] == "Obesiti Tahap 2").sum()),
+            ("Obesiti Morbid", "morbid", (df_tapis["KategoriBMI"] == "Obesiti Morbid").sum()),
+        ]
+
+        for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
+            col.markdown(f"""
+            <div class="bmi-box {css_class}">
+                <div class="bmi-title">{label}</div>
+                <div class="bmi-value">{value}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
         Kategori_df = df_tapis.groupby("KategoriBMI").size().reset_index(name="Bilangan")
         fig = px.pie(Kategori_df, names="KategoriBMI", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")

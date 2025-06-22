@@ -7,13 +7,20 @@ def paparkan_tema():
     st.markdown("""
     <style>
     .wlc-title {
-        font-size: 40px;
+        font-size: 30px;
         font-weight: 700;
         color: #00264d;
         text-align: center;
         margin-top: 2rem;
         margin-bottom: 0.5rem;
     }
+    .wlc-value {
+        font-size: 30px;
+        font-weight: 400;
+        color: #4d4d4d;
+        text-align: center;
+        margin-bottom: 2rem;
+    }           
     .wlc-subtitle {
         font-size: 20px;
         font-weight: 400;
@@ -22,17 +29,47 @@ def paparkan_tema():
         margin-bottom: 2rem;
     }
     .wlc-box {
-        background-color: #f5f8ff;
-        border: 1px solid #cce0ff;
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
         text-align: center;
-        max-width: 700px;
-        margin: 0 auto;
+        margin-bottom: 1 rem;
     }
     </style>
     """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <style>
+    .bmi-box {
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        color: white;
+        font-family: sans-serif;
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+        margin-bottom: 1rem;
+    }
+    .bmi-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+    }
+    .bmi-value {
+        font-size: 1.6rem;
+        font-weight: bold;
+    }
+.kurang { background-color: #2ecc71; }         /* Hijau */
+.normal { background-color: #f1c40f; }         /* Kuning */
+.lebih { background-color: #e67e22; }          /* Oren */
+.obes1 { background-color: #e74c3c; }          /* Merah */
+.obes2 { background-color: #8e44ad; }          /* Ungu */
+.morbid { background-color: #2c3e50; }         /* Biru Gelap */
+</style>
+""", unsafe_allow_html=True)
+
+
 
 def papar_tajuk_utama():
     st.markdown("""
