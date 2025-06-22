@@ -41,7 +41,7 @@ def kemaskini_berat_peserta(nama, berat_baru):
     ws_rekod.append_row([nama, berat_baru, datetime.now().strftime("%Y-%m-%d")])
 
 # === Fungsi: Sejarah Berat
-def load_sejarah_berat(nama):
+def sejarah_berat(nama):
     rekod = pd.DataFrame(ws_rekod.get_all_records())
     rekod["Tarikh"] = pd.to_datetime(rekod["Tarikh"])
     return rekod[rekod["Nama"] == nama].sort_values("Tarikh")
