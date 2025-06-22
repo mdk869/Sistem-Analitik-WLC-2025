@@ -8,11 +8,6 @@ import json
 from datetime import datetime
 import pytz
 
-# Guna credentials dari secrets Streamlit
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-credentials_dict = st.secrets["gcp_service_account"]
-creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
-
 client = gspread.authorize(creds)
 sheet = client.open("peserta").worksheet("Sheet1")
 data = sheet.get_all_records()
