@@ -43,16 +43,23 @@ with st.expander("➕ Tambah Peserta Baru"):
         tinggi = st.number_input("Tinggi (cm)", min_value=100.0, max_value=250.0, step=0.1)
         berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=200.0, step=0.1)
 
-        if st.form_submit_button("Tambah Peserta"):
-            if nama and nostaf:
-                tinggi_meter = tinggi / 100
-                bmi = kira_bmi(berat_awal, tinggi_meter)
-                kategori = kategori_bmi_asia(bmi)
-                tarikh_daftar = datetime.now(local_tz).strftime("%Y-%m-%d %H:%M:%S")
-                tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, bmi, kategori, tarikh_daftar)
-                st.success("✅ Peserta berjaya ditambah!")
-            else:
-                st.error("❌ Sila lengkapkan semua maklumat!")
+    if st.form_submit_button("Tambah Peserta"):
+        if nama and nostaf:
+            tinggi_meter = tinggi / 100
+            bmi = kira_bmi(berat_awal, tinggi_meter)
+            kategori = kategori_bmi_asia(bmi)
+            berat_terkini = berat_awal
+            tarikh_timbang = datetime.now(local_tz).strftime("%Y-%m-%d")
+        
+            tambah_peserta_google_sheet(
+                nama, nostaf, umur, jantina, jabatan,
+                tinggi, berat_awal, berat_terkini,
+                tarikh_timbang, bmi, kategori
+            )
+            st.success("✅ Peserta berjaya ditambah!")
+        else:
+            st.error("❌ Sila lengkapkan semua maklumat!")
+
 
 with st.expander("✏️ Edit & Padam Peserta"):
     peserta_list = df["Nama"].dropna().unique()
