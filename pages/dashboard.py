@@ -77,10 +77,14 @@ if not df.empty:
         st.plotly_chart(fig, use_container_width=True)
 
     with tab2:
-        st.subheader("Leaderboard")
-        df_rank = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
-        df_rank["Ranking"] = df_rank.index + 1
-        st.dataframe(df_rank[["Ranking", "Nama", "% Penurunan"]], use_container_width=True)
+            st.subheader("🏅 10 Terbaik - % Penurunan Berat")
+            top10 = df_rank.head(10)
+            fig_top10 = px.bar(top10, x="Nama", y="% Penurunan",
+                                title="Top 10 Peserta Berdasarkan % Penurunan Berat",
+                                labels={"% Penurunan": "% Turun"},
+                                color="% Penurunan", color_continuous_scale="Blues")
+            st.plotly_chart(fig_top10, use_container_width=True)
+
 
     with tab3:
         st.subheader("📊 Analisis BMI Peserta")
