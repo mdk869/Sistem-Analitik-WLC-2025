@@ -14,9 +14,10 @@ from app.helper_data import (
     FILE_REKOD, FILE_REKOD_BERAT, FILE_EXCEL
 )
 from app.helper_logic import (
-    kira_status_ranking,
     kira_bmi,
-    kategori_bmi_asia
+    kategori_bmi_asia,
+    tambah_kiraan_peserta,
+    kira_status_ranking
 )
 
 # === Setup Paparan ===
