@@ -43,7 +43,7 @@ def kemaskini_berat_peserta(nama, berat_baru):
 # === Fungsi: Sejarah Berat
 def sejarah_berat(nama):
     rekod = pd.DataFrame(ws_rekod.get_all_records())
-    rekod.columns = rekod.columns.str.strip()  # Bersih ruang kosong
+    rekod.columns = [str(col).strip() for col in rekod.columns]  # Bersih ruang kosong
 
     if rekod.empty or "Tarikh" not in rekod.columns:
         return pd.DataFrame()  # Pulangkan dataframe kosong
