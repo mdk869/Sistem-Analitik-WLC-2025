@@ -27,10 +27,19 @@ def tambah_kiraan_peserta(df):
     df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
     return df
 
+def kira_status_ranking(berat_awal, berat_terkini):
+    if berat_terkini < berat_awal:
+        return "Turun"
+    elif berat_terkini > berat_awal:
+        return "Naik"
+    else:
+        return "Kekal"
+
 
 # Untuk import automatik dari modul
 __all__ = [
     "kira_bmi",
     "kategori_bmi_asia",
-    "tambah_kiraan_peserta"
+    "tambah_kiraan_peserta",
+    "kira_status_ranking"
 ]
