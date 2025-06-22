@@ -46,6 +46,23 @@ def sejarah_berat(nama):
     rekod["Tarikh"] = pd.to_datetime(rekod["Tarikh"])
     return rekod[rekod["Nama"] == nama].sort_values("Tarikh")
 
+# === Fungsi: Kemaskini Berat
+def kemaskini_berat_peserta(nama, berat_baru):
+    from datetime import datetime
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    # 1. Update berat terkini di sheet peserta
+    df = pd.DataFrame(ws_peserta.get_all_records())
+    for idx, row in df.iterrows():
+        if row["Nama"] == nama:
+            ws_peserta.update_cell(idx + 2, df.columns.get_loc("BeratTerkini") + 1, berat_baru)
+            ws_peserta.update_cell(idx + 2, df.columns.get_loc("TarikhTimbang") + 1, today)
+            break
+
+    # 2. Rekod sejarah berat (rekod_berat)
+    ws_rekod.append_row([nama, berat_baru, today])
+
+
 # === Fungsi: Padam Peserta
 def padam_peserta_dari_sheet(nama):
     data = ws_peserta.get_all_records()
