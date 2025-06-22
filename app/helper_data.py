@@ -26,14 +26,16 @@ def load_data_cloud_or_local():
     return df
 
 # === Fungsi: Tambah Peserta ===
-def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, berat_terkini, tarikh_timbang, bmi, kategori):
+def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan,
+                                 tinggi, berat_awal, berat_terkini,
+                                 tarikh_timbang, bmi, kategori):
     tarikh_daftar = datetime.now(pytz.timezone("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
 
     ws_peserta.append_row([
-        nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tarikh_daftar,
-        berat_terkini, tarikh_timbang, round(bmi, 2), kategori
+        nama, nostaf, umur, jantina, jabatan, tinggi,
+        berat_awal, tarikh_daftar, berat_terkini,
+        tarikh_timbang, round(bmi, 2), kategori
     ])
-
 
 
 # === Fungsi: Kemaskini Berat
