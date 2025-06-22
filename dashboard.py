@@ -1,67 +1,16 @@
+# dashboard.py (dikemaskini dengan struktur modular)
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
-import gspread
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
-from google.oauth2 import service_account
-import json
 from datetime import datetime
 import pytz
 
-# === Tentukan sama ada Cloud atau Local ===
-try:
-    _ = st.secrets["gcp_service_account"]
-    IS_CLOUD = True
-except st.errors.StreamlitSecretNotFoundError:
-    IS_CLOUD = False
-
-if IS_CLOUD:
-    import gspread
-    from google.oauth2 import service_account
-
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    
-    # ✅ hanya akan cuba akses st.secrets jika benar-benar wujud
-    credentials = service_account.Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"],
-        scopes=scope
-    )
-    
-    client = gspread.authorize(credentials)
-    sheet = client.open("peserta").worksheet("Sheet1")
-    data = sheet.get_all_records()
-    df = pd.DataFrame(data)
-else:
-    # 📁 Local mode: gunakan fail Excel
-    import openpyxl
-
-    DIR_SEMASA = os.path.dirname(os.path.abspath(__file__))
-    FILE_EXCEL = os.path.join(DIR_SEMASA, "peserta.xlsx")
-    FILE_REKOD = os.path.join(DIR_SEMASA, "rekod_ranking_semasa.xlsx")
-    FILE_REKOD_BERAT = os.path.join(DIR_SEMASA, "rekod_berat.xlsx")
-
-    if os.path.exists(FILE_EXCEL):
-        df = pd.read_excel(FILE_EXCEL)
-    else:
-        st.error("❌ Fail peserta.xlsx tidak dijumpai. Sila pastikan fail wujud dalam direktori projek.")
-        st.stop()
-
-    # Auto cipta fail sejarah berat jika tiada
-    if not os.path.exists(FILE_REKOD_BERAT):
-        df_dummy = pd.DataFrame({"Nama": [], "Tarikh": [], "Berat": [], "BMI": []})
-        df_dummy.to_excel(FILE_REKOD_BERAT, index=False)
-
+from app.helper_data import load_data
+from app.helper_logic import tambah_kiraan_peserta
 
 # Laluan changelog
 URL_CHANGELOG = "https://mdk869.github.io/Sistem-Analitik-WLC-2025/changelog2.html"
-
-# ==== Laluan Fail Excel Secara Relatif Berdasarkan Lokasi Fail Ini ====
-DIR_SEMASA = os.path.dirname(os.path.abspath(__file__))
-FILE_EXCEL = os.path.join(DIR_SEMASA, "peserta.xlsx")
-FILE_REKOD = os.path.join(DIR_SEMASA, "rekod_ranking_semasa.xlsx")
-FILE_REKOD_BERAT = os.path.join(DIR_SEMASA, "rekod_berat.xlsx")
 
 # ==== Setup Page ====
 st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
@@ -70,41 +19,11 @@ st.title("📊 Dashboard Weight Loss Challenge 2025")
 # ==== Papar Tarikh & Masa Terkini Berdasarkan Waktu Malaysia ====
 local_tz = pytz.timezone("Asia/Kuala_Lumpur")
 
-# ==== Cipta Fail Sejarah Berat jika belum ada ====
-if not os.path.exists(FILE_REKOD_BERAT):
-    df_dummy = pd.DataFrame({"Nama": [], "Tarikh": [], "Berat": [], "BMI": []})
-    df_dummy.to_excel(FILE_REKOD_BERAT, index=False)
+# ==== Muatkan data ====
+df = load_data()
 
-# ==== Gunakan Data dari Google Sheets ====
 if not df.empty:
-    df["PenurunanKg"] = df["BeratAwal"] - df["BeratTerkini"]
-    df["% Penurunan"] = (df["PenurunanKg"] / df["BeratAwal"] * 100).round(2)
-
-    def kira_bmi(berat, tinggi):
-        try:
-            return round(berat / ((tinggi / 100) ** 2), 1)
-        except:
-            return None
-
-    df["BMI"] = df.apply(lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]) if pd.notna(row["BeratTerkini"]) and pd.notna(row["Tinggi"]) else None, axis=1)
-
-    def kategori_bmi_asia(bmi):
-        if pd.isna(bmi):
-            return None
-        elif bmi < 18.5:
-            return "Kurang Berat Badan"
-        elif 18.5 <= bmi <= 24.9:
-            return "Normal"
-        elif 25 <= bmi <= 29.9:
-            return "Lebih Berat Badan"
-        elif 30 <= bmi <= 34.9:
-            return "Obesiti Tahap 1"
-        elif 35 <= bmi <= 39.9:
-            return "Obesiti Tahap 2"
-        else:
-            return "Obesiti Morbid"
-
-    df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
+    df = tambah_kiraan_peserta(df)
 
     Kategori = st.sidebar.multiselect("Pilih Kategori", options=df["Kategori"].dropna().unique(), default=df["Kategori"].dropna().unique())
     jantina = st.sidebar.multiselect("Pilih Jantina", options=df["Jantina"].dropna().unique(), default=df["Jantina"].dropna().unique())
@@ -118,7 +37,7 @@ if not df.empty:
 else:
     st.warning("Google Sheet kosong atau tiada data.")
 
-# Gaya CSS untuk kad metrik utama (diprefiks supaya tidak ganggu komponen lain)
+# Gaya CSS untuk kad metrik utama
 card_style = """
 <style>
 .wlc-metric-box {
@@ -155,163 +74,68 @@ card_style = """
 """
 st.markdown(card_style, unsafe_allow_html=True)
 
-# Paparan metrik korporat
+# Paparan metrik
 col1, col2, col3, col4 = st.columns(4)
-
 with col1:
     st.markdown(f"""
     <div class="wlc-metric-box">
         <div class="wlc-metric-title">👥 Jumlah Peserta</div>
         <div class="wlc-metric-value">{total_peserta}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    </div>""", unsafe_allow_html=True)
 
 with col2:
     st.markdown(f"""
     <div class="wlc-metric-box">
         <div class="wlc-metric-title">📉 Purata BMI</div>
         <div class="wlc-metric-value">{purata_bmi}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    </div>""", unsafe_allow_html=True)
 
 with col3:
     st.markdown(f"""
     <div class="wlc-metric-box">
         <div class="wlc-metric-title">🏆 % Penurunan</div>
         <div class="wlc-metric-value">{purata_penurunan}%</div>
-    </div>
-    """, unsafe_allow_html=True)
+    </div>""", unsafe_allow_html=True)
 
 with col4:
     st.markdown(f"""
     <div class="wlc-metric-box">
         <div class="wlc-metric-title">⚖️ Berat Turun (kg)</div>
         <div class="wlc-metric-value">{purata_kg} kg</div>
-    </div>
-    """, unsafe_allow_html=True)
+    </div>""", unsafe_allow_html=True)
 
-
-# ===== TAB DI LUAR COLUMN (BEBAS DARI GAYA METRIK) =====
+# ===== Tabs =====
 tab1, tab2, tab3 = st.tabs(["📉 Penurunan Berat", "🏆 Leaderboard", "🧍‍♂️ BMI"])
-    
+
 with tab1:
-        st.subheader("Perbandingan Berat Setiap Peserta")
-        df_plot = df_tapis.sort_values("PenurunanKg", ascending=False)
-        fig = px.bar(df_plot,
-                     x="Nama",
-                     y=["BeratAwal", "BeratTerkini"],
-                     barmode="group",
-                     title="Perbandingan Berat Awal dan Terkini Setiap Peserta",
-                     labels={"value": "Berat (kg)", "variable": "Kategori Berat"})
-        st.plotly_chart(fig, use_container_width=True)
-
-with tab2:
-        st.subheader("🏆 Leaderboard: % Penurunan Berat")
-        df_leaderboard = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
-        df_leaderboard["Ranking"] = df_leaderboard.index + 1
-
-        if os.path.exists(FILE_REKOD):
-            rekod_lama = pd.read_excel(FILE_REKOD)
-            df_leaderboard = df_leaderboard.merge(rekod_lama, on="Nama", how="left", suffixes=("", "_Lama"))
-
-            def kira_status(row):
-                if pd.isna(row["Ranking_Lama"]):
-                    return "🆕 Baru"
-                if row["Ranking"] < row["Ranking_Lama"]:
-                    return "🔺 Naik"
-                elif row["Ranking"] > row["Ranking_Lama"]:
-                    return "🔻 Turun"
-                else:
-                    return "⏸️ Kekal"
-
-            df_leaderboard["Status"] = df_leaderboard.apply(kira_status, axis=1)
-        else:
-            df_leaderboard["Status"] = "-"
-
-        st.dataframe(df_leaderboard[["Ranking", "Nama", "% Penurunan", "BeratAwal", "BeratTerkini", "Status"]], use_container_width=True, hide_index=True)
-
-        if st.button("💾 Simpan Ranking Semasa"):
-            rekod_df = df_leaderboard[["Nama", "Ranking"]]
-            rekod_df.to_excel(FILE_REKOD, index=False)
-
-            if IS_CLOUD:
-                # === Upload ke Google Drive ===
-                from pydrive2.auth import GoogleAuth
-                from pydrive2.drive import GoogleDrive
-                import tempfile
-
-                # Setup pydrive authentication
-                gauth = GoogleAuth()
-                gauth.credentials = credentials.with_scopes([
-                    "https://www.googleapis.com/auth/drive",
-                    "https://www.googleapis.com/auth/drive.file"
-                ])
-                drive = GoogleDrive(gauth)
-
-                # Simpan ke fail sementara sebelum upload
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_file:
-                    rekod_df.to_excel(tmp_file.name, index=False)
-                    tmp_file.flush()
-                    file_drive = drive.CreateFile({
-                        'title': 'rekod_ranking_semasa.xlsx',
-                        'parents': [{'id': '1XR6OlFeiDLet9niwsUdmvKW4GGKNOkgT'}]
-})
-                    file_drive.SetContentFile(tmp_file.name)
-                    file_drive.Upload()
-
-                st.success("✅ Ranking berjaya disimpan & dimuat naik ke Google Drive.")
-        else:
-                st.success(f"✅ Ranking berjaya disimpan ke fail: {FILE_REKOD}")
-
-
-        with st.expander("🔐 Akses Maklumat Individu"):
-            nama_pilihan = st.selectbox("📌 Pilih Nama Peserta:", df_leaderboard["Nama"])
-            peserta_info = df[df["Nama"] == nama_pilihan].iloc[0]
-
-            st.markdown(f"### 🧾 Maklumat Peserta: {nama_pilihan}")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write(f"- **Tinggi:** {peserta_info['Tinggi']} cm")
-                st.write(f"- **Berat Awal:** {peserta_info['BeratAwal']} kg")
-            with col2:
-                st.write(f"- **Berat Terkini:** {peserta_info['BeratTerkini']} kg")
-                st.write(f"- **BMI Semasa:** {peserta_info['BMI']}")
-
-            if os.path.exists(FILE_REKOD_BERAT):
-                df_rekod = pd.read_excel(FILE_REKOD_BERAT)
-                df_sejarah = df_rekod[df_rekod["Nama"] == nama_pilihan]
-
-                if not df_sejarah.empty:
-                    st.markdown("### 📈 Sejarah Berat & BMI")
-                    fig = px.line(df_sejarah, x="Tarikh", y=["Berat", "BMI"], markers=True)
-                    st.plotly_chart(fig, use_container_width=True)
-                else:
-                    st.info("Tiada rekod sejarah berat untuk peserta ini.")
+    st.subheader("Perbandingan Berat Setiap Peserta")
+    df_plot = df_tapis.sort_values("PenurunanKg", ascending=False)
+    fig = px.bar(df_plot, x="Nama", y=["BeratAwal", "BeratTerkini"],
+                 barmode="group", title="Perbandingan Berat Awal dan Terkini",
+                 labels={"value": "Berat (kg)", "variable": "Kategori Berat"})
+    st.plotly_chart(fig, use_container_width=True)
 
 with tab3:
-        st.subheader("📊 Analisis BMI Peserta")
+    st.subheader("📊 Analisis BMI Peserta")
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
+    col1.metric("Kurang Berat Badan", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum())
+    col2.metric("Normal", (df_tapis["KategoriBMI"] == "Normal").sum())
+    col3.metric("Lebih Berat Badan", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum())
+    col4.metric("Obesiti Tahap 1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum())
+    col5.metric("Obesiti Tahap 2", (df_tapis["KategoriBMI"] == "Obesiti Tahap 2").sum())
+    col6.metric("Obesiti Morbid", (df_tapis["KategoriBMI"] == "Obesiti Morbid").sum())
 
-        col1, col2, col3, col4, col5, col6 = st.columns(6)
-        col1.metric("Kurang Berat Badan", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum())
-        col2.metric("Normal", (df_tapis["KategoriBMI"] == "Normal").sum())
-        col3.metric("Lebih Berat Badan", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum())
-        col4.metric("Obesiti Tahap 1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum())
-        col5.metric("Obesiti Tahap 2", (df_tapis["KategoriBMI"] == "Obesiti Tahap 2").sum())
-        col6.metric("Obesiti Morbid", (df_tapis["KategoriBMI"] == "Obesiti Morbid").sum())
+    Kategori_df = df_tapis.groupby("KategoriBMI").size().reset_index(name="Bilangan")
+    fig = px.pie(Kategori_df, names="KategoriBMI", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")
+    st.plotly_chart(fig, use_container_width=True)
 
-        Kategori_df = df_tapis.groupby("KategoriBMI").size().reset_index(name="Bilangan")
-        fig = px.pie(Kategori_df, names="KategoriBMI", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")
-        st.plotly_chart(fig, use_container_width=True)
+    with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
+        df_bmi_table = df_tapis[["Nama", "BMI", "KategoriBMI"]].sort_values("KategoriBMI", na_position="last").reset_index(drop=True)
+        df_bmi_table.index = df_bmi_table.index + 1
+        st.dataframe(df_bmi_table, use_container_width=True)
 
-        with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
-            df_bmi_table = df_tapis[["Nama", "BMI", "KategoriBMI"]].sort_values("KategoriBMI", na_position="last").reset_index(drop=True)
-            df_bmi_table.index = df_bmi_table.index + 1
-            st.dataframe(df_bmi_table, use_container_width=True)
-
-# Garis pemisah
+# Footer
 st.markdown("---")
-
-# Gaya footer ringkas
 footer_date = datetime.now(local_tz).strftime("%d/%m/%Y")
 st.markdown(f"""
 <div style='font-size:15px;'>

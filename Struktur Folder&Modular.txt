@@ -1,0 +1,11 @@
+.
+├── app/                     # Modul sokongan (helper sahaja)
+│   ├── helper_data.py       # Data I/O (Excel / Google Sheet)
+│   ├── helper_logic.py      # Kiraan BMI, Penurunan, dll
+│   └── helper_auth.py       # Login admin (hashed)
+│
+├── dashboard.py             # Paparan analitik utama untuk penganjur
+├── admin.py                 # Panel login & simpan ranking (penganjur sahaja)
+├── requirements.txt         # Semua library yang digunakan
+└── .streamlit/
+    └── secrets.toml         # Google API & Drive Key
