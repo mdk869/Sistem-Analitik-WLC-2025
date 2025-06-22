@@ -10,3 +10,4 @@ plotly.express
 pytz
 gspread
 oauth2client
+pydrive2
