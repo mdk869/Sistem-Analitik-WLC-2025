@@ -1,0 +1,12 @@
+streamlit
+pandas
+openpyxl
+matplotlib
+Pillow
+watchdog
+plotly
+flet
+plotly.express
+pytz
+gspread
+oauth2client
