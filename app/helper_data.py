@@ -62,5 +62,5 @@ def padam_peserta_dari_sheet(nama):
     data = ws_peserta.get_all_records()
     for idx, row in enumerate(data):
         if row["Nama"] == nama:
-            ws_peserta.delete_row(idx + 2)
+            ws_peserta.delete_rows(idx + 2)
             break
