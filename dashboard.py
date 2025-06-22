@@ -8,6 +8,16 @@ import json
 from datetime import datetime
 import pytz
 
+# Ambil dari st.secrets
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"]
+)
+
+client = gspread.authorize(creds)
+sheet = client.open("peserta").worksheet("Sheet1")
+data = sheet.get_all_records()
+df = pd.DataFrame(data)
+
 # Laluan changelog
 URL_CHANGELOG = "https://mdk869.github.io/Sistem-Analitik-WLC-2025/changelog2.html"
 
