@@ -34,30 +34,29 @@ if not check_login():
 
 # === Data ===
 df = load_data_cloud_or_local()
-df.columns = df.columns.str.strip()  # normalize column names
 
 # === Leaderboard ===
 st.subheader("🏆 Leaderboard Semasa")
 df["PenurunanKg"] = df["BeratAwal"] - df["BeratTerkini"]
 df["% Penurunan"] = (df["PenurunanKg"] / df["BeratAwal"] * 100).round(2)
-df["BMI"] = df.apply(lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]), axis=1)
-df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
 df_leaderboard = df.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
 df_leaderboard["Ranking"] = df_leaderboard.index + 1
 
 # Muat turun data ranking lama dari Google Sheet
-ranking_sheet_url = "https://docs.google.com/spreadsheets/d/1K9JiK8FE1-Cd9fYnDU8Pzqj42TWOGi10wHzHt0avbJ0/export?format=csv&gid=0"
-df_ranking_lama = None
-try:
-    df_ranking_lama = pd.read_csv(ranking_sheet_url)
-    df_ranking_lama.columns = df_ranking_lama.columns.str.strip()
-except:
-    pass
+sheet_id_ranking = "1K9JiK8FE1-Cd9fYnDU8Pzqj42TWOGi10wHzHt0avbJ0"
+gid_ranking = "0"  # GID ranking lama jika ada
+url_ranking = f"https://docs.google.com/spreadsheets/d/{sheet_id_ranking}/export?format=csv&gid={gid_ranking}"
 
-if df_ranking_lama is not None and not df_ranking_lama.empty:
-    df_leaderboard = df_leaderboard.merge(df_ranking_lama, on="Nama", how="left", suffixes=("", "_Lama"))
-    df_leaderboard["Status"] = df_leaderboard.apply(lambda row: kira_status_ranking(row["Ranking_Lama"], row["Ranking"]), axis=1)
-else:
+try:
+    df_ranking_lama = pd.read_csv(url_ranking)
+    if not df_ranking_lama.empty:
+        df_leaderboard = df_leaderboard.merge(df_ranking_lama, on="Nama", how="left", suffixes=("", "_Lama"))
+        df_leaderboard["Status"] = df_leaderboard.apply(
+            lambda row: kira_status_ranking(row["BeratAwal"], row["BeratTerkini"]), axis=1
+        )
+    else:
+        df_leaderboard["Status"] = "-"
+except:
     df_leaderboard["Status"] = "-"
 
 st.dataframe(df_leaderboard[["Ranking", "Nama", "% Penurunan", "Status"]], use_container_width=True)
@@ -80,9 +79,9 @@ if nama_dicari:
     st.markdown(f"**Kategori BMI:** {kategori_bmi_asia(bmi)}")
 
     try:
-        rekod_berat_url = "https://docs.google.com/spreadsheets/d/1K9JiK8FE1-Cd9fYnDU8Pzqj42TWOGi10wHzHt0avbJ0/export?format=csv&gid=987654321"
-        df_rekod = pd.read_csv(rekod_berat_url)
-        df_rekod.columns = df_rekod.columns.str.strip()
+        gid_berat = "987654321"  # GID rekod berat sebenar
+        url_rekod_berat = f"https://docs.google.com/spreadsheets/d/{sheet_id_ranking}/export?format=csv&gid={gid_berat}"
+        df_rekod = pd.read_csv(url_rekod_berat)
         df_sejarah = df_rekod[df_rekod["Nama"] == nama_dicari]
         if not df_sejarah.empty:
             df_sejarah["Tarikh"] = pd.to_datetime(df_sejarah["Tarikh"], dayfirst=True)
@@ -101,8 +100,8 @@ with col1:
     st.download_button("⬇️ Muat Turun Data Peserta", excel_buffer, file_name="data_peserta.xlsx")
 
     try:
-        df_rekod_berat = pd.read_csv(rekod_berat_url)
-        df_rekod_berat.columns = df_rekod_berat.columns.str.strip()
+        url_rekod_berat = f"https://docs.google.com/spreadsheets/d/{sheet_id_ranking}/export?format=csv&gid={gid_berat}"
+        df_rekod_berat = pd.read_csv(url_rekod_berat)
         rekod_buffer = io.BytesIO()
         df_rekod_berat.to_excel(rekod_buffer, index=False)
         rekod_buffer.seek(0)
