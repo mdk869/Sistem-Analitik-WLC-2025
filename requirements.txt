@@ -10,9 +10,7 @@ plotly.express
 pytz
 gspread
 oauth2client
-<<<<<<< HEAD
 pydrive2
-=======
 google-auth
 gspread_dataframe
->>>>>>> 56a779ba132cdd7abe5c1cd089540550b2fe7698
+
