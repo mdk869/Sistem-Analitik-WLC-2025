@@ -15,7 +15,7 @@ credentials = Credentials.from_service_account_info(
 gc = gspread.authorize(credentials)
 sheet = gc.open_by_key("1K9JiK8FE1-Cd9fYnDU8Pzqj42TWOGi10wHzHt0avbJ0")
 
-ws_peserta = sheet.worksheet("peserta")
+ws_peserta = sheet.worksheet("Sheet1")
 ws_rekod = sheet.worksheet("sheet1")
 
 # === Fungsi: Load Data
