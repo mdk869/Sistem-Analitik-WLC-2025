@@ -80,7 +80,7 @@ if not df.empty:
         st.subheader("Leaderboard")
         df_rank = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
         df_rank["Ranking"] = df_rank.index + 1
-        st.dataframe(df_rank[["Ranking", "Nama", "% Penurunan"]], use_container_width=True)
+        st.dataframe(df_rank[["Ranking", "Nama", "% Penurunan"]], use_container_width=True, hide_index=True)
 
         st.subheader("🏅 10 Terbaik - % Penurunan Berat")
         top10 = df_rank.head(10)
