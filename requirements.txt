@@ -10,3 +10,5 @@ plotly.express
 pytz
 gspread
 oauth2client
+google-auth
+gspread_dataframe
