@@ -1,4 +1,4 @@
-# admin.py (Simple Version)
+# admin.py
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -6,8 +6,12 @@ import pytz
 
 from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_auth import check_login
-from app.helper_data import load_data_cloud_or_local
-from app.helper_logic import kira_bmi, kategori_bmi_asia
+from app.helper_data import (
+    load_data_cloud_or_local,
+    tambah_peserta_google_sheet,
+    kemaskini_berat_peserta,
+    padam_peserta_dari_sheet
+)
 
 # === Setup Paparan ===
 st.set_page_config(page_title="Admin Panel", layout="wide")
@@ -21,32 +25,45 @@ papar_header("🔐 Admin Panel - WLC 2025")
 if not check_login():
     st.stop()
 
-# === Data ===
+# === Data Semasa ===
 df = load_data_cloud_or_local()
 
-# === Ringkasan Peserta ===
+# === Tambah/Edit/Padam Peserta ===
+st.subheader("👤 Pengurusan Peserta")
+
+with st.expander("➕ Tambah Peserta Baru"):
+    with st.form("form_tambah"):
+        nama = st.text_input("Nama")
+        nostaf = st.text_input("No Staf")
+        tinggi = st.number_input("Tinggi (cm)", min_value=100.0, max_value=250.0, step=0.1)
+        berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=200.0, step=0.1)
+        if st.form_submit_button("Tambah Peserta"):
+            if nama and nostaf:
+                tambah_peserta_google_sheet(nama, nostaf, tinggi, berat_awal)
+                st.success("✅ Peserta berjaya ditambah!")
+            else:
+                st.error("❌ Sila lengkapkan semua maklumat!")
+
+with st.expander("✏️ Edit & Padam Peserta"):
+    peserta_list = df["Nama"].dropna().unique()
+    nama_dipilih = st.selectbox("Pilih Peserta", peserta_list)
+    if nama_dipilih:
+        kol1, kol2 = st.columns(2)
+        with kol1:
+            new_berat = st.number_input("Kemaskini Berat (kg)", value=float(df[df["Nama"] == nama_dipilih]["BeratTerkini"].values[0]))
+            if st.button("✅ Kemaskini Berat"):
+                kemaskini_berat_peserta(nama_dipilih, new_berat)
+                st.success("✅ Berat peserta berjaya dikemaskini!")
+        with kol2:
+            if st.button("🗑️ Padam Peserta"):
+                padam_peserta_dari_sheet(nama_dipilih)
+                st.warning("⚠️ Peserta telah dipadam.")
+
+# === Paparan Jadual Peserta ===
 st.subheader("📋 Senarai Peserta")
-st.dataframe(df, use_container_width=True)
-
-# === Carian Individu ===
-st.subheader("🔍 Carian Peserta")
-nama_dicari = st.selectbox("Pilih Peserta", df["Nama"].dropna().unique())
-if nama_dicari:
-    peserta = df[df["Nama"] == nama_dicari].iloc[0]
-    st.markdown(f"**Nama:** {nama_dicari}")
-    st.markdown(f"**Tinggi:** {peserta['Tinggi']} cm")
-    st.markdown(f"**Berat Terkini:** {peserta['BeratTerkini']} kg")
-    bmi = kira_bmi(peserta['BeratTerkini'], peserta['Tinggi'])
-    st.markdown(f"**BMI:** {bmi}")
-    st.markdown(f"**Kategori BMI:** {kategori_bmi_asia(bmi)}")
-
-# === Statistik Ringkas ===
-st.subheader("📈 Statistik Ringkas")
-total_peserta = df.shape[0]
-purata_bmi = df["BMI"].mean().round(1) if "BMI" in df.columns else 0
-col1, col2 = st.columns(2)
-col1.metric("Peserta Aktif", total_peserta)
-col2.metric("Purata BMI", purata_bmi)
+df_view = df.copy().reset_index(drop=True)
+df_view.index += 1
+st.dataframe(df_view, use_container_width=True)
 
 # === Footer ===
 footer_date = datetime.now(local_tz).strftime("%d/%m/%Y")
