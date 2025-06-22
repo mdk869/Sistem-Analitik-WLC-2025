@@ -43,7 +43,7 @@ def kemaskini_berat_peserta(nama, berat_baru):
 # === Fungsi: Sejarah Berat
 def sejarah_berat(nama):
     rekod = pd.DataFrame(ws_rekod.get_all_records())
-    rekod["Tarikh"] = pd.to_datetime(rekod["Tarikh"])
+    rekod["Tarikh"] = pd.to_datetime(rekod["Tarikh"], format="%Y-%m-%d", errors="coerce")
     return rekod[rekod["Nama"] == nama].sort_values("Tarikh")
 
 # === Fungsi: Kemaskini Berat
