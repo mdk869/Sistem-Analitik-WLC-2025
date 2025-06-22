@@ -1,13 +1,15 @@
-# helper_logic.py
+# app/helper_logic.py
 import pandas as pd
 
 def kira_bmi(berat, tinggi):
+    """Kira BMI berdasarkan berat dan tinggi (dalam cm)."""
     try:
         return round(berat / ((tinggi / 100) ** 2), 1)
     except:
         return None
 
 def kategori_bmi_asia(bmi):
+    """Pulangkan kategori BMI mengikut piawaian Asia."""
     if pd.isna(bmi):
         return None
     elif bmi < 18.5:
@@ -23,10 +25,20 @@ def kategori_bmi_asia(bmi):
     else:
         return "Obesiti Morbid"
 
-def tambah_kiraan_peserta(df):
-    df["PenurunanKg"] = df["BeratAwal"] - df["BeratTerkini"]
-    df["% Penurunan"] = (df["PenurunanKg"] / df["BeratAwal"] * 100).round(2)
-    df["BMI"] = df.apply(lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]) 
-                        if pd.notna(row["BeratTerkini"]) and pd.notna(row["Tinggi"]) else None, axis=1)
-    df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
-    return df
+def kira_status_ranking(row):
+    """Tentukan status ranking peserta: Naik, Turun, Kekal atau Baru."""
+    if pd.isna(row["Ranking_Lama"]):
+        return "🆕 Baru"
+    elif row["Ranking"] < row["Ranking_Lama"]:
+        return "🔺 Naik"
+    elif row["Ranking"] > row["Ranking_Lama"]:
+        return "🔻 Turun"
+    else:
+        return "⏸️ Kekal"
+
+# Untuk import automatik dari modul
+__all__ = [
+    "kira_bmi",
+    "kategori_bmi_asia",
+    "kira_status_ranking"
+]

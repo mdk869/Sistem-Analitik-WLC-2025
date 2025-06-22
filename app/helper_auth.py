@@ -1,12 +1,25 @@
-# helper_auth.py
+# app/helper_auth.py
 import streamlit as st
-import hashlib
 
-# Anda boleh simpan hash password terus di sini untuk auth manual
-ADMIN_CREDENTIALS = {
-    "admin": hashlib.sha256("admin123".encode()).hexdigest(),
-}
+def check_login():
+    """Login asas menggunakan kombinasi username & password."""
+    # Guna session_state untuk kekalkan status login
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
 
-def check_admin_auth(username, password):
-    hashed_input = hashlib.sha256(password.encode()).hexdigest()
-    return ADMIN_CREDENTIALS.get(username) == hashed_input
+    # Jika belum login, papar borang login
+    if not st.session_state.logged_in:
+        st.subheader("🔐 Login Admin")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        login = st.button("Log Masuk")
+
+        if login:
+            # Gantikan dengan username/password sebenar anda
+            if username == "admin" and password == "wlc2025":
+                st.session_state.logged_in = True
+                st.success("✅ Login berjaya!")
+            else:
+                st.error("❌ Username atau password salah.")
+
+    return st.session_state.logged_in
