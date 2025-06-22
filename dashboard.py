@@ -3,21 +3,56 @@ import pandas as pd
 import plotly.express as px
 import os
 import gspread
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
 from google.oauth2 import service_account
 import json
 from datetime import datetime
 import pytz
 
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-credentials = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"],
-    scopes=scope
-)
+# === Tentukan sama ada Cloud atau Local ===
+try:
+    _ = st.secrets["gcp_service_account"]
+    IS_CLOUD = True
+except st.errors.StreamlitSecretNotFoundError:
+    IS_CLOUD = False
 
-client = gspread.authorize(credentials)
-sheet = client.open("peserta").worksheet("Sheet1")
-data = sheet.get_all_records()
-df = pd.DataFrame(data)
+if IS_CLOUD:
+    import gspread
+    from google.oauth2 import service_account
+
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    
+    # ✅ hanya akan cuba akses st.secrets jika benar-benar wujud
+    credentials = service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=scope
+    )
+    
+    client = gspread.authorize(credentials)
+    sheet = client.open("peserta").worksheet("Sheet1")
+    data = sheet.get_all_records()
+    df = pd.DataFrame(data)
+else:
+    # 📁 Local mode: gunakan fail Excel
+    import openpyxl
+
+    DIR_SEMASA = os.path.dirname(os.path.abspath(__file__))
+    FILE_EXCEL = os.path.join(DIR_SEMASA, "peserta.xlsx")
+    FILE_REKOD = os.path.join(DIR_SEMASA, "rekod_ranking_semasa.xlsx")
+    FILE_REKOD_BERAT = os.path.join(DIR_SEMASA, "rekod_berat.xlsx")
+
+    if os.path.exists(FILE_EXCEL):
+        df = pd.read_excel(FILE_EXCEL)
+    else:
+        st.error("❌ Fail peserta.xlsx tidak dijumpai. Sila pastikan fail wujud dalam direktori projek.")
+        st.stop()
+
+    # Auto cipta fail sejarah berat jika tiada
+    if not os.path.exists(FILE_REKOD_BERAT):
+        df_dummy = pd.DataFrame({"Nama": [], "Tarikh": [], "Berat": [], "BMI": []})
+        df_dummy.to_excel(FILE_REKOD_BERAT, index=False)
+
 
 # Laluan changelog
 URL_CHANGELOG = "https://mdk869.github.io/Sistem-Analitik-WLC-2025/changelog2.html"
