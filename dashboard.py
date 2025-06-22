@@ -3,12 +3,18 @@ import pandas as pd
 import plotly.express as px
 import os
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 import json
 from datetime import datetime
 import pytz
 
-client = gspread.authorize(creds)
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"],
+    scopes=scope
+)
+
+client = gspread.authorize(credentials)
 sheet = client.open("peserta").worksheet("Sheet1")
 data = sheet.get_all_records()
 df = pd.DataFrame(data)
