@@ -11,7 +11,8 @@ from app.helper_data import (
     tambah_peserta_google_sheet,
     kemaskini_berat_peserta,
     padam_peserta_dari_sheet,
-    load_sejarah_berat
+    sejarah_berat
+
 )
 from app.helper_logic import kira_bmi, kategori_bmi_asia
 
@@ -65,7 +66,7 @@ with st.expander("✏️ Edit & Padam Peserta"):
 st.subheader("📊 Sejarah Berat Peserta")
 nama_dipilih2 = st.selectbox("Pilih Peserta untuk Sejarah Berat", df["Nama"].dropna().unique(), key="pilih_sejarah")
 if nama_dipilih2:
-    df_sejarah = load_sejarah_berat(nama_dipilih2)
+    df_sejarah = sejarah_berat(nama_dipilih2)
     if not df_sejarah.empty:
         st.line_chart(df_sejarah.set_index("Tarikh")["Berat"])
     else:
