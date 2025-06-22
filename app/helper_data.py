@@ -26,7 +26,7 @@ def load_data_cloud_or_local():
     return df
 
 # === Fungsi: Tambah Peserta ===
-def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, berat_terkini, tarikh_timbang):
+def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, berat_terkini, tarikh_timbang, bmi, kategori):
     tinggi_m = tinggi / 100
     bmi = berat_awal / (tinggi_m ** 2)
     kategori = kategori_bmi_asia(bmi)
