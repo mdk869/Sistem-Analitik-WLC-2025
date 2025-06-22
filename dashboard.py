@@ -233,7 +233,36 @@ with tab2:
         if st.button("💾 Simpan Ranking Semasa"):
             rekod_df = df_leaderboard[["Nama", "Ranking"]]
             rekod_df.to_excel(FILE_REKOD, index=False)
-            st.success(f"Ranking telah disimpan ke fail: {FILE_REKOD}")
+
+            if IS_CLOUD:
+                # === Upload ke Google Drive ===
+                from pydrive2.auth import GoogleAuth
+                from pydrive2.drive import GoogleDrive
+                import tempfile
+
+                # Setup pydrive authentication
+                gauth = GoogleAuth()
+                gauth.credentials = credentials.with_scopes([
+                    "https://www.googleapis.com/auth/drive",
+                    "https://www.googleapis.com/auth/drive.file"
+                ])
+                drive = GoogleDrive(gauth)
+
+                # Simpan ke fail sementara sebelum upload
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_file:
+                    rekod_df.to_excel(tmp_file.name, index=False)
+                    tmp_file.flush()
+                    file_drive = drive.CreateFile({
+                        'title': 'rekod_ranking_semasa.xlsx',
+                        'parents': [{'id': '1XR6OlFeiDLet9niwsUdmvKW4GGKNOkgT'}]
+})
+                    file_drive.SetContentFile(tmp_file.name)
+                    file_drive.Upload()
+
+                st.success("✅ Ranking berjaya disimpan & dimuat naik ke Google Drive.")
+        else:
+                st.success(f"✅ Ranking berjaya disimpan ke fail: {FILE_REKOD}")
+
 
         with st.expander("🔐 Akses Maklumat Individu"):
             nama_pilihan = st.selectbox("📌 Pilih Nama Peserta:", df_leaderboard["Nama"])
