@@ -1,6 +1,6 @@
 # 📊 WLC 2025 Dashboard
 
-Sistem dashboard untuk memantau program Weight Loss Challenge Wilayah Kuala Selangor 2025.
+Sistem dashboard untuk memantau program Weight Loss Challenge.
 
 ## Fungsi Utama
 - Paparan metrik peserta (jumlah, BMI, penurunan berat)
