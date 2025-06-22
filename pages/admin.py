@@ -57,6 +57,8 @@ with st.expander("✏️ Edit & Padam Peserta"):
             if st.button("✅ Kemaskini Berat"):
                 kemaskini_berat_peserta(nama_dipilih, new_berat)
                 st.success("✅ Berat peserta berjaya dikemaskini!")
+                st.rerun()
+                
         with kol2:
             if st.button("🗑️ Padam Peserta"):
                 padam_peserta_dari_sheet(nama_dipilih)
