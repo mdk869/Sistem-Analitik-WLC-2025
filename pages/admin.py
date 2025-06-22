@@ -2,6 +2,7 @@
 import streamlit as st
 import pandas as pd
 import os
+import io
 from datetime import datetime
 import pytz
 
@@ -10,8 +11,7 @@ from app.helper_auth import check_login
 from app.helper_data import (
     load_data_cloud_or_local,
     save_ranking_to_excel,
-    upload_file_to_drive,
-    FILE_REKOD, FILE_REKOD_BERAT, FILE_EXCEL
+    upload_file_to_drive
 )
 from app.helper_logic import (
     kira_bmi,
@@ -42,9 +42,16 @@ df["% Penurunan"] = (df["PenurunanKg"] / df["BeratAwal"] * 100).round(2)
 df_leaderboard = df.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
 df_leaderboard["Ranking"] = df_leaderboard.index + 1
 
-if os.path.exists(FILE_REKOD) and os.path.getsize(FILE_REKOD) > 1000:
-    rekod_lama = pd.read_excel(FILE_REKOD, engine="openpyxl")
-    df_leaderboard = df_leaderboard.merge(rekod_lama, on="Nama", how="left", suffixes=("", "_Lama"))
+SHEET_ID = "1K9JiK8FE1-Cd9fYnDU8Pzqj42TWOGi10wHzHt0avbJ0"
+GID_REKOD_RANKING = "1930381739"  # contoh gid, pastikan betul
+df_ranking_lama = None
+try:
+    df_ranking_lama = pd.read_csv(f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={GID_REKOD_RANKING}")
+except:
+    pass
+
+if df_ranking_lama is not None and not df_ranking_lama.empty:
+    df_leaderboard = df_leaderboard.merge(df_ranking_lama, on="Nama", how="left", suffixes=("", "_Lama"))
     df_leaderboard["Status"] = df_leaderboard.apply(kira_status_ranking, axis=1)
 else:
     df_leaderboard["Status"] = "-"
@@ -68,27 +75,38 @@ if nama_dicari:
     st.markdown(f"**BMI:** {bmi}")
     st.markdown(f"**Kategori BMI:** {kategori_bmi_asia(bmi)}")
 
-    if os.path.exists(FILE_REKOD_BERAT):
-        df_rekod = pd.read_excel(FILE_REKOD_BERAT)
+    try:
+        GID_REKOD_BERAT = "987654321"  # contoh gid, pastikan betul
+        df_rekod = pd.read_csv(f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={GID_REKOD_BERAT}")
         df_sejarah = df_rekod[df_rekod["Nama"] == nama_dicari]
         if not df_sejarah.empty:
+            df_sejarah["Tarikh"] = pd.to_datetime(df_sejarah["Tarikh"], dayfirst=True)
             st.line_chart(df_sejarah.set_index("Tarikh")["Berat"])
+    except:
+        st.warning("⚠️ Tiada rekod sejarah peserta.")
 
 # === Export Data ===
 st.subheader("🗃️ Export & Backup")
 col1, col2 = st.columns(2)
 
 with col1:
-    with open(FILE_EXCEL, "rb") as f:
-        st.download_button("⬇️ Muat Turun Data Peserta", f, file_name="data_peserta.xlsx")
-    with open(FILE_REKOD_BERAT, "rb") as f:
-        st.download_button("⬇️ Muat Turun Rekod Berat", f, file_name="rekod_berat.xlsx")
+    excel_buffer = io.BytesIO()
+    df.to_excel(excel_buffer, index=False)
+    excel_buffer.seek(0)
+    st.download_button("⬇️ Muat Turun Data Peserta", excel_buffer, file_name="data_peserta.xlsx")
+
+    try:
+        df_rekod_berat = pd.read_csv(f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={GID_REKOD_BERAT}")
+        rekod_buffer = io.BytesIO()
+        df_rekod_berat.to_excel(rekod_buffer, index=False)
+        rekod_buffer.seek(0)
+        st.download_button("⬇️ Muat Turun Rekod Berat", rekod_buffer, file_name="rekod_berat.xlsx")
+    except:
+        st.warning("⚠️ Tiada rekod berat untuk dimuat turun.")
 
 with col2:
     if st.button("📦 Backup Semua ke Google Drive"):
-        for file in [FILE_EXCEL, FILE_REKOD, FILE_REKOD_BERAT]:
-            upload_file_to_drive(file)
-        st.success("✅ Semua fail berjaya di-backup ke Google Drive")
+        st.info("✅ Google Sheet digunakan — backup automatik tidak diperlukan.")
 
 # === Statistik Ringkas ===
 st.subheader("📈 Statistik Ringkas")
