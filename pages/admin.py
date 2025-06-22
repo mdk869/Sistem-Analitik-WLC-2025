@@ -41,6 +41,7 @@ with st.expander("➕ Tambah Peserta Baru"):
             if nama and nostaf:
                 tambah_peserta_google_sheet(nama, nostaf, tinggi, berat_awal)
                 st.success("✅ Peserta berjaya ditambah!")
+                st.rerun()
             else:
                 st.error("❌ Sila lengkapkan semua maklumat!")
 
@@ -50,14 +51,17 @@ with st.expander("✏️ Edit & Padam Peserta"):
     if nama_dipilih:
         kol1, kol2 = st.columns(2)
         with kol1:
-            new_berat = st.number_input("Kemaskini Berat (kg)", value=float(df[df["Nama"] == nama_dipilih]["BeratTerkini"].values[0]))
+            berat_terkini = float(df[df["Nama"] == nama_dipilih]["BeratTerkini"].values[0])
+            new_berat = st.number_input("Kemaskini Berat (kg)", value=berat_terkini)
             if st.button("✅ Kemaskini Berat"):
                 kemaskini_berat_peserta(nama_dipilih, new_berat)
                 st.success("✅ Berat peserta berjaya dikemaskini!")
+                st.rerun()
         with kol2:
             if st.button("🗑️ Padam Peserta"):
                 padam_peserta_dari_sheet(nama_dipilih)
                 st.warning("⚠️ Peserta telah dipadam.")
+                st.rerun()
 
 # === Paparan Jadual Peserta ===
 st.subheader("📋 Senarai Peserta")
