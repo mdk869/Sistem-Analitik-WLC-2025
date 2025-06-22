@@ -11,8 +11,7 @@ from app.helper_data import (
     tambah_peserta_google_sheet,
     kemaskini_berat_peserta,
     padam_peserta_dari_sheet,
-    sejarah_berat
-
+    load_sejarah_berat
 )
 from app.helper_logic import kira_bmi, kategori_bmi_asia
 
@@ -38,11 +37,19 @@ with st.expander("➕ Tambah Peserta Baru"):
     with st.form("form_tambah"):
         nama = st.text_input("Nama")
         nostaf = st.text_input("No Staf")
+        umur = st.number_input("Umur", min_value=10, max_value=100, step=1)
+        jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"])
+        jabatan = st.text_input("Jabatan/Unit")
         tinggi = st.number_input("Tinggi (cm)", min_value=100.0, max_value=250.0, step=0.1)
         berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=200.0, step=0.1)
+
         if st.form_submit_button("Tambah Peserta"):
             if nama and nostaf:
-                tambah_peserta_google_sheet(nama, nostaf, tinggi, berat_awal)
+                tinggi_meter = tinggi / 100
+                bmi = kira_bmi(berat_awal, tinggi_meter)
+                kategori = kategori_bmi_asia(bmi)
+                tarikh_daftar = datetime.now(local_tz).strftime("%Y-%m-%d %H:%M:%S")
+                tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, bmi, kategori, tarikh_daftar)
                 st.success("✅ Peserta berjaya ditambah!")
             else:
                 st.error("❌ Sila lengkapkan semua maklumat!")
@@ -57,8 +64,6 @@ with st.expander("✏️ Edit & Padam Peserta"):
             if st.button("✅ Kemaskini Berat"):
                 kemaskini_berat_peserta(nama_dipilih, new_berat)
                 st.success("✅ Berat peserta berjaya dikemaskini!")
-                st.rerun()
-                
         with kol2:
             if st.button("🗑️ Padam Peserta"):
                 padam_peserta_dari_sheet(nama_dipilih)
@@ -68,7 +73,7 @@ with st.expander("✏️ Edit & Padam Peserta"):
 st.subheader("📊 Sejarah Berat Peserta")
 nama_dipilih2 = st.selectbox("Pilih Peserta untuk Sejarah Berat", df["Nama"].dropna().unique(), key="pilih_sejarah")
 if nama_dipilih2:
-    df_sejarah = sejarah_berat(nama_dipilih2)
+    df_sejarah = load_sejarah_berat(nama_dipilih2)
     if not df_sejarah.empty:
         st.line_chart(df_sejarah.set_index("Tarikh")["Berat"])
     else:
