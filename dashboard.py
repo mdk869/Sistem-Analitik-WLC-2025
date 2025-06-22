@@ -8,16 +8,10 @@ import json
 from datetime import datetime
 import pytz
 
-# Google Sheets Setup
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-
-if "GOOGLE_SHEETS_CREDS" in os.environ:
-    creds_dict = json.loads(os.environ["GOOGLE_SHEETS_CREDS"])
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-else:
-    cred_path = os.path.join(os.path.dirname(__file__), "credentials.json")
-    creds = ServiceAccountCredentials.from_json_keyfile_name(cred_path, scope)
-
+# Guna credentials dari secrets Streamlit
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+credentials_dict = st.secrets["gcp_service_account"]
+creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
 
 client = gspread.authorize(creds)
 sheet = client.open("peserta").worksheet("Sheet1")
