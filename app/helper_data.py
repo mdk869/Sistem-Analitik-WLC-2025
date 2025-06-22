@@ -43,11 +43,14 @@ def kemaskini_berat_peserta(nama, berat_baru):
 # === Fungsi: Sejarah Berat
 def sejarah_berat(nama):
     rekod = pd.DataFrame(ws_rekod.get_all_records())
-    if "Tarikh" not in rekod.columns:
-        st.error(f"Kolum 'Tarikh' tiada dalam sheet. Kolum sedia ada: {rekod.columns.tolist()}")
-        return pd.DataFrame()  # return empty df to avoid crash
+    rekod.columns = rekod.columns.str.strip()  # Bersih ruang kosong
+
+    if rekod.empty or "Tarikh" not in rekod.columns:
+        return pd.DataFrame()  # Pulangkan dataframe kosong
+
     rekod["Tarikh"] = pd.to_datetime(rekod["Tarikh"], format="mixed", errors="coerce")
     return rekod[rekod["Nama"] == nama].sort_values("Tarikh")
+
 
 
 # === Fungsi: Kemaskini Berat
