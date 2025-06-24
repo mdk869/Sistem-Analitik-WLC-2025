@@ -169,15 +169,15 @@ if not df.empty:
                 else:
                     return "<1% atau Naik (Perlu Sokongan)"
 
-        gabung['Tahap'] = gabung['% Penurunan'].apply(tahap)
-        tabur_tahap = gabung['Tahap'].value_counts().reset_index()
-        tabur_tahap.columns = ['Tahap Penurunan', 'Bilangan Peserta']
+            gabung['Tahap'] = gabung['% Penurunan'].apply(tahap)
+            tabur_tahap = gabung['Tahap'].value_counts().reset_index()
+            tabur_tahap.columns = ['Tahap Penurunan', 'Bilangan Peserta']
 
-        fig2 = px.bar(tabur_tahap, x='Tahap Penurunan', y='Bilangan Peserta',
+            fig2 = px.bar(tabur_tahap, x='Tahap Penurunan', y='Bilangan Peserta',
                         color='Tahap Penurunan', title="Bilangan Peserta Mengikut Tahap Penurunan")
-        st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, use_container_width=True)
 
-        st.info("Paparan ini menunjukkan prestasi keseluruhan program secara agregat, tanpa memaparkan data berat sebenar.")
+            st.info("Paparan ini menunjukkan prestasi keseluruhan program secara agregat, tanpa memaparkan data berat sebenar.")
 
 
     with tab2:
