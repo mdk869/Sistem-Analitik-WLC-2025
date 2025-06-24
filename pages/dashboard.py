@@ -23,7 +23,7 @@ client = gspread.authorize(creds)
 sh = client.open("data_peserta")
 
 # === Tema & Header ===
-st.title("\ud83d\udcca Dashboard Weight Loss Challenge 2025")
+st.title("\U0001F4CA Dashboard Weight Loss Challenge 2025")
 paparkan_tema()
 
 # === Load data peserta ===
