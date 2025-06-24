@@ -25,6 +25,46 @@ def load_data_cloud_or_local():
     df = pd.DataFrame(ws_peserta.get_all_records())
     return df
 
+def load_rekod_data_from_gsheet(st_secrets: dict, spreadsheet_name: str = "data_peserta") -> pd.DataFrame:
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    creds = Credentials.from_service_account_info(st_secrets["gcp_service_account"], scopes=scope)
+    client = gspread.authorize(creds)
+    sh = client.open(spreadsheet_name)
+    worksheet = sh.worksheet("rekod_berat")
+    
+    df_rekod = pd.DataFrame(worksheet.get_all_records())
+    df_rekod.columns = df_rekod.columns.str.strip()
+
+    if df_rekod.empty:
+        return pd.DataFrame()
+
+    # Tukar jenis tarikh
+    if "Timestamp" in df_rekod.columns:
+        df_rekod["Timestamp"] = pd.to_datetime(df_rekod["Timestamp"], errors="coerce")
+    if "Tarikh Rekod" in df_rekod.columns:
+        df_rekod["Tarikh Rekod"] = pd.to_datetime(df_rekod["Tarikh Rekod"], errors="coerce").dt.date
+    else:
+        raise KeyError("Kolum 'Tarikh Rekod' tidak dijumpai dalam rekod timbang.")
+
+    # Tambah kolum 'Sesi' jika tiada
+    if "Sesi" not in df_rekod.columns:
+        def label_sesi(tarikh):
+            if pd.isna(tarikh):
+                return "Tidak Diketahui"
+            bulan = pd.to_datetime(tarikh).month
+            if bulan == 6:
+                return "Jun"
+            elif bulan == 7:
+                return "Julai"
+            elif bulan == 8:
+                return "Ogos"
+            else:
+                return "Luar Program"
+        df_rekod["Sesi"] = df_rekod["Tarikh Rekod"].apply(label_sesi)
+
+    return df_rekod
+
+
 # === Fungsi: Tambah Peserta
 def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan,
                                  tinggi, berat_awal, berat_terkini,
