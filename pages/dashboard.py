@@ -37,41 +37,6 @@ if not df.empty:
 
     df_tapis = df[(df["Kategori"].isin(Kategori)) & (df["Jantina"].isin(jantina))]
 
-    total_peserta = df_tapis.shape[0]
-    purata_bmi = df_tapis["BMI"].mean().round(1)
-    purata_penurunan = df_tapis["% Penurunan"].mean().round(2)
-    purata_kg = df_tapis["PenurunanKg"].mean().round(2)
-
-    # Paparan metrik
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown(f"""
-        <div class="wlc-box">
-            <div class="wlc-title">👥 Jumlah Peserta</div>
-            <div class="wlc-value">{total_peserta}</div>
-        </div>""", unsafe_allow_html=True)
-
-    with col2:
-        st.markdown(f"""
-        <div class="wlc-box">
-            <div class="wlc-title">📉 Purata BMI</div>
-            <div class="wlc-value">{purata_bmi}</div>
-        </div>""", unsafe_allow_html=True)
-
-    with col3:
-        st.markdown(f"""
-        <div class="wlc-box">
-            <div class="wlc-title">🏆 % Penurunan</div>
-            <div class="wlc-value">{purata_penurunan}%</div>
-        </div>""", unsafe_allow_html=True)
-
-    with col4:
-        st.markdown(f"""
-        <div class="wlc-box">
-            <div class="wlc-title">⚖️ Berat Turun (kg)</div>
-            <div class="wlc-value">{purata_kg} kg</div>
-        </div>""", unsafe_allow_html=True)
-
     tab1, tab2, tab3 = st.tabs(["📉 Penurunan Berat", "🏆 Leaderboard", "🧍‍♂️ BMI"])
 
     with tab1:
