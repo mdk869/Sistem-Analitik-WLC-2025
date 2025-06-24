@@ -5,25 +5,10 @@ import plotly.express as px
 import os
 from datetime import datetime
 import pytz
-import gspread
-from google.oauth2.service_account import Credentials
 
 from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
 from app.helper_logic import tambah_kiraan_peserta
-from app.helper_data import load_rekod_data_from_gsheet
-
-
-# === Streamlit page setup ===
-st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
-local_tz = pytz.timezone("Asia/Kuala_Lumpur")
-
-# === Google Sheets connection for Tab 1 ===
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"], scopes=scope)
-client = gspread.authorize(creds)
-sh = client.open("data_peserta")
 
 # === Setup Paparan ===
 st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
@@ -83,96 +68,13 @@ if not df.empty:
     # Tabs
     tab1, tab2, tab3 = st.tabs(["📉 Penurunan Berat", "🏆 Leaderboard", "🧍‍♂️ BMI"])
 
-    # ================== TAB 1: Trend Program ==================
     with tab1:
-        st.subheader("📈 Prestasi Keseluruhan Program WLC 2025")
-    
-        # === Tarik data dari sheet 'rekod_berat' ===
-        sheet_rekod = sh.worksheet("rekod_berat")
-        df_rekod = load_rekod_data_from_gsheet(st.secrets)
-        if df_rekod.empty:
-            st.warning("Tiada data rekod timbang ditemui dalam sheet 'rekod_berat'.")
-            st.stop()
-
-
-        # Pastikan jenis data betul
-        if 'Timestamp' in df_rekod.columns:
-            df_rekod['Timestamp'] = pd.to_datetime(df_rekod['Timestamp'])
-        else:
-            df_rekod['Timestamp'] = pd.to_datetime(df_rekod['Tarikh Rekod'])
-
-        if 'Tarikh Rekod' in df_rekod.columns:
-            df_rekod['Tarikh Rekod'] = pd.to_datetime(df_rekod['Tarikh Rekod']).dt.date
-        else:
-            st.warning("Kolum 'Tarikh Rekod' tidak dijumpai dalam sheet 'rekod_berat'. Sila semak semula nama kolum.")
-            st.stop()
-
-        # Jika tiada kolum 'Sesi', jana semula (fallback)
-        if 'Sesi' not in df_rekod.columns:
-            def label_sesi(tarikh):
-                bulan = pd.to_datetime(tarikh).month
-                if bulan == 6:
-                    return "Jun"
-                elif bulan == 7:
-                    return "Julai"
-                elif bulan == 8:
-                    return "Ogos"
-                else:
-                    return "Luar Program"
-            df_rekod['Sesi'] = df_rekod['Tarikh Rekod'].apply(label_sesi)
-
-        # === Statistik Kehadiran Timbang ===
-        st.markdown("### 🗓️ Statistik Kehadiran Timbang")
-        kira_hadir = df_rekod.groupby("Sesi")["No.Staf"].nunique().reset_index(name="Bilangan Peserta Timbang")
-        st.dataframe(kira_hadir, use_container_width=True, hide_index=True)
-
-        # === Purata % Penurunan Berat setiap bulan ===
-        st.markdown("### 📉 Purata % Penurunan Berat Mengikut Sesi")
-        df_sorted = df_rekod.sort_values(by=['No.Staf', 'Tarikh Rekod'])
-
-        # Ambil berat pertama dan terakhir peserta
-        berat_awal = df_sorted.groupby('No.Staf').first().reset_index()
-        berat_akhir = df_sorted.groupby('No.Staf').last().reset_index()
-        gabung = berat_awal[['No.Staf', 'Berat (kg)']].merge(
-            berat_akhir[['No.Staf', 'Berat (kg)']], on='No.Staf', suffixes=('_awal', '_terkini')
-        )
-        gabung['% Penurunan'] = ((gabung['Berat (kg)_awal'] - gabung['Berat (kg)_terkini']) / gabung['Berat (kg)_awal']) * 100
-        gabung['% Penurunan'] = gabung['% Penurunan'].round(2)
-
-        # Dapatkan purata penurunan ikut sesi akhir peserta
-        sesi_terkini = df_sorted.groupby('No.Staf').last().reset_index()[['No.Staf', 'Sesi']]
-        gabung = gabung.merge(sesi_terkini, on='No.Staf', how='left')
-        purata_sesi = gabung.groupby('Sesi')['% Penurunan'].mean().reset_index()
-        purata_sesi = purata_sesi.sort_values(by='Sesi')
-
-        fig1 = px.line(purata_sesi, x='Sesi', y='% Penurunan', markers=True,
-                        title="Purata % Penurunan Berat Mengikut Sesi",
-                        labels={'% Penurunan': 'Purata % Penurunan'})
-        st.plotly_chart(fig1, use_container_width=True)
-
-        # === Taburan Tahap Penurunan Individu ===
-        st.markdown("### 🧮 Taburan Tahap Penurunan Individu")
-
-        def tahap(pct):
-            if pct >= 10:
-                return ">10% (Cemerlang)"
-            elif pct >= 5:
-                return "5–9.9% (Baik)"
-            elif pct >= 1:
-                return "1–4.9% (Sederhana)"
-            else:
-                return "<1% atau Naik (Perlu Sokongan)"
-
-        gabung['Tahap'] = gabung['% Penurunan'].apply(tahap)
-        tabur_tahap = gabung['Tahap'].value_counts().reset_index()
-        tabur_tahap.columns = ['Tahap Penurunan', 'Bilangan Peserta']
-
-        fig2 = px.bar(tabur_tahap, x='Tahap Penurunan', y='Bilangan Peserta',
-                        color='Tahap Penurunan', title="Bilangan Peserta Mengikut Tahap Penurunan")
-        st.plotly_chart(fig2, use_container_width=True)
-
-        st.info("Paparan ini menunjukkan prestasi keseluruhan program secara agregat, tanpa memaparkan data berat sebenar.")
-
+        st.subheader("Perbandingan Berat Setiap Peserta")
+        df_plot = df_tapis.sort_values("PenurunanKg", ascending=False)
+        fig = px.bar(df_plot, x="Nama", y=["BeratAwal", "BeratTerkini"],
+                     barmode="group", title="Perbandingan Berat Awal dan Terkini",
+                     labels={"value": "Berat (kg)", "variable": "Kategori Berat"})
+        st.plotly_chart(fig, use_container_width=True)
 
     with tab2:
         st.subheader("Leaderboard")
