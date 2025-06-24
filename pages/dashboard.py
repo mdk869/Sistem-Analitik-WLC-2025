@@ -11,6 +11,8 @@ from google.oauth2.service_account import Credentials
 from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
 from app.helper_logic import tambah_kiraan_peserta
+from app.helper_data import load_rekod_data_from_gsheet
+
 
 # === Streamlit page setup ===
 st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
@@ -87,7 +89,11 @@ if not df.empty:
     
         # === Tarik data dari sheet 'rekod_berat' ===
         sheet_rekod = sh.worksheet("rekod_berat")
-        df_rekod = pd.DataFrame(sheet_rekod.get_all_records())
+        df_rekod = load_rekod_data_from_gsheet(st.secrets)
+        if df_rekod.empty:
+            st.warning("Tiada data rekod timbang ditemui dalam sheet 'rekod_berat'.")
+            st.stop()
+
 
         # Pastikan jenis data betul
         if 'Timestamp' in df_rekod.columns:
