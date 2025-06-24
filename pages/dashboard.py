@@ -100,8 +100,8 @@ if not df.empty:
 
         # === Interaktif Sesi & Statistik ===
         sesi_tersedia = df_rekod['Sesi'].dropna().unique().tolist()
-        sesi_dipilih = sesi_tersedia[-1] if sesi_tersedia else None
-        df_sesi = df_rekod[df_rekod['Sesi'] == sesi_dipilih],
+        sesi_dipilih = st.selectbox("📅 Pilih Sesi", options=sesi_tersedia)
+        df_sesi = df_rekod[df_rekod['Sesi'] == sesi_dipilih,]
 
         opsyen_statistik = [
             "Statistik Kehadiran Timbang",
