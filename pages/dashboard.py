@@ -157,7 +157,7 @@ if not df.empty:
         st.plotly_chart(fig1, use_container_width=True)
 
         # === Taburan Tahap Penurunan Individu ===
-        with st.expander("🧮 Taburan Tahap Penurunan Individu (Klik untuk Lihat)", expanded=False):
+        with st.expander("🧮 Taburan Tahap Penurunan Individu (Klik untuk Lihat)"):
 
             def tahap(pct):
                 if pct >= 10:
