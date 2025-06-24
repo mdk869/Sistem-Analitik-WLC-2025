@@ -133,7 +133,7 @@ if not df.empty:
 
 
         # === Purata % Penurunan Berat setiap bulan ===
-        with st.expander("### 📉 Purata % Penurunan Berat Mengikut Sesi")
+        with st.expander("### 📉 Purata % Penurunan Berat Mengikut Sesi"):
             df_sorted = df_rekod.sort_values(by=['No.Staf', 'Tarikh Rekod'])
 
             # Ambil berat pertama dan terakhir peserta
