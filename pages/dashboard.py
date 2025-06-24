@@ -101,8 +101,6 @@ if not df.empty:
             st.warning("Kolum 'Tarikh Rekod' tidak dijumpai dalam sheet 'rekod_berat'. Sila semak semula nama kolum.")
             st.stop()
 
-            st.write("Senarai Kolum df_rekod:", df_rekod.columns.tolist())
-
         # Jika tiada kolum 'Sesi', jana semula (fallback)
         if 'Sesi' not in df_rekod.columns:
             def label_sesi(tarikh):
