@@ -100,7 +100,7 @@ if not df.empty:
 
         # === Interaktif Sesi & Statistik ===
         sesi_tersedia = df_rekod['Sesi'].dropna().unique().tolist()
-        sesi_dipilih = ()
+        sesi_dipilih = sesi_terkini[-1] if sesi_terkini else None
         df_sesi = df_rekod[df_rekod['Sesi'] == sesi_dipilih,]
 
         opsyen_statistik = [
