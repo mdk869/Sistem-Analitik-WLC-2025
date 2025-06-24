@@ -139,8 +139,25 @@ if not df.empty:
 
     with tab2:
         st.subheader("Leaderboard")
+        #Susun berdasarkan % Penurunan
         df_rank = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
+        #Tambah kolum Ranking
         df_rank["Ranking"] = df_rank.index + 1
+        #Tambah label medal untuk Top 3
+        def add_medal(rank):
+            if rank == 1:
+                return "🥇"
+            elif rank == 2:
+                return "🥈"
+            elif rank == 3:
+                return "🥉"
+            else:
+                return str(rank)
+
+        df_rank["Ranking"] = df_rank["Ranking"].apply(add_medal)
+        # Pilihan berapa Top Ranking nak tunjuk
+        top_n = st.selectbox("Pilih jumlah Top Ranking:", [5, 10, 20, 50], index=1)
+        # Paparkan leaderboard
         st.dataframe(df_rank[["Ranking", "Nama", "% Penurunan"]], use_container_width=True, hide_index=True)
 
         st.subheader("🏅 10 Terbaik - % Penurunan Berat")
