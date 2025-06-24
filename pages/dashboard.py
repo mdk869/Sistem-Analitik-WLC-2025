@@ -175,31 +175,11 @@ if not df.empty:
             st.plotly_chart(fig, use_container_width=True)
 
             st.subheader(f"🧮 Taburan Tahap Penurunan Individu - {sesi_dipilih}")
-            df_sorted = df_sesi.sort_values(by=['Nama', 'Tarikh Rekod'])
-            berat_awal = df_sorted.groupby('Nama').first().reset_index()
-            berat_akhir = df_sorted.groupby('Nama').last().reset_index()
-            gabung = berat_awal[['Nama', 'Berat (kg)']].merge(
-                berat_akhir[['Nama', 'Berat (kg)']], on='Nama', suffixes=('_awal', '_terkini'))
-            gabung['% Penurunan'] = ((gabung['Berat (kg)_awal'] - gabung['Berat (kg)_terkini']) / gabung['Berat (kg)_awal']) * 100
-            gabung['% Penurunan'] = gabung['% Penurunan'].round(2)
-
-            def tahap(pct):
-                if pct >= 10:
-                    return ">10% (Cemerlang)"
-                elif pct >= 5:
-                    return "5–9.9% (Baik)"
-                elif pct >= 1:
-                    return "1–4.9% (Sederhana)"
-                else:
-                    return "<1% atau Naik (Perlu Sokongan)"
-
             gabung['Tahap'] = gabung['% Penurunan'].apply(tahap)
             tabur_tahap = gabung['Tahap'].value_counts().reset_index()
             tabur_tahap.columns = ['Tahap Penurunan', 'Bilangan Peserta']
             fig = px.bar(tabur_tahap, x='Tahap Penurunan', y='Bilangan Peserta', color='Tahap Penurunan')
             st.plotly_chart(fig, use_container_width=True)
-
-
     with tab2:
         st.subheader("Leaderboard")
         df_rank = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
