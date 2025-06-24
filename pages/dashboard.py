@@ -145,6 +145,52 @@ if not df.empty:
             tabur_tahap.columns = ['Tahap Penurunan', 'Bilangan Peserta']
             fig = px.bar(tabur_tahap, x='Tahap Penurunan', y='Bilangan Peserta', color='Tahap Penurunan')
             st.plotly_chart(fig, use_container_width=True)
+    with tab2:
+        st.subheader("Leaderboard")
+        df_rank = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
+        df_rank["Ranking"] = df_rank.index + 1
+        st.dataframe(df_rank[["Ranking", "Nama", "% Penurunan"]], use_container_width=True, hide_index=True)
+
+        st.subheader("🏅 10 Terbaik - % Penurunan Berat")
+        top10 = df_rank.head(10)
+        fig_top10 = px.bar(top10, x="Nama", y="% Penurunan",
+                       title="Top 10 Peserta Berdasarkan % Penurunan Berat",
+                       labels={"% Penurunan": "% Turun"},
+                       color="% Penurunan", color_continuous_scale="Blues")
+        st.plotly_chart(fig_top10, use_container_width=True)
+
+
+    with tab3:
+        st.subheader("📊 Analisis BMI Peserta")
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
+
+        # Paparan metrik kategori BMI dengan gaya mengikut warna
+        cols = st.columns(6)
+        kategori_bmi_data = [
+            ("Kurang Berat Badan", "kurang", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum()),
+            ("Normal", "normal", (df_tapis["KategoriBMI"] == "Normal").sum()),
+            ("Lebih Berat Badan", "lebih", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum()),
+            ("Obesiti Tahap 1", "obes1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum()),
+            ("Obesiti Tahap 2", "obes2", (df_tapis["KategoriBMI"] == "Obesiti Tahap 2").sum()),
+            ("Obesiti Morbid", "morbid", (df_tapis["KategoriBMI"] == "Obesiti Morbid").sum()),
+        ]
+
+        for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
+            col.markdown(f"""
+            <div class="bmi-box {css_class}">
+                <div class="bmi-title">{label}</div>
+                <div class="bmi-value">{value}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        Kategori_df = df_tapis.groupby("KategoriBMI").size().reset_index(name="Bilangan")
+        fig = px.pie(Kategori_df, names="KategoriBMI", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")
+        st.plotly_chart(fig, use_container_width=True)
+
+        with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
+            df_bmi_table = df_tapis[["Nama", "BMI", "KategoriBMI"]].sort_values("KategoriBMI", na_position="last").reset_index(drop=True)
+            df_bmi_table.index = df_bmi_table.index + 1
+            st.dataframe(df_bmi_table, use_container_width=True)
 
 else:
     st.warning("Google Sheet kosong atau tiada data.")
