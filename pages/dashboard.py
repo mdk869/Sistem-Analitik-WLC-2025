@@ -158,7 +158,11 @@ if not df.empty:
         # Pilihan berapa Top Ranking nak tunjuk
         top_n = st.selectbox("Pilih jumlah Top Ranking:", [5, 10, 20, 50], index=1)
         # Paparkan leaderboard
-        st.dataframe(df_rank[["Ranking", "Nama", "% Penurunan"]], use_container_width=True, hide_index=True)
+        st.dataframe(
+            df_rank.head(top_n)[["Ranking", "Nama", "% Penurunan"]],
+            use_container_width=True,
+            hide_index=True
+        )
 
         st.subheader("🏅 10 Terbaik - % Penurunan Berat")
         top10 = df_rank.head(10)
