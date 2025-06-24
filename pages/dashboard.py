@@ -69,12 +69,73 @@ if not df.empty:
     tab1, tab2, tab3 = st.tabs(["📉 Penurunan Berat", "🏆 Leaderboard", "🧍‍♂️ BMI"])
 
     with tab1:
-        st.subheader("Perbandingan Berat Setiap Peserta")
-        df_plot = df_tapis.sort_values("PenurunanKg", ascending=False)
-        fig = px.bar(df_plot, x="Nama", y=["BeratAwal", "BeratTerkini"],
-                     barmode="group", title="Perbandingan Berat Awal dan Terkini",
-                     labels={"value": "Berat (kg)", "variable": "Kategori Berat"})
-        st.plotly_chart(fig, use_container_width=True)
+        st.subheader("Penurunan Berat Peserta")
+
+        # Susun ikut % Penurunan
+        df_plot = df_tapis.sort_values("% Penurunan", ascending=False)
+
+        colA, colB = st.columns(2)
+
+        with colA:
+            st.markdown("### 🏆 Ranking % Penurunan Berat")
+            fig1 = px.bar(
+                df_plot,
+                x="Nama",
+                y="% Penurunan",
+                title="% Penurunan Berat Mengikut Peserta",
+                labels={"% Penurunan": "% Penurunan", "Nama": "Peserta"},
+                text="% Penurunan",
+            )
+            fig1.update_traces(texttemplate='%{text}%', textposition='outside')
+            fig1.update_layout(xaxis_tickangle=-45, yaxis_title="% Penurunan")
+            st.plotly_chart(fig1, use_container_width=True)
+
+        with colB:
+            st.markdown("### ⚖️ Penurunan Berat (Kg) Mengikut Peserta")
+            fig2 = px.bar(
+                df_plot,
+                x="Nama",
+                y="PenurunanKg",
+                title="Penurunan Berat (Kg) Mengikut Peserta",
+                labels={"PenurunanKg": "Kg Turun", "Nama": "Peserta"},
+                text="PenurunanKg",
+            )
+            fig2.update_traces(texttemplate='%{text} kg', textposition='outside')
+            fig2.update_layout(xaxis_tickangle=-45, yaxis_title="Kg Turun")
+            st.plotly_chart(fig2, use_container_width=True)
+
+        st.markdown("### 📊 Kategori Penurunan Berat")
+        # Buat kategori berdasarkan berat turun
+        def kategori_penurunan(kg):
+            if kg >= 5:
+                return "🔺 >5 kg"
+            elif 3 <= kg < 5:
+                return "⬆️ 3-5 kg"
+            elif 1 <= kg < 3:
+                return "↗️ 1-3 kg"
+            elif kg > 0:
+                return "➖ <1 kg"
+            else:
+                return "⏸️ Tiada Perubahan"
+
+        df_plot["Kategori Penurunan"] = df_plot["PenurunanKg"].apply(kategori_penurunan)
+
+        kategori_counts = df_plot["Kategori Penurunan"].value_counts().reset_index()
+        kategori_counts.columns = ["Kategori", "Bilangan"]
+
+        fig3 = px.pie(
+            kategori_counts,
+            values="Bilangan",
+            names="Kategori",
+            title="Peratusan Peserta Mengikut Kategori Penurunan Berat",
+        )
+        st.plotly_chart(fig3, use_container_width=True)
+
+        with st.expander("📄 Lihat Senarai Penuh"):
+            df_senarai = df_plot[["Nama", "PenurunanKg", "% Penurunan", "Kategori Penurunan"]]
+            df_senarai = df_senarai.reset_index(drop=True)
+            df_senarai.index = df_senarai.index + 1
+            st.dataframe(df_senarai, use_container_width=True)
 
     with tab2:
         st.subheader("Leaderboard")
