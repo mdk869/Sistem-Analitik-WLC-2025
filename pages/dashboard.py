@@ -95,8 +95,13 @@ if not df.empty:
         else:
             df_rekod['Timestamp'] = pd.to_datetime(df_rekod['Tarikh Rekod'])
 
-        df_rekod['Tarikh Rekod'] = pd.to_datetime(df_rekod['Tarikh Rekod']).dt.date
-        st.write("Senarai Kolum df_rekod:", df_rekod.columns.tolist())
+        if 'Tarikh Rekod' in df_rekod.columns:
+            df_rekod['Tarikh Rekod'] = pd.to_datetime(df_rekod['Tarikh Rekod']).dt.date
+        else:
+            st.warning("Kolum 'Tarikh Rekod' tidak dijumpai dalam sheet 'rekod_berat'. Sila semak semula nama kolum.")
+            st.stop()
+
+            st.write("Senarai Kolum df_rekod:", df_rekod.columns.tolist())
 
         # Jika tiada kolum 'Sesi', jana semula (fallback)
         if 'Sesi' not in df_rekod.columns:
