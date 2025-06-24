@@ -62,3 +62,18 @@ def load_rekod_data_from_gsheet(st_secrets: dict, spreadsheet_name: str = "data_
         df_rekod["Sesi"] = df_rekod["Tarikh Rekod"].apply(label_sesi)
 
     return df_rekod
+
+def tambah_peserta_google_sheet(data_dict: dict) -> bool:
+    try:
+        client = sambung_gsheet()
+        ws = client.open("data_peserta").worksheet("peserta")
+
+        # Tukar dict kepada list ikut urutan kolum
+        senarai_kolum = ws.row_values(1)
+        rekod_baru = [data_dict.get(kolum, "") for kolum in senarai_kolum]
+
+        ws.append_row(rekod_baru, value_input_option="USER_ENTERED")
+        return True
+    except Exception as e:
+        print(f"[Gagal Tambah Peserta]: {e}")
+        return False
