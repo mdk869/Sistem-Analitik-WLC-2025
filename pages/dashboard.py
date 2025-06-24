@@ -90,7 +90,11 @@ if not df.empty:
         df_rekod = pd.DataFrame(sheet_rekod.get_all_records())
 
         # Pastikan jenis data betul
-        df_rekod['Timestamp'] = pd.to_datetime(df_rekod['Timestamp'])
+        if 'Timestamp' in df_rekod.columns:
+            df_rekod['Timestamp'] = pd.to_datetime(df_rekod['Timestamp'])
+        else:
+            df_rekod['Timestamp'] = pd.to_datetime(df_rekod['Tarikh Rekod'])
+
         df_rekod['Tarikh Rekod'] = pd.to_datetime(df_rekod['Tarikh Rekod']).dt.date
 
         # Jika tiada kolum 'Sesi', jana semula (fallback)
