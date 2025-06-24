@@ -99,7 +99,7 @@ if not df.empty:
             df_rekod['Sesi'] = df_rekod['Tarikh Rekod'].apply(label_sesi)
 
         # === Interaktif Sesi & Statistik ===
-        sesi_tersedia = df_rekod['Sesi'].dropna().unique().tolist()
+        sesi_terkini = df_rekod['Sesi'].dropna().unique().tolist()
         sesi_dipilih = sesi_terkini[-1] if sesi_terkini else None
         df_sesi = df_rekod[df_rekod['Sesi'] == sesi_dipilih,]
 
