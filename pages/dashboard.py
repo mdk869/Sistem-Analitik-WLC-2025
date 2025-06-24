@@ -133,28 +133,28 @@ if not df.empty:
 
 
         # === Purata % Penurunan Berat setiap bulan ===
-        st.markdown("### 📉 Purata % Penurunan Berat Mengikut Sesi")
-        df_sorted = df_rekod.sort_values(by=['No.Staf', 'Tarikh Rekod'])
+        with st.expander("### 📉 Purata % Penurunan Berat Mengikut Sesi")
+            df_sorted = df_rekod.sort_values(by=['No.Staf', 'Tarikh Rekod'])
 
-        # Ambil berat pertama dan terakhir peserta
-        berat_awal = df_sorted.groupby('No.Staf').first().reset_index()
-        berat_akhir = df_sorted.groupby('No.Staf').last().reset_index()
-        gabung = berat_awal[['No.Staf', 'Berat (kg)']].merge(
-            berat_akhir[['No.Staf', 'Berat (kg)']], on='No.Staf', suffixes=('_awal', '_terkini')
-        )
-        gabung['% Penurunan'] = ((gabung['Berat (kg)_awal'] - gabung['Berat (kg)_terkini']) / gabung['Berat (kg)_awal']) * 100
-        gabung['% Penurunan'] = gabung['% Penurunan'].round(2)
+            # Ambil berat pertama dan terakhir peserta
+            berat_awal = df_sorted.groupby('No.Staf').first().reset_index()
+            berat_akhir = df_sorted.groupby('No.Staf').last().reset_index()
+            gabung = berat_awal[['No.Staf', 'Berat (kg)']].merge(
+                berat_akhir[['No.Staf', 'Berat (kg)']], on='No.Staf', suffixes=('_awal', '_terkini')
+            )
+            gabung['% Penurunan'] = ((gabung['Berat (kg)_awal'] - gabung['Berat (kg)_terkini']) / gabung['Berat (kg)_awal']) * 100
+            gabung['% Penurunan'] = gabung['% Penurunan'].round(2)
 
-        # Dapatkan purata penurunan ikut sesi akhir peserta
-        sesi_terkini = df_sorted.groupby('No.Staf').last().reset_index()[['No.Staf', 'Sesi']]
-        gabung = gabung.merge(sesi_terkini, on='No.Staf', how='left')
-        purata_sesi = gabung.groupby('Sesi')['% Penurunan'].mean().reset_index()
-        purata_sesi = purata_sesi.sort_values(by='Sesi')
+            # Dapatkan purata penurunan ikut sesi akhir peserta
+            sesi_terkini = df_sorted.groupby('No.Staf').last().reset_index()[['No.Staf', 'Sesi']]
+            gabung = gabung.merge(sesi_terkini, on='No.Staf', how='left')
+            purata_sesi = gabung.groupby('Sesi')['% Penurunan'].mean().reset_index()
+            purata_sesi = purata_sesi.sort_values(by='Sesi')
 
-        fig1 = px.line(purata_sesi, x='Sesi', y='% Penurunan', markers=True,
-                        title="Purata % Penurunan Berat Mengikut Sesi",
-                        labels={'% Penurunan': 'Purata % Penurunan'})
-        st.plotly_chart(fig1, use_container_width=True)
+            fig1 = px.line(purata_sesi, x='Sesi', y='% Penurunan', markers=True,
+                            title="Purata % Penurunan Berat Mengikut Sesi",
+                            labels={'% Penurunan': 'Purata % Penurunan'})
+            st.plotly_chart(fig1, use_container_width=True)
 
         # === Taburan Tahap Penurunan Individu ===
         with st.expander("🧮 Taburan Tahap Penurunan Individu (Klik untuk Lihat)"):
