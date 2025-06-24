@@ -5,10 +5,23 @@ import plotly.express as px
 import os
 from datetime import datetime
 import pytz
+import gspread
+from google.oauth2.service_account import Credentials
 
 from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
 from app.helper_logic import tambah_kiraan_peserta
+
+# === Streamlit page setup ===
+st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
+local_tz = pytz.timezone("Asia/Kuala_Lumpur")
+
+# === Google Sheets connection for Tab 1 ===
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"], scopes=scope)
+client = gspread.authorize(creds)
+sh = client.open("data_peserta")
 
 # === Setup Paparan ===
 st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
