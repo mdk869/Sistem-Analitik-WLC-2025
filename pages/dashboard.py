@@ -124,7 +124,7 @@ if not df.empty:
         # === Statistik Kehadiran Timbang ===
         st.markdown("### 🗓️ Statistik Kehadiran Timbang")
 
-        kira_hadir = df_rekod.groupby("Sesi")["Nama"].nunique().reset_index(name="Bilangan Peserta Timbang")
+        kira_hadir = df_rekod.groupby("Sesi")["No.Staf"].nunique().reset_index(name="Bilangan Peserta Timbang")
 
         cols = st.columns(len(kira_hadir))
         for i, row in kira_hadir.iterrows():
@@ -157,7 +157,7 @@ if not df.empty:
         st.plotly_chart(fig1, use_container_width=True)
 
         # === Taburan Tahap Penurunan Individu ===
-        st.markdown("### 🧮 Taburan Tahap Penurunan Individu")
+        with st.expander("🧮 Taburan Tahap Penurunan Individu (Klik untuk Lihat)", expanded=False):
 
         def tahap(pct):
             if pct >= 10:
