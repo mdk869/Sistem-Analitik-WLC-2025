@@ -23,7 +23,7 @@ client = gspread.authorize(creds)
 sh = client.open("data_peserta")
 
 # === Tema & Header ===
-st.title("\U0001F4CA Dashboard Weight Loss Challenge 2025")
+st.title("📊 Dashboard Weight Loss Challenge 2025")
 paparkan_tema()
 
 # === Load data peserta ===
@@ -62,25 +62,25 @@ if not df.empty:
 
     # === Interaktif Sesi & Statistik ===
     sesi_tersedia = df_rekod['Sesi'].dropna().unique().tolist()
-    sesi_dipilih = st.selectbox("\ud83d\udcc5 Pilih Sesi", options=sesi_tersedia)
+    sesi_dipilih = st.selectbox("📅 Pilih Sesi", options=sesi_tersedia)
     df_sesi = df_rekod[df_rekod['Sesi'] == sesi_dipilih]
 
     opsyen_statistik = [
         "Statistik Kehadiran Timbang",
         "Purata % Penurunan Mengikut Sesi",
         "Taburan Tahap Penurunan Individu",
-        "\ud83d\udcca Semua Statistik Sekaligus"
+        "📊 Semua Statistik Sekaligus"
     ]
-    papar_stat = st.selectbox("\ud83d\udcca Jenis Statistik", options=opsyen_statistik)
+    papar_stat = st.selectbox("📊 Jenis Statistik", options=opsyen_statistik)
 
     # === Paparan Statistik Berdasarkan Pilihan ===
     if papar_stat == "Statistik Kehadiran Timbang":
-        st.subheader(f"\ud83d\uddd3\ufe0f Statistik Kehadiran Timbang ({sesi_dipilih})")
+        st.subheader(f"🗓️ Statistik Kehadiran Timbang ({sesi_dipilih})")
         kira_hadir = df_sesi["Nama"].nunique()
         st.metric(label="Bilangan Peserta Hadir", value=kira_hadir)
 
     elif papar_stat == "Purata % Penurunan Mengikut Sesi":
-        st.subheader(f"\ud83d\udcc9 Purata % Penurunan Berat - {sesi_dipilih}")
+        st.subheader(f"📉 Purata % Penurunan Berat - {sesi_dipilih}")
         df_sorted = df_sesi.sort_values(by=['Nama', 'Tarikh Rekod'])
         berat_awal = df_sorted.groupby('Nama').first().reset_index()
         berat_akhir = df_sorted.groupby('Nama').last().reset_index()
@@ -94,7 +94,7 @@ if not df.empty:
         st.plotly_chart(fig, use_container_width=True)
 
     elif papar_stat == "Taburan Tahap Penurunan Individu":
-        st.subheader(f"\ud83e\uddee Taburan Tahap Penurunan Individu - {sesi_dipilih}")
+        st.subheader(f"🧮 Taburan Tahap Penurunan Individu - {sesi_dipilih}")
         df_sorted = df_sesi.sort_values(by=['Nama', 'Tarikh Rekod'])
         berat_awal = df_sorted.groupby('Nama').first().reset_index()
         berat_akhir = df_sorted.groupby('Nama').last().reset_index()
@@ -119,12 +119,12 @@ if not df.empty:
         fig = px.bar(tabur_tahap, x='Tahap Penurunan', y='Bilangan Peserta', color='Tahap Penurunan')
         st.plotly_chart(fig, use_container_width=True)
 
-    elif papar_stat == "\ud83d\udcca Semua Statistik Sekaligus":
-        st.subheader(f"\ud83d\uddd3\ufe0f Statistik Kehadiran Timbang ({sesi_dipilih})")
+    elif papar_stat == "📊 Semua Statistik Sekaligus":
+        st.subheader(f"🗓️ Statistik Kehadiran Timbang ({sesi_dipilih})")
         kira_hadir = df_sesi["Nama"].nunique()
         st.metric(label="Bilangan Peserta Hadir", value=kira_hadir)
 
-        st.subheader(f"\ud83d\udcc9 Purata % Penurunan Berat - {sesi_dipilih}")
+        st.subheader(f"📉 Purata % Penurunan Berat - {sesi_dipilih}")
         df_sorted = df_sesi.sort_values(by=['Nama', 'Tarikh Rekod'])
         berat_awal = df_sorted.groupby('Nama').first().reset_index()
         berat_akhir = df_sorted.groupby('Nama').last().reset_index()
@@ -137,7 +137,7 @@ if not df.empty:
         fig = px.bar(gabung, x='Nama', y='% Penurunan', color='% Penurunan')
         st.plotly_chart(fig, use_container_width=True)
 
-        st.subheader(f"\ud83e\uddee Taburan Tahap Penurunan Individu - {sesi_dipilih}")
+        st.subheader(f"🧮 Taburan Tahap Penurunan Individu - {sesi_dipilih}")
         def tahap(pct):
             if pct >= 10:
                 return ">10% (Cemerlang)"
