@@ -159,15 +159,15 @@ if not df.empty:
         # === Taburan Tahap Penurunan Individu ===
         with st.expander("🧮 Taburan Tahap Penurunan Individu (Klik untuk Lihat)", expanded=False):
 
-        def tahap(pct):
-            if pct >= 10:
-                return ">10% (Cemerlang)"
-            elif pct >= 5:
-                return "5–9.9% (Baik)"
-            elif pct >= 1:
-                return "1–4.9% (Sederhana)"
-            else:
-                return "<1% atau Naik (Perlu Sokongan)"
+            def tahap(pct):
+                if pct >= 10:
+                    return ">10% (Cemerlang)"
+                elif pct >= 5:
+                    return "5–9.9% (Baik)"
+                elif pct >= 1:
+                    return "1–4.9% (Sederhana)"
+                else:
+                    return "<1% atau Naik (Perlu Sokongan)"
 
         gabung['Tahap'] = gabung['% Penurunan'].apply(tahap)
         tabur_tahap = gabung['Tahap'].value_counts().reset_index()
