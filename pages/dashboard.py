@@ -124,7 +124,7 @@ if not df.empty:
         # === Statistik Kehadiran Timbang ===
         st.markdown("### 🗓️ Statistik Kehadiran Timbang")
         kira_hadir = df_rekod.groupby("Sesi")["No.Staf"].nunique().reset_index(name="Bilangan Peserta Timbang")
-        st.dataframe(kira_hadir, use_container_width=True)
+        st.dataframe(kira_hadir, use_container_width=True, hide_index=True)
 
         # === Purata % Penurunan Berat setiap bulan ===
         st.markdown("### 📉 Purata % Penurunan Berat Mengikut Sesi")
