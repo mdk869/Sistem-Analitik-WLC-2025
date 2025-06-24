@@ -33,7 +33,8 @@ def load_rekod_data_from_gsheet(st_secrets: dict, spreadsheet_name: str = "data_
     worksheet = sh.worksheet("rekod_berat")
     
     df_rekod = pd.DataFrame(worksheet.get_all_records())
-    df_rekod.columns = df_rekod.columns.str.strip()
+    df_rekod.columns = df_rekod.columns.map(str).str.strip()
+
 
     if df_rekod.empty:
         return pd.DataFrame()
