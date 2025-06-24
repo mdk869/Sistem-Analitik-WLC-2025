@@ -40,28 +40,28 @@ if not df.empty:
     with col1:
         st.markdown(f"""
         <div class="wlc-box">
-            <div class="wlc-title">👥 Jumlah Peserta</div>
+            <div class="wlc-sub-title">👥 Jumlah Peserta</div>
             <div class="wlc-value">{total_peserta}</div>
         </div>""", unsafe_allow_html=True)
 
     with col2:
         st.markdown(f"""
         <div class="wlc-box">
-            <div class="wlc-title">📉 Purata BMI</div>
+            <div class="wlc-sub-title">📉 Purata BMI</div>
             <div class="wlc-value">{purata_bmi}</div>
         </div>""", unsafe_allow_html=True)
 
     with col3:
         st.markdown(f"""
         <div class="wlc-box">
-            <div class="wlc-title">🏆 % Penurunan</div>
+            <div class="wlc-sub-title">🏆 % Penurunan</div>
             <div class="wlc-value">{purata_penurunan}%</div>
         </div>""", unsafe_allow_html=True)
 
     with col4:
         st.markdown(f"""
         <div class="wlc-box">
-            <div class="wlc-title">⚖️ Berat Turun (kg)</div>
+            <div class="wlc-sub-title">⚖️ Berat Turun (kg)</div>
             <div class="wlc-value">{purata_kg} kg</div>
         </div>""", unsafe_allow_html=True)
 

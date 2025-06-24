@@ -14,6 +14,11 @@ def paparkan_tema():
         margin-top: 2rem;
         margin-bottom: 0.5rem;
     }
+    .wlc-sub-title {
+        font-size: 0.95rem;
+        color: #333;
+        margin-bottom: 0.4rem;
+    }
     .wlc-value {
         font-size: 30px;
         font-weight: 400;
