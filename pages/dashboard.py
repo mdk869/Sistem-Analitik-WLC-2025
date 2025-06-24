@@ -151,7 +151,7 @@ if not df.empty:
         purata_sesi = gabung.groupby('Sesi')['% Penurunan'].mean().reset_index()
         purata_sesi = purata_sesi.sort_values(by='Sesi')
 
-        fig1 = px.bar(purata_sesi, x='Sesi', y='% Penurunan', markers=True,
+        fig1 = px.bar(purata_sesi, x='Sesi', y='% Penurunan', color='Sesi',
                         title="Purata % Penurunan Berat Mengikut Sesi",
                         labels={'% Penurunan': 'Purata % Penurunan'})
         st.plotly_chart(fig1, use_container_width=True)
