@@ -75,7 +75,11 @@ with colA:
 with colB:
     st.image("https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png", use_container_width=True)
     nutrisi = get_tips_nutrisi()
-    st.info(f"🍎 **Tips Nutrisi Hari Ini:**\n{nutrisi}")
+    st.info(f"""
+    🍎 **Tips Nutrisi Hari Ini:**
+    
+    {nutrisi}
+    """)
     
 
 # === Popup Memo / Changelog ===
