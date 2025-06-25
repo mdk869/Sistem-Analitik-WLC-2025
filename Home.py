@@ -2,6 +2,7 @@
 import streamlit as st
 from datetime import datetime
 import pytz
+from streamlit_autorefresh import st_autorefresh
 from app.styles import paparkan_tema, papar_footer, papar_tajuk_utama
 from app.helper_info import get_motivasi_harian, get_tips_nutrisi, get_tips_kesihatan
 
@@ -20,7 +21,14 @@ with colA:
     papar_tajuk_utama()
 
 with colB:
+    # Auto refresh setiap 1000ms (1 saat)
+    st_autorefresh(interval=1000, limit=None, key="jamref")
 
+    st.markdown("## ⏰ Live Jam Digital")
+
+    sekarang = datetime.now().strftime("%H:%M:%S")
+    st.subheader(f"🕒 {sekarang}")
+    
 
 # === Tarikh Countdown Program ===
     tz = pytz.timezone("Asia/Kuala_Lumpur")
