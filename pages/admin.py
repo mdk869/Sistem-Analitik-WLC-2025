@@ -42,17 +42,35 @@ st.divider()
 # === Tambah Peserta ===
 st.markdown("### ➕ Tambah Peserta Baru")
 
-with st.form("form_tambah_peserta"):
-    nama_baru = st.text_input("Nama Peserta")
-    no_staf_baru = st.text_input("No. Staf")
-    berat_awal = st.number_input("Berat Awal (kg)", min_value=20.0, max_value=300.0, step=0.1)
-    submit_tambah = st.form_submit_button("✅ Tambah Peserta")
+with st.form("form_tambah_peserta", clear_on_submit=True):
+    st.subheader("🆕 Tambah Peserta Baru")
 
-    if submit_tambah:
-        if nama_baru and no_staf_baru:
-            tambah_peserta_google_sheet(nama_baru, no_staf_baru, berat_awal)
-            st.success(f"✅ {nama_baru} berjaya ditambah.")
-            st.rerun()
+    nama = st.text_input("Nama")
+    jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"])
+    jabatan = st.text_input("Jabatan")
+    tinggi = st.number_input("Tinggi (cm)", min_value=100, max_value=250)
+    berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=300.0)
+    tarikh_timbang = st.date_input("Tarikh Timbang Berat Awal")
+    
+    berat_terkini = berat_awal
+    bmi = round(berat_awal / ((tinggi / 100) ** 2), 2)
+    
+    kategori = (
+        "Underweight" if bmi < 18.5 else
+        "Normal" if bmi < 23 else
+        "Overweight" if bmi < 27.5 else
+        "Obese"
+    )
+
+    submitted = st.form_submit_button("➕ Tambah Peserta")
+
+    if submitted:
+        if nama and jabatan:
+            tambah_peserta_google_sheet(
+                nama, jantina, jabatan, tinggi, berat_awal,
+                berat_terkini, str(tarikh_timbang), bmi, kategori
+            )
+            st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
         else:
             st.warning("⚠️ Sila isi semua maklumat peserta.")
 
