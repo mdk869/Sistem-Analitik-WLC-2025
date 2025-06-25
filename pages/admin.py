@@ -19,15 +19,8 @@ from app.helper_logic import (
 
 from app.styles import paparkan_tema, papar_header, papar_footer
 
-# === ✅ Check Login Sebelum Akses Page ===
-if not check_login():
-    st.stop()
-
-with st.sidebar:
-    if st.button("🚪 Log Keluar"):
-        st.session_state.logged_in = False
-        st.rerun()
-
+# 🔐 Login Check
+is_admin = check_login()
 
 paparkan_tema()
 papar_header("Admin Panel | WLC 2025")
