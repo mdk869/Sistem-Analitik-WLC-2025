@@ -3,7 +3,7 @@ import streamlit as st
 from datetime import datetime
 import pytz
 from app.styles import paparkan_tema, papar_footer, papar_tajuk_utama
-from app.helper_info import get_motivasi_harian, get_tips_nutrisi
+from app.helper_info import get_motivasi_harian, get_tips_nutrisi, get_tips_kesihatan
 
 # === Setup Paparan ===
 st.set_page_config(
@@ -73,12 +73,14 @@ with colA:
     """)
     
     st.image(
-        "https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png",
+        "https://i.ibb.co/rK49V8yW/poster-Tips-Kesihatan-Harian.jpg",
         use_container_width=True
     )
-    st.success("""
+    
+    health_list = get_tips_kesihatan(jumlah=2)
 
-    """)
+    st.subheader("🏃‍♂️**Tips Kesihatan Harian**")
+    st.info("\n".join([f"- {tip}" for tip in health_list]))
 
 
 with colB:
