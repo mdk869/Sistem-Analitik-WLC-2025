@@ -97,7 +97,9 @@ def papar_kandungan_home():
 def papar_header(teks):
     st.markdown(f"<div class='wlc-header'>{teks}</div>", unsafe_allow_html=True)
     
-def papar_footer(owner="MKR", date=None):
+def papar_footer(owner="MKR Dev Team", version="v3.0.0", last_update=None):
+    update_info = last_update if last_update else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     st.markdown(f"""
         <hr style="border: 1px solid #444;">
         <div style="
@@ -106,9 +108,11 @@ def papar_footer(owner="MKR", date=None):
             color:#bbbbbb;
             line-height:1.6;
             ">
-            Dibangunkan dengan ❤️ oleh <strong style="color:#FFD700;">MKR Dev Team</strong><br>
-            🚀 <em>Sistem Analitik WLC 2025</em> | Versi terkini: <strong>{date}</strong><br>
-            Powered by Streamlit + Google Cloud
+            Dibangunkan dengan ❤️ oleh <strong style="color:#FFD700;">{owner}</strong><br>
+            🚀 <em>Sistem Analitik WLC 2025</em> | Versi: <strong>{version}</strong><br>
+            📅 Kemas kini terakhir: <strong>{update}</strong><br>
+            ⚙️ Powered by Streamlit + Google Cloud
         </div>
-    """, unsafe_allow_html=True)
-
+        """.format(owner=owner, version=version, update=update_info),
+        unsafe_allow_html=True
+    )
