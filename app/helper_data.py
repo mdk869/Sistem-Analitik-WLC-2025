@@ -95,8 +95,8 @@ def get_berat_terkini():
 
     df_latest = (
         df_rekod.sort_values('Tarikh', ascending=False)
-        .groupby('Nama', as_index=False)
-        .first()
+        .drop_duplicates(subset=['Nama'], keep='first')
+        .reset_index(drop=True)
     )
 
     return df_latest[["Nama", "Berat", "Tarikh"]]
