@@ -41,8 +41,11 @@ data_rekod = load_data_cloud_or_local()
 # === Papar Senarai Peserta ===
 st.markdown("### 📋 Senarai Peserta")
 
+kolum_pilihan = ['Nama', 'NoStaf', 'Umur', 'Jantina', 'Tinggi', 'BeratAwal', 'TarikhDaftar']
+
+# Papar dataframe dengan kolum terpilih dan numbering No.
 st.dataframe(
-    data_peserta.set_index(
+    data_peserta[kolum_pilihan].set_index(
         pd.Index(range(1, len(data_peserta) + 1), name="No.")
     ),
     use_container_width=True
