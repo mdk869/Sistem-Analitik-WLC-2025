@@ -39,8 +39,6 @@ st.dataframe(
 
 st.divider()
 
-st.divider()
-
 # === Tambah Peserta ===
 st.markdown("### ➕ Tambah Peserta Baru")
 
