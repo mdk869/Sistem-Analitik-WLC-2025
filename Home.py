@@ -63,14 +63,13 @@ with colA:
     - Memantau BMI dan komposisi badan.
     - Menyediakan data analitik untuk peserta dan penganjur.
     """)
-
-    st.warning("""
-    ### 📌 Kenapa Gunakan Sistem Ini?
-    - Memudahkan pemantauan progres.
-    - Data direkod secara cloud (Google Sheets).
-    - Paparan leaderboard automatik.
-    - Privasi data terjamin.
-    """)
+    with st.expander("### 📌 Kenapa Gunakan Sistem Ini?"):    
+        st.warning("""
+        - Memudahkan pemantauan progres.
+        - Data direkod secara cloud (Google Sheets).
+        - Paparan leaderboard automatik.
+        - Privasi data terjamin.
+        """)
     
     st.image(
         "https://i.ibb.co/rK49V8yW/poster-Tips-Kesihatan-Harian.jpg",
