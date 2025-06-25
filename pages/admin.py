@@ -19,8 +19,6 @@ from app.helper_logic import (
 
 from app.styles import paparkan_tema, papar_header, papar_footer
 
-# === Login Check ===
-check_login()
 
 paparkan_tema()
 papar_header("Admin Panel | WLC 2025")
