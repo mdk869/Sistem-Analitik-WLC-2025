@@ -107,8 +107,8 @@ def papar_footer(owner="MKR", date=None):
             line-height:1.6;
             ">
             Dibangunkan dengan ❤️ oleh <strong style="color:#FFD700;">MKR Dev Team</strong><br>
-            🚀 <em>Sistem Analitik WLC 2025</em> | Versi terkini: <strong>{last_update}</strong><br>
-            👥 Pengguna aktif: <strong>{user_count}</strong> | Powered by Streamlit + Google Cloud
+            🚀 <em>Sistem Analitik WLC 2025</em> | Versi terkini: <strong>{date}</strong><br>
+            Powered by Streamlit + Google Cloud
         </div>
     """, unsafe_allow_html=True)
 
