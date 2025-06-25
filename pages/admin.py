@@ -107,7 +107,7 @@ if st.button("💾 Simpan Berat Terkini"):
 st.divider()
 
 # === Padam Peserta ===
-st.expander("### 🗑️ Padam Peserta"):
+st.expander("### 🗑️ Padam Peserta")
 
 if len(data_peserta) > 0:
         nama_list = data_peserta["Nama"].tolist()
