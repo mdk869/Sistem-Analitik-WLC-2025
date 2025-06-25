@@ -88,8 +88,6 @@ with st.expander("### ➕ Tambah Peserta Baru"):
             else:
                 st.warning("⚠️ Sila isi semua maklumat peserta.")
 
-st.divider()
-
 # === Kemaskini Berat ===
 with st.expander("### ⚖️ Kemaskini Berat Terkini"):
 
@@ -103,8 +101,6 @@ with st.expander("### ⚖️ Kemaskini Berat Terkini"):
         kemaskini_berat_peserta(nama_dipilih, berat_baru, tarikh_baru)
         st.success(f"✅ Berat {nama_dipilih} berjaya dikemaskini.")
         st.rerun()
-
-st.divider()
 
 # === Padam Peserta ===
 with st.expander("### 🗑️ Padam Peserta"):
