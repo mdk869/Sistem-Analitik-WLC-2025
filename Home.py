@@ -2,7 +2,6 @@
 import streamlit as st
 from datetime import datetime
 import pytz
-
 from app.styles import paparkan_tema, papar_footer, papar_tajuk_utama, papar_kandungan_home
 
 # === Setup Paparan ===
@@ -18,26 +17,17 @@ papar_tajuk_utama()
 papar_kandungan_home()
 
 # === Popup Memo Update Sistem ===
-if "show_memo" not in st.session_state:
-    st.session_state.show_memo = True
+st.info("""
+📢 **Makluman Sistem WLC V3**  
+🔔 Update Terbaharu:  
+- ✅ Dashboard Interaktif  
+- ✅ Leaderboard dengan Medal & Trend  
+- ✅ Modul Admin (Tambah, Edit, Padam)  
+- ✅ Sistem Login  
+- 🔜 Push Notification & Tips Nutrisi (akan datang)  
 
-if st.session_state.show_memo:
-    with st.modal("📢 Makluman Sistem WLC V3"):
-        st.subheader("🔔 Update Terbaharu - WLC V3")
-        st.markdown("""
-        - ✅ **Penambahan Dashboard Interaktif**
-        - ✅ Fungsi **Leaderboard dengan Trend Naik/Turun + Medal**
-        - ✅ Kemaskini Paparan BMI dengan kategori Asia
-        - ✅ Modul Admin lengkap (Tambah, Edit, Padam Peserta)
-        - ✅ Sistem login admin (username & password)
-        - ✅ Integrasi dengan API Motivasi & Cuaca
-        - 🔜 Akan Datang: Push Notification Telegram, Tips Nutrisi Harian
-
-        ---
-        """)
-        st.success("✨ Terima kasih kerana menggunakan Sistem WLC V3.")
-        if st.button("❌ Tutup"):
-            st.session_state.show_memo = False
+✨ Terima kasih kerana menggunakan Sistem WLC V3.
+""")
 
 
 # === Footer ===
