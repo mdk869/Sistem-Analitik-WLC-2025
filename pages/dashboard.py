@@ -131,7 +131,7 @@ if not df.empty:
         st.divider()
 
     # === Paparan Progress Penurunan Berat ===
-        with st.expander("📉 Trend Penurunan Berat Program Ini (Klik Disini)"):
+    with st.expander("📉 Trend Penurunan Berat Program Ini (Klik Disini)"):
             df_plot = (df_tapis)
 
             fig = px.bar(
@@ -148,15 +148,15 @@ if not df.empty:
             st.divider()
 
     # === Interaktif Kad Maklumat ===
-        st.subheader("🩺 Info Nutrisi & Kesihatan")
+    st.subheader("🩺 Info Nutrisi & Kesihatan")
 
-        info_col1, info_col2 = st.columns(2)
+    info_col1, info_col2 = st.columns(2)
 
-        with info_col1:
+    with info_col1:
             st.info("🍎 **Kalori Harian:**\nAnggaran kalori untuk kekal sihat adalah sekitar 1800-2200 kcal sehari bergantung pada aktiviti harian.")
             st.info("💧 **Keperluan Air:**\nMinum 30-35ml air per kg berat badan. Contoh: 70kg × 35ml = 2.45 liter sehari.")
 
-        with info_col2:
+    with info_col2:
             st.info("🚶‍♂️ **Aktiviti Disarankan:**\n- Jalan kaki 8000-10000 langkah sehari.\n- Senaman 3-4 kali seminggu.")
             st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
 
