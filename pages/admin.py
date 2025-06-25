@@ -143,7 +143,6 @@ st.dataframe(
     use_container_width=True
 )
 
-st.divider()
 
 
 papar_footer("MKR")
