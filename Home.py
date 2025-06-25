@@ -101,7 +101,7 @@ with colB:
 
 # === Popup Memo / Changelog ===
 if "show_memo" not in st.session_state:
-    st.session_state.show_memo = True
+    st.session_state.show_memo = False
 
 if st.session_state.show_memo:
     st.info("""
