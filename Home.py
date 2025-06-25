@@ -81,6 +81,9 @@ with colB:
     {nutrisi}
     """)
     
+    st.info("🍎 **Tips Nutrisi Hari Ini:**")
+    for tip in get_tips_nutrisi:
+        st.markdown(f"- {tip}")
 
 # === Popup Memo / Changelog ===
 if "show_memo" not in st.session_state:
