@@ -1,9 +1,9 @@
+# Home.py
 import streamlit as st
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
-import random
-import requests
-from app.styles import paparkan_tema, papar_footer, papar_tajuk_utama, papar_kandungan_home
+from app.styles import paparkan_tema, papar_footer, papar_tajuk_utama
+from app.helper_info import get_motivasi_harian
 
 # === Setup Paparan ===
 st.set_page_config(
@@ -12,84 +12,97 @@ st.set_page_config(
     layout="wide"
 )
 
-# === Paparkan Tema dan Tajuk ===
+# === Paparkan Tema & Tajuk ===
 paparkan_tema()
 papar_tajuk_utama()
-papar_kandungan_home()
 
-# === Countdown ke Timbang Akhir ===
-st.subheader("⏳ Countdown ke Timbang Akhir")
-tarikh_timbang_akhir = datetime(2025, 8, 20, 8, 0, 0)
-now = datetime.now(pytz.timezone("Asia/Kuala_Lumpur"))
-countdown = tarikh_timbang_akhir - now
-days = countdown.days
-hours, remainder = divmod(countdown.seconds, 3600)
-minutes, seconds = divmod(remainder, 60)
-st.success(f"📅 {days} hari, ⏰ {hours} jam {minutes} minit {seconds} saat lagi!")
+# === Tarikh Countdown Program ===
+tz = pytz.timezone("Asia/Kuala_Lumpur")
+tarikh_mula = tz.localize(datetime(2025, 5, 18))
+tarikh_akhir = tz.localize(datetime(2025, 8, 20))
+hari_ini = datetime.now(tz)
 
-# === Fun Fact Kesihatan ===
-st.subheader("🍏 Fun Fact Kesihatan")
-facts = [
-    "🥦 Brokoli mengandungi lebih protein daripada daging per kalori!",
-    "💧 Minum air sebelum makan boleh bantu kurangkan pengambilan kalori.",
-    "🧠 Tidur yang cukup bantu pembakaran lemak lebih efektif.",
-    "🔥 10 minit lompat tali membakar lebih banyak kalori daripada joging 30 minit.",
-    "🍋 Lemon membantu penghadaman dan detox semula jadi."
-]
-st.info(random.choice(facts))
+total_hari = (tarikh_akhir - tarikh_mula).days
+baki_hari = max((tarikh_akhir - hari_ini).days, 0)
+progress_hari = ((total_hari - baki_hari) / total_hari) * 100
 
-# === Petikan Motivasi ===
-st.subheader("💡 Petikan Motivasi Hari Ini")
-try:
-    res = requests.get("https://api.adviceslip.com/advice")
-    if res.status_code == 200:
-        advice = res.json()["slip"]["advice"]
-        st.success(f"🌟 \"{advice}\"")
-    else:
-        st.error("❌ Tidak dapat memuatkan petikan motivasi.")
-except:
-    st.warning("⚠️ Gagal mendapatkan petikan motivasi.")
+# === Layout Info Utama ===
+st.markdown("## 🌟 **Selamat Datang ke Sistem Analitik WLC 2025**")
+st.markdown("""
+Sistem ini direka khas untuk membantu **penganjur** dan **peserta** memantau prestasi penurunan berat badan sepanjang program.
 
-# === FAQ Interaktif ===
-st.subheader("❓ Soalan Lazim (FAQ)")
-with st.expander("📝 Bagaimana sistem ini berfungsi?"):
-    st.write("""
-    Sistem ini membantu penganjur memantau kemajuan peserta dalam program penurunan berat badan.
-    Data seperti berat badan, BMI, dan leaderboard akan dikemaskini oleh admin.
-    """)
+📅 **Tempoh Program:** 18 Mei 2025 - 20 Ogos 2025  
+🏆 **Objektif:** Membantu peserta mencapai berat badan ideal melalui pemantauan berkala.
 
-with st.expander("🔒 Adakah data peserta dipaparkan kepada umum?"):
-    st.write("""
-    Tidak. Data individu tidak dipaparkan kepada umum. Hanya data umum dan statistik keseluruhan yang boleh dilihat.
-    """)
+---
+""")
 
-with st.expander("📅 Bilakah sesi timbang seterusnya?"):
-    st.write("""
-    Sesi timbang seterusnya dijadualkan pada **20 Julai 2025**.
-    """)
-
-with st.expander("📊 Apa yang boleh dilihat dalam Dashboard?"):
-    st.write("""
-    Anda boleh lihat perkembangan keseluruhan, statistik BMI peserta, dan leaderboard % penurunan berat.
-    """)
-
-# === Quick Navigation ===
-st.subheader("🚀 Pergi ke:")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    if st.button("📊 Dashboard"):
-        st.switch_page("pages/dashboard.py")
+    st.metric("📅 Baki Hari Program", f"{baki_hari} Hari")
+    st.progress(progress_hari/100)
 
 with col2:
-    if st.button("🏆 Leaderboard"):
-        st.switch_page("pages/leaderboard.py")
+    st.metric("🚀 Status Program", f"{round(progress_hari, 1)}% Selesai")
 
 with col3:
-    if st.button("⚖️ Info BMI"):
-        st.switch_page("pages/bmi.py")
+    motivasi = get_motivasi_harian()
+    st.info(f"💡 **Motivasi Hari Ini:**\n{motivasi}")
+
+# === Bahagian Info Kad ===
+st.markdown("## 🔍 **Informasi Program & Tips Kesihatan**")
+
+colA, colB = st.columns(2)
+
+with colA:
+    st.success("""
+    ### 🎯 Matlamat WLC 2025
+    - Memupuk gaya hidup sihat.
+    - Menurunkan berat badan secara berhemah.
+    - Memantau BMI dan komposisi badan.
+    - Menyediakan data analitik untuk peserta dan penganjur.
+    """)
+
+    st.warning("""
+    ### 📌 Kenapa Gunakan Sistem Ini?
+    - Memudahkan pemantauan progres.
+    - Data direkod secara cloud (Google Sheets).
+    - Paparan leaderboard automatik.
+    - Privasi data terjamin.
+    """)
+
+with colB:
+    st.image("https://i.ibb.co/hZV4QF6/healthy.png", use_column_width=True)
+    st.info("""
+    ### 🍎 Tips Nutrisi
+    - Minum air secukupnya (2-3L sehari).
+    - Kurangkan makanan bergula dan berminyak.
+    - Lebihkan protein dan serat.
+    - Amalkan senaman ringan 20-30 minit sehari.
+    """)
+
+# === Popup Memo / Changelog ===
+if "show_memo" not in st.session_state:
+    st.session_state.show_memo = True
+
+if st.session_state.show_memo:
+    st.info("""
+    ## 📢 **Makluman Sistem WLC V3**
+    🔔 Update Terbaharu:
+    - ✅ Dashboard Interaktif
+    - ✅ Leaderboard dengan Medal & Trend 📈📉
+    - ✅ Modul Admin (Tambah, Edit, Padam)
+    - ✅ Sistem Login Admin
+    - ✅ Countdown Program + Motivasi Harian
+    - 🔜 Akan Datang: Push Notification, Tips Nutrisi Automatik
+
+    ---
+    ✨ Terima kasih kerana menggunakan Sistem WLC V3.
+    """)
+    if st.button("❌ Tutup Memo"):
+        st.session_state.show_memo = False
 
 # === Footer ===
-local_tz = pytz.timezone("Asia/Kuala_Lumpur")
-footer_date = datetime.now(local_tz).strftime("%d/%m/%Y")
+footer_date = hari_ini.strftime("%d/%m/%Y")
 papar_footer("MKR", footer_date)
