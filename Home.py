@@ -3,7 +3,7 @@ import streamlit as st
 from datetime import datetime
 import pytz
 from app.styles import paparkan_tema, papar_footer, papar_tajuk_utama
-from app.helper_info import get_motivasi_harian
+from app.helper_info import get_motivasi_harian, get_tips_nutrisi
 
 # === Setup Paparan ===
 st.set_page_config(
@@ -27,7 +27,7 @@ baki_hari = max((tarikh_akhir - hari_ini).days, 0)
 progress_hari = ((total_hari - baki_hari) / total_hari) * 100
 
 # === Layout Info Utama ===
-st.markdown("## 🌟 **Selamat Datang ke Sistem Analitik WLC 2025**")
+st.markdown("##**Selamat Datang ke Sistem Analitik WLC 2025**")
 st.markdown("""
 Sistem ini direka khas untuk membantu **penganjur** dan **peserta** memantau prestasi penurunan berat badan sepanjang program.
 
@@ -74,13 +74,9 @@ with colA:
 
 with colB:
     st.image("https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png", use_container_width=True)
-    st.info("""
-    ### 🍎 Tips Nutrisi
-    - Minum air secukupnya (2-3L sehari).
-    - Kurangkan makanan bergula dan berminyak.
-    - Lebihkan protein dan serat.
-    - Amalkan senaman ringan 20-30 minit sehari.
-    """)
+    nutrisi = get_tips_nutrisi()
+    st.info(f"🍎 **Tips Nutrisi Hari Ini:**\n{nutrisi}")
+    
 
 # === Popup Memo / Changelog ===
 if "show_memo" not in st.session_state:
