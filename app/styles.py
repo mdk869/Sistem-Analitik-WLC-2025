@@ -100,9 +100,9 @@ def papar_header(teks):
 def papar_footer(owner="MKR Dev Team", version="v3.0.0", last_update=None):
     # Timezone Malaysia
     tz = pytz.timezone('Asia/Kuala_Lumpur')
-    
-    tarikh_kemas_kini = last_update if last_update else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    tarikh_kemas_kini = last_update if last_update else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    tahun_sekarang = datetime.now(tz).strftime("%Y")
     st.markdown(
         f"""
         <hr style="border: 1px solid #444;">
@@ -115,7 +115,14 @@ def papar_footer(owner="MKR Dev Team", version="v3.0.0", last_update=None):
             Dibangunkan dengan ❤️ oleh <strong style="color:#FFD700;">{owner}</strong><br>
             🚀 <em>Sistem Analitik WLC 2025</em> | Versi: <strong>{version}</strong><br>
             📅 Kemas kini terakhir: <strong>{tarikh_kemas_kini}</strong><br>
-            ⚙️ Powered by Streamlit + Google Cloud
+            ⚙️ Powered by Streamlit + Google Cloud<br><br>
+
+            Tagline = "Transforming Data Into Action."
+
+            <span style="font-size:12px;">
+            &copy; {tahun_sekarang} {owner}. All rights reserved.<br>
+            Made with 💻☕ by <strong>MKR Dev Team</strong>.
+            </span>
         </div>
         """,
         unsafe_allow_html=True
