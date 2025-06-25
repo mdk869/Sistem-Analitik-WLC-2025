@@ -185,7 +185,7 @@ if not df.empty:
                 df_bmi_table.index = df_bmi_table.index + 1
                 st.dataframe(df_bmi_table, use_container_width=True)
             else:
-                st.warning("⚠️ Akses Terhad! Hanya Admin boleh melihat senarai nama peserta dan BMI.")
+                st.warning("🔒 Jadual BMI dilindungi untuk privasi peserta. Sila login sebagai Admin untuk akses.")
 else:
     st.warning("Google Sheet kosong atau tiada data.")
 
