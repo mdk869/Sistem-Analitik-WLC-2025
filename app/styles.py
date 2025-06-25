@@ -98,9 +98,11 @@ def papar_header(teks):
     st.markdown(f"<div class='wlc-header'>{teks}</div>", unsafe_allow_html=True)
     
 def papar_footer(owner="MKR Dev Team", version="v3.0.0", last_update=None):
-    update_info = last_update if last_update else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    st.markdown(f"""
+    tarikh_kemas_kini = last_update if last_update else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    st.markdown(
+        f"""
         <hr style="border: 1px solid #444;">
         <div style="
             text-align:center;
@@ -110,9 +112,9 @@ def papar_footer(owner="MKR Dev Team", version="v3.0.0", last_update=None):
             ">
             Dibangunkan dengan ❤️ oleh <strong style="color:#FFD700;">{owner}</strong><br>
             🚀 <em>Sistem Analitik WLC 2025</em> | Versi: <strong>{version}</strong><br>
-            📅 Kemas kini terakhir: <strong>{update_info}</strong><br>
+            📅 Kemas kini terakhir: <strong>{tarikh_kemas_kini}</strong><br>
             ⚙️ Powered by Streamlit + Google Cloud
         </div>
-        """(owner=owner, version=version, update=update_info),
+        """,
         unsafe_allow_html=True
     )
