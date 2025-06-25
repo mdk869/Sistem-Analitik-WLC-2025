@@ -7,8 +7,8 @@ from datetime import datetime
 import pytz
 
 from app.styles import paparkan_tema, papar_footer, papar_header
-from app.helper_data import load_data_peserta, get_berat_terkini
-from app.helper_logic import tambah_kiraan_peserta
+from app.helper_data import load_data_peserta, get_berat_terkini, load_rekod_berat
+from app.helper_logic import tambah_kiraan_peserta, kira_status_ranking, simpan_ranking_ke_gsheet
 from app.helper_ranking import (
     create_ranking_snapshot,
     save_ranking_to_sheet,
@@ -26,13 +26,13 @@ paparkan_tema()
 
 # === Load Data
 df_peserta = load_data_peserta()
-df_berat_terkini = get_berat_terkini()
+df_rekod = load_rekod_berat()
+
+df_berat_terkini = get_berat_terkini(df_rekod)
 
 # Gabungkan berat awal + berat terkini
 df_merge = df_peserta.merge(df_berat_terkini, on="Nama", how="left")
 df_merge.rename(columns={"Berat": "BeratTerkini", "Tarikh": "TarikhTerkini"}, inplace=True)
-
-# Kiraan penurunan berat + BMI
 df_merge = tambah_kiraan_peserta(df_merge)
 
 
@@ -153,26 +153,31 @@ if not df.empty:
 
     with tab2:
         st.subheader("🏆 Leaderboard")
-        df_rank = df_merge.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
-        df_rank["Ranking"] = df_rank.index + 1
+        df_leaderboard = df_merge.sort_values(by="% Penurunan", ascending=False).reset_index(drop=True)
+        df_leaderboard["Ranking"] = df_leaderboard.index + 1
 
-        st.dataframe(df_rank[["Ranking", "Nama", "% Penurunan"]].head(10), use_container_width=True)
+        st.dataframe(df_leaderboard[["Ranking", "Nama", "% Penurunan"]].head(10), use_container_width=True)
 
-        # === Buat Snapshot Ranking Sekarang
-        df_ranking_now = create_ranking_snapshot(df_merge)
+        # === Simpan Ranking ke Google Sheet ===
+        if st.button("📥 Simpan Ranking ke Google Sheet"):
+            simpan_ranking_ke_gsheet(df_leaderboard)
+            st.success("Ranking berjaya disimpan ke Google Sheet!")
 
-        st.subheader("💾 Simpan Ranking Bulanan")
-        if st.button("Simpan Ranking Ini ke Google Sheet"):
-            result = save_ranking_to_sheet(df_ranking_now)
-            st.success(result)
+        # === Papar Leaderboard ===
+        st.subheader("📋 Leaderboard % Penurunan Berat")
+        st.dataframe(df_leaderboard[["Ranking", "Nama", "BeratAwal", "BeratTerkini", "% Penurunan", "BMI", "KategoriBMI"]])
 
-        st.subheader("📜 Sejarah Ranking")
-        df_ranking_history = load_ranking_history()
-
-        if not df_ranking_history.empty:
-            st.dataframe(df_ranking_history)
-        else:
-            st.info("Belum ada data ranking disimpan.")
+        # === Papar Graf ===
+        st.subheader("📈 Graf Perubahan Berat")
+        fig = px.bar(
+            df_leaderboard,
+            x="Nama",
+            y="% Penurunan",
+            color="% Penurunan",
+            color_continuous_scale="Aggrnyl",
+            title="Leaderboard % Penurunan Berat"
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
     with tab3:
         st.subheader("📊 Analisis BMI Peserta")
