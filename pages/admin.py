@@ -29,7 +29,15 @@ data_rekod = load_data_cloud_or_local()
 
 # === Papar Senarai Peserta ===
 st.markdown("### 📋 Senarai Peserta")
-st.dataframe(data_peserta.index(pd.Index(range(1, len(data_peserta) + 1), name="No.")), use_container_width=True)
+
+st.dataframe(
+    data_peserta.set_index(
+        pd.Index(range(1, len(data_peserta) + 1), name="No.")
+    ),
+    use_container_width=True
+)
+
+st.divider()
 
 st.divider()
 
@@ -95,6 +103,14 @@ st.divider()
 
 # === Papar Sejarah Rekod Berat ===
 st.markdown("### 🗂️ Sejarah Rekod Berat")
-st.dataframe(data_rekod.index(pd.Index(range(1, len(data_rekod) + 1), name="No.")), use_container_width=True)
+
+st.dataframe(
+    data_rekod.set_index(
+        pd.Index(range(1, len(data_rekod) + 1), name="No.")
+    ),
+    use_container_width=True
+)
+
+st.divider()
 
 papar_footer("MKR")
