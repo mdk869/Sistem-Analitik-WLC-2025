@@ -58,11 +58,11 @@ with st.form("form_tambah_peserta", clear_on_submit=True):
 
     nama = st.text_input("Nama")
     nostaf = st.text_input("No Staf")
-    umur = st.number_input("Umur", min_value=10, max_value=100)
+    umur = st.number_input("Umur", min_value=0, max_value=100)
     jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"])
     jabatan = st.text_input("Jabatan")
-    tinggi = st.number_input("Tinggi (cm)", min_value=100, max_value=250)
-    berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=300.0)
+    tinggi = st.number_input("Tinggi (cm)", min_value=0, max_value=250)
+    berat_awal = st.number_input("Berat Awal (kg)", min_value=0, max_value=300.0)
     tarikh_daftar = st.date_input("Tarikh Daftar")
 
     # Berat terkini sama dengan berat awal semasa daftar
@@ -96,7 +96,7 @@ st.markdown("### ⚖️ Kemaskini Berat Terkini")
 if len(data_peserta) > 0:
     nama_list = data_peserta["Nama"].tolist()
     nama_dipilih = st.selectbox("Pilih Nama", nama_list)
-    berat_baru = st.number_input("Masukkan Berat Terkini (kg)", min_value=30.0, max_value=300.0)
+    berat_baru = st.number_input("Masukkan Berat Terkini (kg)", min_value=0, max_value=300.0)
     tarikh_baru = st.date_input("Tarikh Timbang Terkini")
 
 if st.button("💾 Simpan Berat Terkini"):
