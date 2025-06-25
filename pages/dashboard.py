@@ -87,6 +87,49 @@ if not df.empty:
 
         st.divider()
 
+    with st.expander("📋 Aktiviti Timbang / Progres Timbang", expanded=True):
+        st.subheader("📈 Statistik Progres Timbang Peserta")
+
+        # === Kiraan Statistik Timbangan ===
+        total_peserta = df.shape[0]
+        sudah_timbang = df["TarikhTimbang"].notna().sum()
+        belum_timbang = total_peserta - sudah_timbang
+
+        peratus_sudah = (sudah_timbang / total_peserta * 100).round(1) if total_peserta != 0 else 0
+        peratus_belum = (belum_timbang / total_peserta * 100).round(1) if total_peserta != 0 else 0
+
+        # === Paparan Metrik ===
+        col1, col2, col3 = st.columns(3)
+        col1.metric("👥 Jumlah Peserta", total_peserta)
+        col2.metric("✅ Sudah Timbang", f"{sudah_timbang} ({peratus_sudah}%)")
+        col3.metric("❌ Belum Timbang", f"{belum_timbang} ({peratus_belum}%)")
+
+        st.divider()
+
+        # === Carta Pie ===
+        df_status = pd.DataFrame({
+            "Status": ["Sudah Timbang", "Belum Timbang"],
+            "Bilangan": [sudah_timbang, belum_timbang]
+        })
+
+        fig = px.pie(df_status, names="Status", values="Bilangan",
+                    title="Status Timbangan Peserta",
+                    color_discrete_sequence=["#00cc96", "#EF553B"],
+                    hole=0.4)  # Pie separuh donat
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.divider()
+
+        # === Senarai Peserta Belum Timbang ===
+        st.subheader("📋 Senarai Peserta Belum Timbang")
+        df_belum = df[df["TarikhTimbang"].isna()][["Nama", "NoStaf", "Jabatan"]].reset_index(drop=True)
+        df_belum.index = df_belum.index + 1
+
+        st.dataframe(df_belum, use_container_width=True)
+
+        st.divider()
+
         # === Paparan Progress Penurunan Berat ===
         with st.expander("📉 Trend Penurunan Berat Program Ini (Klik Disini)"):
             df_plot = (df_tapis)
