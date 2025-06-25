@@ -47,8 +47,8 @@ with col2:
 
 with col3:
     motivasi = get_motivasi_harian()
-    st.subheader("💡 **Motivasi Hari Ini:")
-    st.info(f"💡 **Motivasi Hari Ini:**\n{motivasi}")
+    st.subheader("💡Motivasi Hari Ini:")
+    st.info(f"\n{motivasi}")
 
 # === Bahagian Info Kad ===
 st.markdown("## 🔍 **Informasi Program & Tips Kesihatan**")
