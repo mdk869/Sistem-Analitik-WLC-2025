@@ -75,7 +75,7 @@ def paparkan_tema():
 
 
 def papar_tajuk_utama():
-    st.title("🏠 Selamat Datang ke Sistem Analitik WLC 2025")
+    st.title("Selamat Datang ke Sistem Analitik WLC 2025")
 
 def papar_kandungan_home():
     st.markdown("""
