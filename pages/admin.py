@@ -107,9 +107,9 @@ if st.button("💾 Simpan Berat Terkini"):
 st.divider()
 
 # === Padam Peserta ===
-st.expander("### 🗑️ Padam Peserta")
+with st.expander("### 🗑️ Padam Peserta"):
 
-if len(data_peserta) > 0:
+    if len(data_peserta) > 0:
         nama_list = data_peserta["Nama"].tolist()
         nama_dipilih = st.selectbox("Pilih Nama untuk Dipadam", nama_list, key="padam")
 
@@ -125,7 +125,7 @@ if len(data_peserta) > 0:
                     st.warning("⚠️ Nama tidak dijumpai atau berlaku ralat.")
             else:
                 st.info("👉 Tandakan kotak pengesahan sebelum padam.")
-else:
+    else:
         st.info("🚫 Tiada peserta untuk dipadam.")
 
 st.divider()
