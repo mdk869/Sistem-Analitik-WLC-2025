@@ -19,8 +19,18 @@ from app.helper_logic import (
 
 from app.styles import paparkan_tema, papar_header, papar_footer
 
-# 🔐 Login Check
+# ✅ Check login
 is_admin = check_login()
+
+# 🔐 Sekat akses jika bukan admin
+if not is_admin:
+    st.error("❌ Akses ditolak! Halaman ini hanya untuk Admin.")
+    st.stop()  # 🚫 Hentikan load page ini
+
+# ✅ Jika admin, teruskan paparan fungsi admin
+st.title("👑 Halaman Admin")
+
+st.markdown("Selamat datang ke Panel Admin. Anda mempunyai akses penuh ke fungsi berikut:")
 
 paparkan_tema()
 papar_header("Admin Panel | WLC 2025")
