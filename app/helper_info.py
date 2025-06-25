@@ -19,8 +19,7 @@ def get_tips_nutrisi():
     nutrisi_list = [
         "🍽️ Kawal Saiz Hidangan",
         "🥚 Cukupkan Protein",
-        "🚫 Kurangkan"
-        "- Minuman manis (teh tarik, air gas, sirap). "
+        "🚫 Kurangkan- Minuman manis (teh tarik, air gas, sirap). "
         "- Makanan bergoreng dan berminyak."
         "- Gula tersembunyi (biskut, kek, roti putih)."
         "- Garam berlebihan (jajan, makanan segera)."
