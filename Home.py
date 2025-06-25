@@ -18,8 +18,8 @@ paparkan_tema()
 st.markdown("""
 <div style="text-align:center">
     <h1 style="color:#FFB800;">🏋️‍♂️ Weight Loss Challenge 2025</h1>
-    <h3>Menuju Berat Ideal, Hidup Lebih Sihat!</h3>
-    <p>Sebuah inisiatif untuk menggalakkan gaya hidup sihat di <strong>Wilayah Kuala Selangor</strong>.</p>
+    <h3 style="margin-top:-10px;">Menuju Berat Ideal, Hidup Lebih Sihat!</h3>
+    <p>Inisiatif Kesihatan <strong>Wilayah Kuala Selangor</strong> bagi memupuk gaya hidup sihat melalui cabaran penurunan berat badan.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -27,39 +27,42 @@ st.markdown("""
 st.divider()
 
 # === Tentang Program ===
-st.subheader("❓ Tentang Program WLC 2025")
-st.markdown("""
-Program **Weight Loss Challenge (WLC) 2025** adalah satu kempen gaya hidup sihat  
-untuk membantu peserta menurunkan berat badan dengan cara sihat, konsisten dan berinformasi.
+with st.container():
+    col1, col2 = st.columns([2, 1])
 
-**🗓️ Tempoh Program:** 18 Mei 2025 - 20 Ogos 2025  
-**🎯 Objektif:**  
-- Meningkatkan kesedaran tentang pentingnya menjaga berat badan.  
-- Menggalakkan aktiviti fizikal secara berkala.  
-- Memberi pendedahan tentang pemakanan sihat dan kawalan berat badan.
+    with col1:
+        st.subheader("❓ Apa itu WLC 2025?")
+        st.markdown("""
+        **Weight Loss Challenge (WLC) 2025** adalah program komuniti yang bertujuan untuk:  
+        - ✅ Meningkatkan kesedaran tentang kepentingan berat badan sihat.  
+        - ✅ Menggalakkan aktiviti fizikal & pemakanan sihat.  
+        - ✅ Memantau perkembangan penurunan berat badan secara sistematik.
 
-**🔒 Privasi:**  
-Sistem ini memastikan data peserta disimpan secara selamat dan hanya boleh diakses oleh peserta sendiri dan penganjur.
-""")
+        **🗓️ Tempoh Program:** 18 Mei 2025 - 20 Ogos 2025  
+        """)
+        st.success("Semua data yang dipaparkan adalah statistik umum program. Akses penuh kepada data peserta hanya oleh pihak penganjur (Admin).")
+
+    with col2:
+        st.image("https://i.ibb.co/hZV4QF6/healthy.png", use_column_width=True)
 
 st.divider()
 
 # === Tentang WebApp ===
 st.subheader("🌐 Tentang WebApp WLC 2025")
 st.markdown("""
-WebApp ini direka untuk memudahkan:  
-- ✅ Peserta memantau perkembangan berat badan.  
-- ✅ Melihat trend BMI dan ranking peserta (Leaderboard).  
-- ✅ Panel Admin untuk pengurusan data dan program.
+Aplikasi ini direka untuk:  
+- ✅ Memaparkan perkembangan program secara umum.  
+- ✅ Menunjukkan visual statistik, carta BMI & leaderboard.  
+- ✅ Membantu penganjur (Admin) mengurus data melalui **Admin Panel**.
 
-**Nota:**  
-Dashboard hanya memaparkan data **individu** berdasarkan akaun peserta yang login.  
-Panel Admin mempunyai akses penuh untuk pengurusan data.
+> ⚠️ **Tiada fungsi login untuk peserta.** Web ini terbuka untuk paparan umum sahaja.  
+> ✅ **Login hanya untuk penganjur bagi urusan pengurusan data.**
 """)
 
 st.divider()
 
-# === Kad Info Program ===
+# === Kad Status Program ===
+st.subheader("📊 Status Semasa Program")
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
@@ -71,31 +74,32 @@ with col3:
 with col4:
     st.metric("🗓️ Timbang Seterusnya", "20 Julai 2025")
 
-
 st.divider()
 
 # === FAQ Ringkas ===
 st.subheader("💡 FAQ (Soalan Lazim)")
 
-with st.expander("🧑‍💻 Siapa boleh akses sistem ini?"):
-    st.markdown("✅ Peserta WLC 2025 dan Penganjur.")
+faq = st.expander("🧑‍💻 Siapa boleh akses sistem ini?")
+faq.write("✅ Semua boleh akses untuk melihat perkembangan program secara umum. Akses pengurusan hanya untuk penganjur (Admin).")
 
-with st.expander("🔑 Bagaimana untuk login?"):
-    st.markdown("✅ Peserta boleh akses dashboard menggunakan No. Staf atau email (akan datang). Admin perlu login di Panel Admin.")
+faq = st.expander("🔐 Adakah data peserta dipaparkan?")
+faq.write("❌ Tidak. Hanya data agregat atau statistik umum dipaparkan. Data individu tidak dikongsi secara awam.")
 
-with st.expander("🔐 Adakah data saya selamat?"):
-    st.markdown("✅ Sistem ini menggunakan Google Sheet sebagai backend yang selamat dengan akses terkawal.")
+faq = st.expander("🔑 Bagaimana penganjur login?")
+faq.write("✅ Melalui Admin Panel dengan username & password khas untuk penganjur.")
 
-with st.expander("🎯 Bagaimana nak sertai program ini?"):
-    st.markdown("✅ Penyertaan telah ditutup untuk sesi 2025.")
+faq = st.expander("🎯 Adakah peserta boleh kemaskini berat sendiri?")
+faq.write("❌ Tidak. Semua kemaskini dilakukan oleh penganjur sahaja.")
 
 st.divider()
 
-# === Notis / Pengumuman ===
+# === Pengumuman ===
+st.subheader("📢 Pengumuman Terkini")
 st.info("""
-📢 **Pengumuman Penting:**  
-- Timbang seterusnya pada **20 Julai 2025**.  
-- Pastikan anda login untuk kemas kini berat terkini selepas penimbangan.
+- ✅ **Leaderboard** kini dilengkapi dengan trend naik/turun & sistem medal.
+- ✅ Paparan BMI telah dikemaskini dengan kategori Asia.
+- ✅ Timbang seterusnya adalah pada **20 Julai 2025**.
+- 🔜 Akan datang: Push Notification Telegram & Tips Nutrisi Harian.
 """)
 
 st.divider()
