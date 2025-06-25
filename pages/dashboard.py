@@ -72,20 +72,20 @@ if not df.empty:
     # Tabs
     tab1, tab2, tab3 = st.tabs(["📊 Info Program", "🏆 Leaderboard", "🧍‍♂️ BMI"])
 
-    with tab1:
-        st.subheader("Info Program & Perkembangan Peserta")
+with tab1:
+    st.subheader("Info Program & Perkembangan Peserta")
 
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Jumlah Peserta", len(df_tapis))
-        with col2:
-            st.metric("Tarikh Mula", "18 Mei 2025")
-        with col3:
-            st.metric("Tarikh Timbang Seterusnya", "20 Julai 2025")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Jumlah Peserta", len(df_tapis))
+    with col2:
+        st.metric("Tarikh Mula", "18 Mei 2025")
+    with col3:
+        st.metric("Tarikh Timbang Seterusnya", "20 Julai 2025")
 
-        st.warning("📅 Sila bersedia untuk sesi timbangan seterusnya pada **20 Julai 2025.**")
+    st.warning("📅 Sila bersedia untuk sesi timbangan seterusnya pada **20 Julai 2025.**")
 
-        st.divider()
+    st.divider()
 
     with st.expander("📋 Aktiviti Timbang / Progres Timbang", expanded=True):
         st.subheader("📈 Statistik Progres Timbang Peserta")
@@ -160,39 +160,39 @@ if not df.empty:
             st.info("🚶‍♂️ **Aktiviti Disarankan:**\n- Jalan kaki 8000-10000 langkah sehari.\n- Senaman 3-4 kali seminggu.")
             st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
 
-    with tab2:
-        st.subheader("🏆 Leaderboard")
+with tab2:
+    st.subheader("🏆 Leaderboard")
 
-        # Pilihan untuk filter berapa peserta nak paparkan
-        pilihan_top = st.selectbox(
-            "Pilih jumlah peserta untuk dipaparkan:",
-            options=[5, 10, 20, 50, "Semua"],
-            index=1
-        )
+    # Pilihan untuk filter berapa peserta nak paparkan
+    pilihan_top = st.selectbox(
+        "Pilih jumlah peserta untuk dipaparkan:",
+        options=[5, 10, 20, 50, "Semua"],
+        index=1
+    )
 
-        df_rank = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
-        df_rank["Ranking"] = df_rank.index + 1
+    df_rank = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
+    df_rank["Ranking"] = df_rank.index + 1
         
-        # Top N filter
-        if pilihan_top != "Semua":
-            df_rank = df_rank.head(int(pilihan_top))
+    # Top N filter
+    if pilihan_top != "Semua":
+        df_rank = df_rank.head(int(pilihan_top))
 
-        st.dataframe(
-            df_rank[["Ranking", "Nama", "% Penurunan"]],
-            use_container_width=True,
-            hide_index=True
-        )
+    st.dataframe(
+        df_rank[["Ranking", "Nama", "% Penurunan"]],
+        use_container_width=True,
+        hide_index=True
+    )
 
-        st.subheader("🏅 10 Terbaik - % Penurunan Berat")
+    st.subheader("🏅 10 Terbaik - % Penurunan Berat")
 
-        top10 = df_rank.head(10)
-        fig_top10 = px.bar(top10, x="Nama", y="% Penurunan",
-                       title="Top 10 Peserta Berdasarkan % Penurunan Berat",
-                       labels={"% Penurunan": "% Turun"},
-                       color="% Penurunan", color_continuous_scale="Blues")
-        st.plotly_chart(fig_top10, use_container_width=True)
+    top10 = df_rank.head(10)
+    fig_top10 = px.bar(top10, x="Nama", y="% Penurunan",
+                    title="Top 10 Peserta Berdasarkan % Penurunan Berat",
+                    labels={"% Penurunan": "% Turun"},
+                    color="% Penurunan", color_continuous_scale="Blues")
+    st.plotly_chart(fig_top10, use_container_width=True)
 
-    with tab3:
+with tab3:
         st.subheader("📊 Analisis BMI Peserta")
         col1, col2, col3, col4, col5, col6 = st.columns(6)
 
