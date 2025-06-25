@@ -56,37 +56,37 @@ with st.expander("### ➕ Tambah Peserta Baru"):
     with st.form("form_tambah_peserta", clear_on_submit=True):
         st.subheader("🆕 Tambah Peserta Baru")
 
-    nama = st.text_input("Nama")
-    nostaf = st.text_input("No Staf")
-    umur = st.number_input("Umur", min_value=10, max_value=100)
-    jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"])
-    jabatan = st.text_input("Jabatan")
-    tinggi = st.number_input("Tinggi (cm)", min_value=100, max_value=250)
-    berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=300.0)
-    tarikh_daftar = st.date_input("Tarikh Daftar")
+        nama = st.text_input("Nama")
+        nostaf = st.text_input("No Staf")
+        umur = st.number_input("Umur", min_value=10, max_value=100)
+        jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"])
+        jabatan = st.text_input("Jabatan")
+        tinggi = st.number_input("Tinggi (cm)", min_value=100, max_value=250)
+        berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=300.0)
+        tarikh_daftar = st.date_input("Tarikh Daftar")
 
-    # Berat terkini sama dengan berat awal semasa daftar
-    berat_terkini = berat_awal
+        # Berat terkini sama dengan berat awal semasa daftar
+        berat_terkini = berat_awal
 
-    # === Kiraan BMI dan Kategori BMI ===
-    bmi = kira_bmi(berat_awal, tinggi)
-    kategori = kategori_bmi_asia(bmi)
+        # === Kiraan BMI dan Kategori BMI ===
+        bmi = kira_bmi(berat_awal, tinggi)
+        kategori = kategori_bmi_asia(bmi)
 
-    # === Papar Hasil Kiraan ===
-    st.info(f"BMI: {bmi} ({kategori})")
+        # === Papar Hasil Kiraan ===
+        st.info(f"BMI: {bmi} ({kategori})")
 
-    submitted = st.form_submit_button("➕ Tambah Peserta")
+        submitted = st.form_submit_button("➕ Tambah Peserta")
 
-    if submitted:
-        if nama and nostaf and jabatan:
-            tambah_peserta_google_sheet(
-                nama, nostaf, umur, jantina, jabatan,
-                tinggi, berat_awal, tarikh_daftar
-            )
-            st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
-            st.rerun()
-        else:
-            st.warning("⚠️ Sila isi semua maklumat peserta.")
+        if submitted:
+            if nama and nostaf and jabatan:
+                tambah_peserta_google_sheet(
+                    nama, nostaf, umur, jantina, jabatan,
+                    tinggi, berat_awal, tarikh_daftar
+                )
+                st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
+                st.rerun()
+            else:
+                st.warning("⚠️ Sila isi semua maklumat peserta.")
 
 st.divider()
 
