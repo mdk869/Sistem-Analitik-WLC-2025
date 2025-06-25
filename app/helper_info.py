@@ -62,3 +62,51 @@ def get_tips_nutrisi(jumlah=1):
 
     jumlah = min(jumlah, len(nutrisi_list))
     return random.sample(nutrisi_list, jumlah)
+
+
+def get_tips_kesihatan(jumlah=1):
+    health_list = [
+    "Get morning sunlight for natural Vitamin D.",
+    "Dapatkan cahaya matahari pagi sekurang-kurangnya 10-15 minit.",
+    "Check your health regularly — blood pressure, sugar, cholesterol.",
+    "Buat pemeriksaan kesihatan berkala untuk cegah penyakit.",
+    "Healthy living is a lifestyle, not a short-term goal.",
+    "Gaya hidup sihat bukan untuk sementara, tapi untuk sepanjang hayat.",
+    "Small steps everyday lead to big changes.",
+    "Langkah kecil hari ini akan jadi perubahan besar esok.",
+    "Avoid smoking and limit alcohol — your body will thank you.",
+    "Berhenti merokok dan kurangkan alkohol untuk kesihatan lebih baik.",
+    "Sleep early, wake up fresh.",
+    "Tidur awal, bangun dengan lebih segar dan produktif.",
+    "No excuses — your health is your responsibility.",
+    "Tiada alasan — kesihatan adalah tanggungjawab diri sendiri.",
+    "Love yourself enough to live a healthy life.",
+    "Sayangi diri sendiri dengan memilih hidup yang lebih sihat."
+    "Get enough sleep, at least 6-8 hours per night.",
+    "Tidur yang cukup bantu jaga kesihatan badan dan mental.",
+    "Breathe deeply, relax, and manage your stress.",
+    "Urus tekanan dengan aktiviti santai atau hobi kegemaran.",
+    "Laugh more, stress less.",
+    "Ketawa lebih, stress kurang.",
+    "Don’t compare your journey to others — focus on yourself.",
+    "Bandingkan diri dengan versi diri anda semalam, bukan orang lain.",
+    "If you’re tired, rest — not quit.",
+    "Kalau penat, rehat. Jangan berhenti.",
+    "Stay consistent, not perfect.",
+    "Konsisten lebih penting daripada kesempurnaan."
+    "Move more, sit less.",
+    "Bergerak sekurang-kurangnya 30 minit sehari.",
+    "Exercise not just for weight loss, but for a healthy mind.",
+    "Senaman bukan untuk kurus saja, tapi untuk badan dan minda yang sihat.",
+    "Take regular breaks from screens — rest your eyes and mind.",
+    "Jangan duduk terlalu lama, bangun dan regangkan badan setiap jam.",
+    "Strengthen your muscles — it helps with fat loss and long-term health.",
+    "Bina otot untuk kesihatan jangka panjang dan bakar lebih kalori.",
+    "Walk after meals — helps digestion and blood sugar control.",
+    "Berjalan 5-10 minit selepas makan bantu penghadaman.",
+    "Sweat daily — your body is designed to move.",
+    "Berpeluh setiap hari, itu tanda badan aktif dan sihat."
+    ]
+
+    jumlah = min(jumlah, len(health_list))
+    return random.sample(health_list, jumlah)
