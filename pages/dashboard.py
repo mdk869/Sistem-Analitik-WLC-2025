@@ -66,10 +66,10 @@ if not df.empty:
         </div>""", unsafe_allow_html=True)
 
     # Tabs
-    tab1, tab2, tab3 = st.tabs(["📉 Penurunan Berat", "🏆 Leaderboard", "🧍‍♂️ BMI"])
+    tab1, tab2, tab3 = st.tabs(["📊 Info Program", "🏆 Leaderboard", "🧍‍♂️ BMI"])
 
     with tab1:
-        st.subheader("📊 Info Program & Perkembangan Peserta")
+        st.subheader("Info Program & Perkembangan Peserta")
 
         col1, col2, col3 = st.columns(3)
         with col1:
