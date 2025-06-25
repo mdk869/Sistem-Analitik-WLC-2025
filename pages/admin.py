@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import pytz
+from app.helper_auth import check_login
 
 from app.helper_data import (
     load_data_peserta,
@@ -12,13 +13,14 @@ from app.helper_data import (
 )
 
 from app.helper_logic import (
-    tambah_kiraan_peserta,
-    kira_status_ranking,
     kira_bmi,
     kategori_bmi_asia
 )
 
 from app.styles import paparkan_tema, papar_header, papar_footer
+
+# === Login Check ===
+check_login()
 
 paparkan_tema()
 papar_header("Admin Panel | WLC 2025")
@@ -48,11 +50,13 @@ with st.form("form_tambah_peserta", clear_on_submit=True):
     st.subheader("🆕 Tambah Peserta Baru")
 
     nama = st.text_input("Nama")
+    nostaf = st.text_input("No Staf")
+    umur = st.number_input("Umur", min_value=10, max_value=100)
     jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"])
     jabatan = st.text_input("Jabatan")
     tinggi = st.number_input("Tinggi (cm)", min_value=100, max_value=250)
     berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=300.0)
-    tarikh_timbang = st.date_input("Tarikh Timbang Berat Awal")
+    tarikh_daftar = st.date_input("Tarikh Daftar")
 
     # Berat terkini sama dengan berat awal semasa daftar
     berat_terkini = berat_awal
@@ -67,10 +71,10 @@ with st.form("form_tambah_peserta", clear_on_submit=True):
     submitted = st.form_submit_button("➕ Tambah Peserta")
 
     if submitted:
-        if nama and jabatan:
+        if nama and nostaf and jabatan:
             tambah_peserta_google_sheet(
-                nama, jantina, jabatan, tinggi, berat_awal,
-                berat_terkini, str(tarikh_timbang), bmi, kategori
+                nama, nostaf, umur, jantina, jabatan,
+                tinggi, berat_awal, tarikh_daftar
             )
             st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
             st.rerun()
@@ -85,14 +89,13 @@ st.markdown("### ⚖️ Kemaskini Berat Terkini")
 if len(data_peserta) > 0:
     nama_list = data_peserta["Nama"].tolist()
     nama_dipilih = st.selectbox("Pilih Nama", nama_list)
-    berat_baru = st.number_input("Masukkan Berat Terkini (kg)", min_value=20.0, max_value=300.0, step=0.1)
+    berat_baru = st.number_input("Masukkan Berat Terkini (kg)", min_value=30.0, max_value=300.0)
+    tarikh_baru = st.date_input("Tarikh Timbang Terkini")
 
-    if st.button("💾 Simpan Berat Terkini"):
-        kemaskini_berat_peserta(nama_dipilih, berat_baru)
-        st.success(f"✅ Berat {nama_dipilih} berjaya dikemaskini!")
-        st.rerun()
-else:
-    st.info("🚫 Tiada peserta dalam senarai.")
+if st.button("💾 Simpan Berat Terkini"):
+    kemaskini_berat_peserta(nama_dipilih, berat_baru, tarikh_baru)
+    st.success(f"✅ Berat {nama_dipilih} berjaya dikemaskini.")
+    st.rerun()
 
 st.divider()
 
