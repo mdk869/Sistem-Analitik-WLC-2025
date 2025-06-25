@@ -1,68 +1,93 @@
-# Home.py
 import streamlit as st
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
-from app.styles import paparkan_tema, papar_footer
+import random
+import requests
+from app.styles import paparkan_tema, papar_footer, papar_tajuk_utama, papar_kandungan_home
 
 # === Setup Paparan ===
 st.set_page_config(
     page_title="Sistem Analitik WLC 2025",
-    page_icon="🏋️‍♂️",
+    page_icon="📊",
     layout="wide"
 )
 
+# === Paparkan Tema dan Tajuk ===
 paparkan_tema()
+papar_tajuk_utama()
+papar_kandungan_home()
 
-# === Header Utama ===
-st.title("🏋️‍♂️ Weight Loss Challenge (WLC) Wilayah Kuala Selangor 2025")
-st.subheader("📊 Sistem Analitik · Program Penurunan Berat Badan")
+# === Countdown ke Timbang Akhir ===
+st.subheader("⏳ Countdown ke Timbang Akhir")
+tarikh_timbang_akhir = datetime(2025, 8, 20, 8, 0, 0)
+now = datetime.now(pytz.timezone("Asia/Kuala_Lumpur"))
+countdown = tarikh_timbang_akhir - now
+days = countdown.days
+hours, remainder = divmod(countdown.seconds, 3600)
+minutes, seconds = divmod(remainder, 60)
+st.success(f"📅 {days} hari, ⏰ {hours} jam {minutes} minit {seconds} saat lagi!")
 
-st.info("""
-**Selamat datang ke Sistem Analitik WLC 2025!**  
-Platform ini dibangunkan khusus untuk membantu *penganjur program* memantau perkembangan peserta sepanjang cabaran berlangsung.
+# === Fun Fact Kesihatan ===
+st.subheader("🍏 Fun Fact Kesihatan")
+facts = [
+    "🥦 Brokoli mengandungi lebih protein daripada daging per kalori!",
+    "💧 Minum air sebelum makan boleh bantu kurangkan pengambilan kalori.",
+    "🧠 Tidur yang cukup bantu pembakaran lemak lebih efektif.",
+    "🔥 10 minit lompat tali membakar lebih banyak kalori daripada joging 30 minit.",
+    "🍋 Lemon membantu penghadaman dan detox semula jadi."
+]
+st.info(random.choice(facts))
 
-- 🎯 **Objektif:** Membantu peserta mencapai berat badan sihat secara konsisten dan terkawal.
-- 🔒 **Privasi:** Data peribadi peserta adalah rahsia dan tidak dipaparkan secara umum.
-- 👨‍💻 **Akses:** Sistem ini boleh digunakan oleh peserta untuk melihat maklumat umum, perkembangan program, statistik BMI keseluruhan, dan leaderboard umum.
+# === Petikan Motivasi ===
+st.subheader("💡 Petikan Motivasi Hari Ini")
+try:
+    res = requests.get("https://api.adviceslip.com/advice")
+    if res.status_code == 200:
+        advice = res.json()["slip"]["advice"]
+        st.success(f"🌟 \"{advice}\"")
+    else:
+        st.error("❌ Tidak dapat memuatkan petikan motivasi.")
+except:
+    st.warning("⚠️ Gagal mendapatkan petikan motivasi.")
 
----
-""")
-
-# === Info Program ===
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    st.markdown("""
-### 🎯 Tentang Program WLC 2025
-- 📅 **Tempoh Program:** 18 Mei 2025 - 20 Ogos 2025  
-- 🏢 **Lokasi:** Wilayah Kuala Selangor  
-- 🧠 **Konsep:** Penurunan berat badan secara sihat, berilmu, dan diselia  
-- 🥇 **Kriteria Kemenangan:** Berdasarkan **% penurunan berat badan tertinggi**  
-
-### 🚀 Apa Yang Anda Akan Dapat?
-- Dashboard visual perkembangan peserta (secara umum)  
-- Tips pemakanan sihat dan aktiviti fizikal  
-- Info BMI populasi peserta  
-- Paparan leaderboard (tanpa dedahan berat individu)
-
----
+# === FAQ Interaktif ===
+st.subheader("❓ Soalan Lazim (FAQ)")
+with st.expander("📝 Bagaimana sistem ini berfungsi?"):
+    st.write("""
+    Sistem ini membantu penganjur memantau kemajuan peserta dalam program penurunan berat badan.
+    Data seperti berat badan, BMI, dan leaderboard akan dikemaskini oleh admin.
     """)
 
+with st.expander("🔒 Adakah data peserta dipaparkan kepada umum?"):
+    st.write("""
+    Tidak. Data individu tidak dipaparkan kepada umum. Hanya data umum dan statistik keseluruhan yang boleh dilihat.
+    """)
 
-# === Maklumat Tambahan ===
-st.markdown("""
-## 🔍 Fungsi Utama Sistem
-- 📈 **Dashboard Analitik:** Paparan graf penurunan berat, BMI dan statistik kategori peserta.
-- 🏆 **Leaderboard:** Senarai peserta dengan peratus penurunan berat terbaik.
-- 🔐 **Admin Panel:** Modul khas untuk penganjur program bagi mengurus peserta.  
+with st.expander("📅 Bilakah sesi timbang seterusnya?"):
+    st.write("""
+    Sesi timbang seterusnya dijadualkan pada **20 Julai 2025**.
+    """)
 
----
-""")
+with st.expander("📊 Apa yang boleh dilihat dalam Dashboard?"):
+    st.write("""
+    Anda boleh lihat perkembangan keseluruhan, statistik BMI peserta, dan leaderboard % penurunan berat.
+    """)
 
-st.success("""
-💡 **Nota:**  
-Akses penuh kepada pengurusan data hanya diberikan kepada pihak *penganjur program* melalui modul Admin. Peserta hanya boleh melihat paparan umum, tanpa akses kepada maklumat peribadi individu.
-""")
+# === Quick Navigation ===
+st.subheader("🚀 Pergi ke:")
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    if st.button("📊 Dashboard"):
+        st.switch_page("pages/dashboard.py")
+
+with col2:
+    if st.button("🏆 Leaderboard"):
+        st.switch_page("pages/leaderboard.py")
+
+with col3:
+    if st.button("⚖️ Info BMI"):
+        st.switch_page("pages/bmi.py")
 
 # === Footer ===
 local_tz = pytz.timezone("Asia/Kuala_Lumpur")
