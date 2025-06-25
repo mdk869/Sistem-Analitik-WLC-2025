@@ -73,8 +73,9 @@ if not df_merge.empty:
     # Tab 1: Penurunan Berat
     # =========================
     with tab1:
-        st.subheader("📉 Analisis Penurunan Berat")
+        st.subheader("Penurunan Berat Peserta")
 
+        # Susun ikut % Penurunan
         df_plot = df_tapis.sort_values("% Penurunan", ascending=False)
 
         colA, colB = st.columns(2)
@@ -85,6 +86,7 @@ if not df_merge.empty:
                 df_plot,
                 x="Nama",
                 y="% Penurunan",
+                title="% Penurunan Berat Mengikut Peserta",
                 labels={"% Penurunan": "% Penurunan", "Nama": "Peserta"},
                 text="% Penurunan",
             )
@@ -93,11 +95,12 @@ if not df_merge.empty:
             st.plotly_chart(fig1, use_container_width=True)
 
         with colB:
-            st.markdown("### ⚖️ Penurunan Berat (Kg)")
+            st.markdown("### ⚖️ Penurunan Berat (Kg) Mengikut Peserta")
             fig2 = px.bar(
                 df_plot,
                 x="Nama",
                 y="PenurunanKg",
+                title="Penurunan Berat (Kg) Mengikut Peserta",
                 labels={"PenurunanKg": "Kg Turun", "Nama": "Peserta"},
                 text="PenurunanKg",
             )
@@ -106,7 +109,7 @@ if not df_merge.empty:
             st.plotly_chart(fig2, use_container_width=True)
 
         st.markdown("### 📊 Kategori Penurunan Berat")
-
+        # Buat kategori berdasarkan berat turun
         def kategori_penurunan(kg):
             if kg >= 5:
                 return "🔺 >5 kg"
@@ -128,7 +131,7 @@ if not df_merge.empty:
             kategori_counts,
             values="Bilangan",
             names="Kategori",
-            title="Peratus Peserta Mengikut Kategori Penurunan Berat",
+            title="Peratusan Peserta Mengikut Kategori Penurunan Berat",
         )
         st.plotly_chart(fig3, use_container_width=True)
 
