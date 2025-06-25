@@ -11,6 +11,9 @@ from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
 from app.helper_logic import tambah_kiraan_peserta, proses_leaderboard
 
+# ✅ Login check
+is_admin = check_login()
+
 # === Setup Paparan ===
 st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
 local_tz = pytz.timezone("Asia/Kuala_Lumpur")
@@ -146,9 +149,6 @@ if not df.empty:
                        color="% Penurunan", color_continuous_scale="Blues")
         st.plotly_chart(fig_top10, use_container_width=True)
 
-    # ✅ Login check
-    is_admin = check_login()
-
     with tab3:
         st.subheader("📊 Analisis BMI Peserta")
         col1, col2, col3, col4, col5, col6 = st.columns(6)
@@ -176,18 +176,16 @@ if not df.empty:
         fig = px.pie(Kategori_df, names="KategoriBMI", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")
         st.plotly_chart(fig, use_container_width=True)
 
-        # ✅ Kawalan Akses untuk Table BMI
+        # === Senarai Nama Peserta Mengikut Kategori BMI (Akses Admin Sahaja) ===
         with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
-            if is_admin:  # ✅ hanya admin boleh lihat
+            if is_admin:
                 df_bmi_table = df_tapis[["Nama", "BMI", "KategoriBMI"]].sort_values(
                     "KategoriBMI", na_position="last"
                 ).reset_index(drop=True)
                 df_bmi_table.index = df_bmi_table.index + 1
                 st.dataframe(df_bmi_table, use_container_width=True)
             else:
-                st.warning("🔒 Jadual BMI dilindungi untuk privasi peserta. Sila login sebagai Admin untuk akses.")
-else:
-    st.warning("Google Sheet kosong atau tiada data.")
+                st.warning("⚠️ Akses Terhad! Hanya Admin boleh melihat senarai nama peserta dan BMI.")
 
 # === Footer ===
 papar_footer(
