@@ -100,7 +100,7 @@ def papar_kandungan_home():
 def papar_header(teks):
     st.markdown(f"<div class='wlc-header'>{teks}</div>", unsafe_allow_html=True)
     
-def papar_footer(pembangun: str, tarikh: str = None):
+def papar_footer(pembangun: str = "MKR", tarikh: str = None):
     if not tarikh:
         local_tz = pytz.timezone("Asia/Kuala_Lumpur")
         tarikh = datetime.now(local_tz).strftime("%d/%m/%Y")
