@@ -21,14 +21,12 @@ with colA:
     papar_tajuk_utama()
 
 with colB:
-    # Auto refresh setiap 1000ms (1 saat)
-    st_autorefresh(interval=1000, limit=None, key="jamref")
 
     st.markdown("## ⏰ Live Jam Digital")
 
     sekarang = datetime.now().strftime("%H:%M:%S")
     st.subheader(f"🕒 {sekarang}")
-    
+
 
 # === Tarikh Countdown Program ===
     tz = pytz.timezone("Asia/Kuala_Lumpur")
