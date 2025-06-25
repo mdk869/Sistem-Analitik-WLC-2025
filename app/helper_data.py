@@ -24,6 +24,18 @@ ws_peserta = sheet.worksheet("peserta")
 ws_rekod = sheet.worksheet("rekod_berat")
 
 
+def load_data_cloud_or_local():
+    try:
+        df = load_data_peserta()
+        st.success("✔️ Data dimuat dari Google Sheet")
+    except Exception as e:
+        st.warning(f"⚠️ Gagal load dari Google Sheet: {e}")
+        # Cuba load dari fail Excel lokal sebagai backup
+        df = pd.read_excel("data_peserta_backup.xlsx")
+        st.info("Data dimuat dari fail lokal sebagai backup")
+    return df
+
+
 # === Fungsi: Load Data Peserta
 def load_data_peserta():
     return pd.DataFrame(ws_peserta.get_all_records())
