@@ -78,8 +78,11 @@ with st.expander("✏️ Edit & Padam Peserta"):
                 st.success("✅ Berat peserta berjaya dikemaskini!")
         with kol2:
             if st.button("🗑️ Padam Peserta"):
-                padam_peserta_dari_sheet(nama_dipilih)
-                st.warning("⚠️ Peserta telah dipadam.")
+                berjaya = padam_peserta_dari_sheet(nama_dipilih)
+            if berjaya:
+                st.success("✅ Peserta telah dipadam dari Google Sheet.")
+            else:
+                st.warning("⚠️ Nama tidak dijumpai atau berlaku ralat.")
 
 # === Paparan Sejarah Berat ===
 st.subheader("📊 Sejarah Berat Peserta")
