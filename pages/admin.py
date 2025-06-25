@@ -76,7 +76,7 @@ if len(data_peserta) > 0:
     nama_list = data_peserta["Nama"].tolist()
     nama_dipilih = st.selectbox("Pilih Nama untuk Dipadam", nama_list, key="padam")
 
-    confirm = st.checkbox("⚠️ Saya benar-benar ingin padam peserta ini.")
+    confirm = st.checkbox("⚠️ Saya ingin padam peserta ini.")
 
     if st.button("🗑️ Padam Peserta"):
         if confirm:
