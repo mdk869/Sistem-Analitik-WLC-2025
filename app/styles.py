@@ -98,7 +98,9 @@ def papar_header(teks):
     st.markdown(f"<div class='wlc-header'>{teks}</div>", unsafe_allow_html=True)
     
 def papar_footer(owner="MKR Dev Team", version="v3.0.0", last_update=None):
-
+    # Timezone Malaysia
+    tz = pytz.timezone('Asia/Kuala_Lumpur')
+    
     tarikh_kemas_kini = last_update if last_update else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     st.markdown(
