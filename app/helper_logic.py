@@ -30,11 +30,11 @@ def tambah_kiraan_peserta(df):
     # Isi BeratTerkini kosong
     df["BeratTerkini"] = df["BeratTerkini"].fillna(df["BeratAwal"])
 
-    # Kiraan
+    # Kiraan penurunan berat
     df["PenurunanKg"] = (df["BeratAwal"] - df["BeratTerkini"]).round(2)
     df["% Penurunan"] = ((df["PenurunanKg"] / df["BeratAwal"]) * 100).round(2)
 
-    # BMI
+    # Kiraan BMI dan Kategori
     df["BMI"] = df.apply(
         lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]),
         axis=1
@@ -44,7 +44,7 @@ def tambah_kiraan_peserta(df):
     return df
 
 
-# === Kiraan Status Timbang (Naik, Turun, Kekal) ===
+# === Status Timbang (Naik/Turun/Kekal) ===
 def kira_status_ranking(berat_awal, berat_terkini):
     if berat_terkini < berat_awal:
         return "Turun"
@@ -54,7 +54,7 @@ def kira_status_ranking(berat_awal, berat_terkini):
         return "Kekal"
 
 
-# === Kiraan Trend Naik/Turun untuk Leaderboard ===
+# === Kiraan Trend Leaderboard ===
 def kira_trend(ranking_semasa, ranking_sebelum):
     if pd.isna(ranking_sebelum):
         return "🆕"
@@ -66,7 +66,7 @@ def kira_trend(ranking_semasa, ranking_sebelum):
         return "➖"
 
 
-# === Medal 🥇🥈🥉 ===
+# === Medal untuk Top 3 ===
 def tambah_medal(rank):
     if rank == 1:
         return "🥇"
@@ -106,26 +106,6 @@ def proses_leaderboard(df_tapis, df_ranking_sebelum=None):
 
     return df_merge
 
-# === Simpan Ranking ke Google Sheet ===
-def simpan_ranking_google_sheet(df_ranking):
-    import gspread
-    from google.oauth2.service_account import Credentials
-    import streamlit as st
-
-    scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-    creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
-    gc = gspread.authorize(creds)
-
-    sheet_url = st.secrets["sheet_urls"]["ranking"]
-    sh = gc.open_by_url(sheet_url)
-
-    try:
-        worksheet = sh.worksheet("Ranking")
-    except:
-        worksheet = sh.add_worksheet(title="Ranking", rows="1000", cols="20")
-
-    worksheet.clear()
-    worksheet.update([df_ranking.columns.values.tolist()] + df_ranking.values.tolist())
 
 # === Untuk import automatik dari modul ===
 __all__ = [
