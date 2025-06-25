@@ -26,7 +26,7 @@ if not check_login():
 with st.sidebar:
     if st.button("🚪 Log Keluar"):
         st.session_state.logged_in = False
-        st.experimental_rerun()
+        st.rerun()
 
 
 paparkan_tema()
