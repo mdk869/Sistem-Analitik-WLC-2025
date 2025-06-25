@@ -79,12 +79,12 @@ if not df.empty:
         with col3:
             st.metric("Tarikh Timbang Seterusnya", "20 Julai 2025")
 
-        st.warning("📅 **Sila bersedia untuk sesi timbang seterusnya pada 20 Julai 2025.**")
+        st.warning("📅 Sila bersedia untuk sesi timbangan seterusnya pada **20 Julai 2025.**")
 
         st.divider()
 
         # === Paparan Progress Penurunan Berat ===
-        with st.expander("📉 Trend Penurunan Berat Program Ini"):
+        with st.expander("📉 Trend Penurunan Berat Program Ini (Klik Disini)"):
             df_plot = (df_tapis)
 
             fig = px.bar(
