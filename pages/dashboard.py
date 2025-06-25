@@ -146,6 +146,8 @@ if not df.empty:
                        color="% Penurunan", color_continuous_scale="Blues")
         st.plotly_chart(fig_top10, use_container_width=True)
 
+    # ✅ Login check
+    is_admin = check_login()
 
     with tab3:
         st.subheader("📊 Analisis BMI Peserta")
@@ -176,7 +178,7 @@ if not df.empty:
 
         # ✅ Kawalan Akses untuk Table BMI
         with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
-            if check_login:  # ✅ hanya admin boleh lihat
+            if is_admin:  # ✅ hanya admin boleh lihat
                 df_bmi_table = df_tapis[["Nama", "BMI", "KategoriBMI"]].sort_values(
                     "KategoriBMI", na_position="last"
                 ).reset_index(drop=True)
