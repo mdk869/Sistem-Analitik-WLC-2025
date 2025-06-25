@@ -77,7 +77,7 @@ with colB:
     nutrisi = get_tips_nutrisi()
     
     st.info("🍎 **Tips Nutrisi Hari Ini:**")
-    for nutrisi in get_tips_nutrisi:
+    for nutrisi in get_tips_nutrisi():
         st.markdown(f"- {nutrisi}")
 
 # === Popup Memo / Changelog ===
