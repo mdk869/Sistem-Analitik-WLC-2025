@@ -97,4 +97,4 @@ st.divider()
 st.markdown("### 🗂️ Sejarah Rekod Berat")
 st.dataframe(data_rekod, use_container_width=True)
 
-papar_footer()
+papar_footer("MKR")
