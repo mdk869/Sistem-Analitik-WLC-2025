@@ -100,22 +100,6 @@ if not df.empty:
 
         st.divider()
 
-        # === Health Tips / Nutrition ===
-        st.subheader("💡 Tips Kesihatan & Nutrisi")
-
-        tips = [
-            "✅ Minum air sekurang-kurangnya 2-3 liter sehari.",
-            "✅ Kurangkan gula dan makanan bergoreng.",
-            "✅ Tingkatkan aktiviti fizikal sekurang-kurangnya 30 minit sehari.",
-            "✅ Tidur yang cukup 6-8 jam untuk metabolisme yang lebih baik.",
-            "✅ Amalkan suku-suku separuh dalam setiap hidangan."
-        ]
-
-        for tip in tips:
-            st.success(tip)
-
-        st.divider()
-
         # === Interaktif Kad Maklumat ===
         st.subheader("🩺 Info Nutrisi & Kesihatan")
 
