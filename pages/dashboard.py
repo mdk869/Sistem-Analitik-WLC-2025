@@ -73,7 +73,7 @@ if not df.empty:
 
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("Jumlah Peserta", len())
+            st.metric("Jumlah Peserta", len(df_tapis))
         with col2:
             st.metric("Tarikh Mula", "18 Mei 2025")
         with col3:
@@ -85,7 +85,7 @@ if not df.empty:
 
         # === Paparan Progress Penurunan Berat ===
         st.subheader("📉 Trend Penurunan Berat Program Ini")
-        df_plot = ()
+        df_plot = (df_tapis)
 
         fig = px.bar(
             df_plot.sort_values("PenurunanKg", ascending=False),
