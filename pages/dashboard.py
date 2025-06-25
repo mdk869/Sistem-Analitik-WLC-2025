@@ -78,11 +78,21 @@ if not df.empty:
 
     with tab2:
         st.subheader("Leaderboard")
+
+        # Pilihan untuk filter berapa peserta nak paparkan
+        pilihan_top = st.selectbox(
+            "Pilih jumlah peserta untuk dipaparkan:",
+            options=[5, 10, 20, 50, "Semua"],
+            index=1
+        )
+
         df_rank = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
         df_rank["Ranking"] = df_rank.index + 1
         
-        df_top10 = df_rank.head(10)  # Ambil hanya Top 10 peserta
-        
+        # Top N filter
+        if pilihan_top != "Semua":
+            df_rank = df_rank.head(int(pilihan_top))
+
         st.dataframe(
             df_top10[["Ranking", "Nama", "% Penurunan"]],
             use_container_width=True,
