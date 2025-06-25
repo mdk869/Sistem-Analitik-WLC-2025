@@ -57,9 +57,12 @@ with st.form("form_tambah_peserta", clear_on_submit=True):
     # Berat terkini sama dengan berat awal semasa daftar
     berat_terkini = berat_awal
 
-    # === Kiraan BMI dan Kategori BMI Standard ===
+    # === Kiraan BMI dan Kategori BMI ===
     bmi = kira_bmi(berat_awal, tinggi)
     kategori = kategori_bmi_asia(bmi)
+
+    # === Papar Hasil Kiraan ===
+    st.info(f"BMI: {bmi} ({kategori})")
 
     submitted = st.form_submit_button("➕ Tambah Peserta")
 
@@ -70,6 +73,7 @@ with st.form("form_tambah_peserta", clear_on_submit=True):
                 berat_terkini, str(tarikh_timbang), bmi, kategori
             )
             st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
+            st.rerun()
         else:
             st.warning("⚠️ Sila isi semua maklumat peserta.")
 
