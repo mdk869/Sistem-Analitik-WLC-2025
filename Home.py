@@ -27,7 +27,6 @@ baki_hari = max((tarikh_akhir - hari_ini).days, 0)
 progress_hari = ((total_hari - baki_hari) / total_hari) * 100
 
 # === Layout Info Utama ===
-st.markdown("##**Selamat Datang ke Sistem Analitik WLC 2025**")
 st.markdown("""
 Sistem ini direka khas untuk membantu **penganjur** dan **peserta** memantau prestasi penurunan berat badan sepanjang program.
 
@@ -48,6 +47,7 @@ with col2:
 
 with col3:
     motivasi = get_motivasi_harian()
+    st.subheader("💡 **Motivasi Hari Ini:")
     st.info(f"💡 **Motivasi Hari Ini:**\n{motivasi}")
 
 # === Bahagian Info Kad ===
