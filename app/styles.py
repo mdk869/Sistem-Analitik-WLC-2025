@@ -75,10 +75,7 @@ def paparkan_tema():
 
 
 def papar_tajuk_utama():
-    st.markdown("""
-    <div class='wlc-title'>📊 Sistem Analitik WLC 2025</div>
-    <div class='wlc-subtitle'>Satu platform pemantauan dan analitik untuk penganjur program Weight Loss Challenge (WLC)</div>
-    """, unsafe_allow_html=True)
+    st.title("🏠 Selamat Datang ke Sistem Analitik WLC 2025")
 
 def papar_kandungan_home():
     st.markdown("""
@@ -100,15 +97,11 @@ def papar_kandungan_home():
 def papar_header(teks):
     st.markdown(f"<div class='wlc-header'>{teks}</div>", unsafe_allow_html=True)
     
-def papar_footer(pembangun: str = "MKR", tarikh: str = None):
-    if not tarikh:
-        local_tz = pytz.timezone("Asia/Kuala_Lumpur")
-        tarikh = datetime.now(local_tz).strftime("%d/%m/%Y")
-    
+def papar_footer(owner="MKR", date=None):
     st.markdown(f"""
-    ---
-    <div style='text-align:center; font-size:13px; color:gray;'>
-    Dibangunkan oleh <strong>{pembangun}</strong> · Weight Loss Challenge Wilayah Kuala Selangor 2025<br>
-    Dikemaskini: {tarikh}
+    <hr>
+    <div style="text-align:center; font-size: 14px; opacity: 0.7">
+        Dibangunkan oleh <strong>{owner}</strong> | Kemas kini terakhir {date}
     </div>
     """, unsafe_allow_html=True)
+
