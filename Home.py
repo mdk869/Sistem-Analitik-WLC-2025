@@ -14,25 +14,15 @@ st.set_page_config(
 )
 
 # === Paparkan Tema & Tajuk ===
-colA, colB = st.columns(2)
-
-with colA:
-    paparkan_tema()
-    papar_tajuk_utama()
-
-with colB:
-
-    st.markdown("## ⏰ Live Jam Digital")
-
-    sekarang = datetime.now().strftime("%H:%M:%S")
-    st.subheader(f"🕒 {sekarang}")
+paparkan_tema()
+papar_tajuk_utama()
 
 
 # === Tarikh Countdown Program ===
-    tz = pytz.timezone("Asia/Kuala_Lumpur")
-    tarikh_mula = tz.localize(datetime(2025, 5, 18))
-    tarikh_akhir = tz.localize(datetime(2025, 8, 20))
-    hari_ini = datetime.now(tz)
+tz = pytz.timezone("Asia/Kuala_Lumpur")
+tarikh_mula = tz.localize(datetime(2025, 5, 18))
+tarikh_akhir = tz.localize(datetime(2025, 8, 20))
+hari_ini = datetime.now(tz)
 
 total_hari = (tarikh_akhir - tarikh_mula).days
 baki_hari = max((tarikh_akhir - hari_ini).days, 0)
