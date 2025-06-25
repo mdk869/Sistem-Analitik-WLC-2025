@@ -79,7 +79,7 @@ if not df.empty:
         with col3:
             st.metric("Tarikh Timbang Seterusnya", "20 Julai 2025")
 
-        st.info("📅 **Sila bersedia untuk sesi timbang seterusnya pada 20 Julai 2025.**")
+        st.warning("📅 **Sila bersedia untuk sesi timbang seterusnya pada 20 Julai 2025.**")
 
         st.divider()
 
@@ -112,8 +112,6 @@ if not df.empty:
         with info_col2:
             st.info("🚶‍♂️ **Aktiviti Disarankan:**\n- Jalan kaki 8000-10000 langkah sehari.\n- Senaman 3-4 kali seminggu.")
             st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
-
-        
 
     with tab2:
         st.subheader("🏆 Leaderboard")
