@@ -5,8 +5,8 @@ import pytz
 
 from app.helper_data import (
     load_data_peserta,
-    load_data_rekod,
-    tambah_peserta_ke_sheet,
+    load_data_cloud_or_local,
+    tambah_peserta_google_sheet,
     kemaskini_berat_peserta,
     padam_peserta_dari_sheet
 )
@@ -25,7 +25,7 @@ st.subheader("🔧 Pengurusan Peserta")
 
 # === Load Data ===
 data_peserta = load_data_peserta()
-data_rekod = load_data_rekod()
+data_rekod = load_data_cloud_or_local()
 
 # === Papar Senarai Peserta ===
 st.markdown("### 📋 Senarai Peserta")
@@ -44,7 +44,7 @@ with st.form("form_tambah_peserta"):
 
     if submit_tambah:
         if nama_baru and no_staf_baru:
-            tambah_peserta_ke_sheet(nama_baru, no_staf_baru, berat_awal)
+            tambah_peserta_google_sheet(nama_baru, no_staf_baru, berat_awal)
             st.success(f"✅ {nama_baru} berjaya ditambah.")
             st.rerun()
         else:
