@@ -74,18 +74,11 @@ with colA:
 
 with colB:
     st.image("https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png", use_container_width=True)
-    nutrisi = get_tips_nutrisi()
+    nutrisi = get_tips_nutrisi(jumlah=2)
     
-    st.markdown("""
-    <div style='background-color: #F0FFF0; padding: 15px; border-radius: 10px; border: 1px solid #00B050'>
-    <h4>🍎 Tips Nutrisi Hari Ini</h4>
-    <ul>
-    """, unsafe_allow_html=True)
-
+    st.subheader("🍎 **Tips Nutrisi Hari Ini**")
     for tip in get_tips_nutrisi:
-        st.markdown(f"<li>{tip}</li>", unsafe_allow_html=True)
-
-    st.markdown("</ul></div>", unsafe_allow_html=True)
+        st.markdown(f"- {tip}")
 
 # === Popup Memo / Changelog ===
 if "show_memo" not in st.session_state:
