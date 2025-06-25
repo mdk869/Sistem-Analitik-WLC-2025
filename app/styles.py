@@ -142,10 +142,9 @@ def papar_footer(
 
             <em style="color:#888888;">✨ {tagline}</em><br><br>
 
-            <span style="font-size:12px;">
             &copy; {tahun_sekarang} {owner}. All rights reserved.<br>
             Made with 💻☕ by <strong>{owner}</strong>.
-            </span>
+            
         </div>
         """,
         unsafe_allow_html=True
