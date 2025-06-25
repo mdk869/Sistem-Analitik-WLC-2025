@@ -71,6 +71,15 @@ with colA:
     - Paparan leaderboard automatik.
     - Privasi data terjamin.
     """)
+    
+    st.image(
+        "https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png",
+        use_container_width=True
+    )
+    st.success("""
+
+    """)
+
 
 with colB:
     st.image(
