@@ -73,12 +73,16 @@ with colA:
     """)
 
 with colB:
-    st.image("https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png", use_container_width=True)
-    nutrisi = get_tips_nutrisi(jumlah=2)
-    
+    st.image(
+        "https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png",
+        use_container_width=True
+    )
+
+    nutrisi_list = get_tips_nutrisi(jumlah=2)
+
     st.subheader("🍎 **Tips Nutrisi Hari Ini**")
-    st.info(f"""{nutrisi}
-                {nutrisi}""")
+    for tip in nutrisi_list:
+        st.info(f"- {tip}")
 
 # === Popup Memo / Changelog ===
 if "show_memo" not in st.session_state:
