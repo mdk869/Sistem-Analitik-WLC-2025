@@ -98,10 +98,19 @@ def papar_header(teks):
     st.markdown(f"<div class='wlc-header'>{teks}</div>", unsafe_allow_html=True)
     
 def papar_footer(owner="MKR", date=None):
-    st.markdown(f"""
-    <hr>
-    <div style="text-align:center; font-size: 14px; opacity: 0.7">
-        Dibangunkan oleh <strong>{owner}</strong> | Kemas kini terakhir {date}
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""
+        <hr style="border: 1px solid #444;">
+        <div style="
+            text-align:center;
+            font-size:13px;
+            color:#bbbbbb;
+            line-height:1.6;
+            ">
+            Dibangunkan dengan ❤️ oleh <strong style="color:#FFD700;">MKR Dev Team</strong><br>
+            🚀 <em>Sistem Analitik WLC 2025</em> | Versi terkini: <strong>{last_update}</strong><br>
+            👥 Pengguna aktif: <strong>{user_count}</strong> | Powered by Streamlit + Google Cloud
+        </div>
+    """)
+    
+    unsafe_allow_html=True
 
