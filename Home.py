@@ -56,13 +56,14 @@ st.markdown("## 🔍 **Informasi Program & Tips Kesihatan**")
 colA, colB = st.columns(2)
 
 with colA:
-    st.success("""
-    ### 🎯 Matlamat WLC 2025
-    - Memupuk gaya hidup sihat.
-    - Menurunkan berat badan secara berhemah.
-    - Memantau BMI dan komposisi badan.
-    - Menyediakan data analitik untuk peserta dan penganjur.
-    """)
+    with st.expander("### 🎯 Matlamat WLC 2025"):
+        st.success("""
+        - Memupuk gaya hidup sihat.
+        - Menurunkan berat badan secara berhemah.
+        - Memantau BMI dan komposisi badan.
+        - Menyediakan data analitik untuk peserta dan penganjur.
+        """)
+
     with st.expander("### 📌 Kenapa Gunakan Sistem Ini?"):    
         st.warning("""
         - Memudahkan pemantauan progres.
