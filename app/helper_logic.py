@@ -25,11 +25,23 @@ def kategori_bmi_asia(bmi: float) -> str:
 
 # === Kiraan % Penurunan Berat dan BMI ===
 def tambah_kiraan_peserta(df):
+    df = df.copy()
+
+    # Isi BeratTerkini kosong dengan BeratAwal (jika peserta tiada rekod baru)
+    df["BeratTerkini"] = df["BeratTerkini"].fillna(df["BeratAwal"])
+
+    # Kiraan
     df["PenurunanKg"] = df["BeratAwal"] - df["BeratTerkini"]
     df["% Penurunan"] = (df["PenurunanKg"] / df["BeratAwal"] * 100).round(2)
-    df["BMI"] = df.apply(lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]), axis=1)
+
+    df["BMI"] = df.apply(
+        lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]),
+        axis=1
+    )
     df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
+
     return df
+
 
 
 # === Kiraan Status Timbang (Naik, Turun, Kekal) ===
