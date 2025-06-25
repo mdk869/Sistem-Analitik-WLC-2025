@@ -10,6 +10,20 @@ from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
 from app.helper_logic import tambah_kiraan_peserta
 
+from app.helper_data import (
+    load_data_peserta,
+    load_rekod_berat,
+    get_berat_terkini,
+    list_ranking_sheets,
+    load_ranking_bulanan,
+    simpan_ranking_bulanan
+)
+
+from app.helper_logic import (
+    proses_leaderboard,
+    tambah_kiraan_peserta
+)
+
 # === Setup Paparan ===
 st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
 local_tz = pytz.timezone("Asia/Kuala_Lumpur")
@@ -21,6 +35,18 @@ paparkan_tema()
 
 # === Data ===
 df = load_data()
+df_peserta = load_data_peserta()
+df_rekod = load_rekod_berat()
+
+df_berat_terkini = get_berat_terkini()
+
+# Gabungkan berat awal + berat terkini
+df_merge = df_peserta.merge(df_berat_terkini, on="Nama", how="left")
+df_merge.rename(columns={"Berat": "BeratTerkini", "Tarikh": "TarikhTerkini"}, inplace=True)
+
+# Kiraan penurunan berat + BMI
+df_merge = tambah_kiraan_peserta(df_merge)
+
 
 if not df.empty:
     df = tambah_kiraan_peserta(df)
@@ -138,40 +164,36 @@ if not df.empty:
             st.dataframe(df_senarai, use_container_width=True)
 
     with tab2:
-        st.subheader("Leaderboard")
-        #Susun berdasarkan % Penurunan
-        df_rank = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
-        #Tambah kolum Ranking
-        df_rank["Ranking"] = df_rank.index + 1
-        #Tambah label medal untuk Top 3
-        def add_medal(rank):
-            if rank == 1:
-                return "🥇"
-            elif rank == 2:
-                return "🥈"
-            elif rank == 3:
-                return "🥉"
-            else:
-                return str(rank)
+        st.subheader("🏆 Leaderboard dengan History Trend")
 
-        df_rank["Ranking"] = df_rank["Ranking"].apply(add_medal)
-        # Pilihan berapa Top Ranking nak tunjuk
+        # Load ranking history jika ada
+        ranking_sheets = list_ranking_sheets()
+        if ranking_sheets:
+            pilihan_bulan = st.selectbox(
+                "Pilih Ranking Sebelum (Bulan)",
+                [s.split('_')[1] for s in ranking_sheets]
+            )
+            df_ranking_sebelum = load_ranking_bulanan(pilihan_bulan)
+        else:
+            df_ranking_sebelum = None
+
+        # Proses leaderboard semasa
+        df_rank = proses_leaderboard(df_merge, df_ranking_sebelum)
+
+        # Pilihan jumlah Top Ranking
         top_n = st.selectbox("Pilih jumlah Top Ranking:", [5, 10, 20, 50], index=1)
-        # Paparkan leaderboard
+
+        # Papar leaderboard
         st.dataframe(
-            df_rank.head(top_n)[["Ranking", "Nama", "% Penurunan"]],
+            df_rank.head(top_n)[["Ranking_Trend", "Nama", "% Penurunan"]],
             use_container_width=True,
             hide_index=True
         )
 
-        st.subheader("🏅 10 Terbaik - % Penurunan Berat")
-        top10 = df_rank.head(10)
-        fig_top10 = px.bar(top10, x="Nama", y="% Penurunan",
-                       title="Top 10 Peserta Berdasarkan % Penurunan Berat",
-                       labels={"% Penurunan": "% Turun"},
-                       color="% Penurunan", color_continuous_scale="Blues")
-        st.plotly_chart(fig_top10, use_container_width=True)
-
+        # Butang simpan ranking
+        if st.button("💾 Simpan Ranking Terkini Bulan Ini"):
+            df_simpan = df_rank[["Ranking", "Nama", "% Penurunan"]]
+            simpan_ranking_bulanan(df_simpan)
 
     with tab3:
         st.subheader("📊 Analisis BMI Peserta")
