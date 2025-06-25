@@ -13,7 +13,9 @@ from app.helper_data import (
 
 from app.helper_logic import (
     tambah_kiraan_peserta,
-    kira_status_ranking
+    kira_status_ranking,
+    kira_bmi,
+    kategori_bmi_asia
 )
 
 from app.styles import paparkan_tema, papar_header, papar_footer
@@ -51,16 +53,13 @@ with st.form("form_tambah_peserta", clear_on_submit=True):
     tinggi = st.number_input("Tinggi (cm)", min_value=100, max_value=250)
     berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=300.0)
     tarikh_timbang = st.date_input("Tarikh Timbang Berat Awal")
-    
+
+    # Berat terkini sama dengan berat awal semasa daftar
     berat_terkini = berat_awal
-    bmi = round(berat_awal / ((tinggi / 100) ** 2), 2)
-    
-    kategori = (
-        "Underweight" if bmi < 18.5 else
-        "Normal" if bmi < 23 else
-        "Overweight" if bmi < 27.5 else
-        "Obese"
-    )
+
+    # === Kiraan BMI dan Kategori BMI Standard ===
+    bmi = kira_bmi(berat_awal, tinggi)
+    kategori = kategori_bmi_asia(bmi)
 
     submitted = st.form_submit_button("➕ Tambah Peserta")
 
