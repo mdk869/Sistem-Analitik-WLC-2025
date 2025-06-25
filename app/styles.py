@@ -110,6 +110,5 @@ def papar_footer(owner="MKR", date=None):
             🚀 <em>Sistem Analitik WLC 2025</em> | Versi terkini: <strong>{last_update}</strong><br>
             👥 Pengguna aktif: <strong>{user_count}</strong> | Powered by Streamlit + Google Cloud
         </div>
-    """.format(
-    ), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
