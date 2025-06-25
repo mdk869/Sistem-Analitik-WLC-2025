@@ -15,7 +15,7 @@ def get_motivasi_harian():
     ]
     return random.choice(motivasi_list)
 
-def get_tips_nutrisi(jumlah=2):
+def get_tips_nutrisi(jumlah=1):
     nutrisi_list = [
         "🚫 Kurangkan minuman manis (teh tarik, air gas, sirap).",
         "🍟 Elakkan makanan bergoreng dan berminyak.",
@@ -25,4 +25,4 @@ def get_tips_nutrisi(jumlah=2):
         "🚶‍♂️ Banyakkan aktiviti fizikal, sekurang-kurangnya 30 minit sehari."  
     ]
     jumlah = min(jumlah, len(nutrisi_list))
-    return random.choice(nutrisi_list)
+    return random.sample(nutrisi_list, jumlah)
