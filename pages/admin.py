@@ -107,26 +107,26 @@ if st.button("💾 Simpan Berat Terkini"):
 st.divider()
 
 # === Padam Peserta ===
-st.markdown("### 🗑️ Padam Peserta")
+st.expander("### 🗑️ Padam Peserta"):
 
 if len(data_peserta) > 0:
-    nama_list = data_peserta["Nama"].tolist()
-    nama_dipilih = st.selectbox("Pilih Nama untuk Dipadam", nama_list, key="padam")
+        nama_list = data_peserta["Nama"].tolist()
+        nama_dipilih = st.selectbox("Pilih Nama untuk Dipadam", nama_list, key="padam")
 
-    confirm = st.checkbox("⚠️ Saya ingin padam peserta ini.")
+        confirm = st.checkbox("⚠️ Saya ingin padam peserta ini.")
 
-    if st.button("🗑️ Padam Peserta"):
-        if confirm:
-            berjaya = padam_peserta_dari_sheet(nama_dipilih)
-            if berjaya:
-                st.success(f"✅ {nama_dipilih} telah dipadam dari Google Sheet.")
-                st.rerun()
+        if st.button("🗑️ Padam Peserta"):
+            if confirm:
+                berjaya = padam_peserta_dari_sheet(nama_dipilih)
+                if berjaya:
+                    st.success(f"✅ {nama_dipilih} telah dipadam dari Google Sheet.")
+                    st.rerun()
+                else:
+                    st.warning("⚠️ Nama tidak dijumpai atau berlaku ralat.")
             else:
-                st.warning("⚠️ Nama tidak dijumpai atau berlaku ralat.")
-        else:
-            st.info("👉 Tandakan kotak pengesahan sebelum padam.")
+                st.info("👉 Tandakan kotak pengesahan sebelum padam.")
 else:
-    st.info("🚫 Tiada peserta untuk dipadam.")
+        st.info("🚫 Tiada peserta untuk dipadam.")
 
 st.divider()
 
