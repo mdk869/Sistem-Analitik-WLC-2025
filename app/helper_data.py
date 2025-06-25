@@ -46,14 +46,13 @@ def load_rekod_berat():
 
 
 # === Fungsi: Tambah Peserta Baru
-def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan,
-                                 tinggi, berat_awal, berat_terkini,
-                                 tarikh_timbang, bmi, kategori):
-    tarikh_daftar = datetime.now(pytz.timezone("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
+def tambah_peserta_google_sheet(
+    nama, jantina, jabatan, tinggi, berat_awal,
+    berat_terkini, tarikh_timbang, bmi, kategori
+):
     ws_peserta.append_row([
-        nama, nostaf, umur, jantina, jabatan, tinggi,
-        berat_awal, tarikh_daftar, berat_terkini,
-        tarikh_timbang, round(bmi, 2), kategori
+        nama, jantina, jabatan, tinggi, berat_awal,
+        berat_terkini, tarikh_timbang, bmi, kategori
     ])
 
 
@@ -91,8 +90,6 @@ def padam_peserta_dari_sheet(nama):
             ws_peserta.delete_rows(idx + 2)  # Delete baris di Google Sheet
             return True
     return False
-
-
 
 
 # === Fungsi: Dapatkan Berat Terkini Semua Peserta
