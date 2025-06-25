@@ -46,28 +46,37 @@ def load_rekod_berat():
 
 
 # === Fungsi: Tambah Peserta Baru
-def tambah_peserta_google_sheet(
-    nama, jantina, jabatan, tinggi, berat_awal,
-    berat_terkini, tarikh_timbang, bmi, kategori
-):
-    ws_peserta.append_row([
-        nama, jantina, jabatan, tinggi, berat_awal,
-        berat_terkini, tarikh_timbang, bmi, kategori
-    ])
+def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tarikh_daftar):
+    berat_terkini = berat_awal
+    tarikh_timbang = tarikh_daftar
+    bmi = kira_bmi(berat_awal, tinggi)
+    kategori = kategori_bmi_asia(bmi)
+
+    data_baru = [
+        nama, nostaf, umur, jantina, jabatan, tinggi,
+        berat_awal, str(tarikh_daftar), berat_terkini,
+        str(tarikh_timbang), bmi, kategori
+    ]
+
+    ws_peserta.append_row(data_baru)
+    ws_rekod.append_row([nama, str(tarikh_timbang), berat_terkini])
 
 
 # === Fungsi: Kemaskini Berat Peserta + Simpan ke Rekod
-def kemaskini_berat_peserta(nama, berat_baru):
-    today = datetime.now().strftime("%Y-%m-%d")
-    df = pd.DataFrame(ws_peserta.get_all_records())
+def kemaskini_berat_peserta(nama, berat_baru, tarikh_baru):
+    data = ws_peserta.get_all_records()
 
-    for idx, row in df.iterrows():
+    for idx, row in enumerate(data):
         if row["Nama"] == nama:
-            ws_peserta.update_cell(idx + 2, df.columns.get_loc("BeratTerkini") + 1, berat_baru)
-            ws_peserta.update_cell(idx + 2, df.columns.get_loc("TarikhTimbang") + 1, today)
+            bmi_baru = kira_bmi(berat_baru, row["Tinggi"])
+            kategori_baru = kategori_bmi_asia(bmi_baru)
+            ws_peserta.update(f"I{idx+2}", berat_baru)  # BeratTerkini
+            ws_peserta.update(f"J{idx+2}", str(tarikh_baru))  # TarikhTimbang
+            ws_peserta.update(f"K{idx+2}", bmi_baru)  # BMI
+            ws_peserta.update(f"L{idx+2}", kategori_baru)  # Kategori
             break
 
-    ws_rekod.append_row([nama, berat_baru, today])
+    ws_rekod.append_row([nama, str(tarikh_baru), berat_baru])
 
 
 # === Fungsi: Sejarah Berat Individu
@@ -85,9 +94,10 @@ def sejarah_berat(nama):
 # === Fungsi: Padam Peserta
 def padam_peserta_dari_sheet(nama):
     data = ws_peserta.get_all_records()
+
     for idx, row in enumerate(data):
         if row["Nama"] == nama:
-            ws_peserta.delete_rows(idx + 2)  # Delete baris di Google Sheet
+            ws_peserta.delete_rows(idx + 2)
             return True
     return False
 
