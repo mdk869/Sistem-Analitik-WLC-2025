@@ -139,9 +139,9 @@ def papar_footer(
             🚀 <em>Sistem Analitik WLC 2025</em> | Versi: <strong>{version}</strong><br>
             📅 Kemas kini terakhir: <strong>{tarikh_kemas_kini}</strong><br>
             ⚙️ Powered by Streamlit + Google Cloud<br><br>
+            
             ✨ <em>{tagline}</em><br><br>
             
-
             &copy; {tahun_sekarang} {owner}. All rights reserved.<br>
             Made with 💻☕ by <strong>{owner}</strong>.
             
