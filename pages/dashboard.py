@@ -94,7 +94,7 @@ if not df.empty:
             df_rank = df_rank.head(int(pilihan_top))
 
         st.dataframe(
-            df_top10[["Ranking", "Nama", "% Penurunan"]],
+            df_rank[["Ranking", "Nama", "% Penurunan"]],
             use_container_width=True,
             hide_index=True
         )
