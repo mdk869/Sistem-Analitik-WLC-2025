@@ -113,7 +113,7 @@ if not df.empty:
             st.info("🚶‍♂️ **Aktiviti Disarankan:**\n- Jalan kaki 8000-10000 langkah sehari.\n- Senaman 3-4 kali seminggu.")
             st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
 
-        st.divider()
+        
 
     with tab2:
         st.subheader("🏆 Leaderboard")
