@@ -130,7 +130,7 @@ if not df.empty:
 
         st.divider()
 
-        # === Paparan Progress Penurunan Berat ===
+    # === Paparan Progress Penurunan Berat ===
         with st.expander("📉 Trend Penurunan Berat Program Ini (Klik Disini)"):
             df_plot = (df_tapis)
 
@@ -147,7 +147,7 @@ if not df.empty:
 
             st.divider()
 
-        # === Interaktif Kad Maklumat ===
+    # === Interaktif Kad Maklumat ===
         st.subheader("🩺 Info Nutrisi & Kesihatan")
 
         info_col1, info_col2 = st.columns(2)
