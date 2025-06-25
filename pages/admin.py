@@ -51,10 +51,10 @@ st.dataframe(
 st.divider()
 
 # === Tambah Peserta ===
-st.markdown("### ➕ Tambah Peserta Baru")
+with st.expander("### ➕ Tambah Peserta Baru"):
 
-with st.form("form_tambah_peserta", clear_on_submit=True):
-    st.subheader("🆕 Tambah Peserta Baru")
+    with st.form("form_tambah_peserta", clear_on_submit=True):
+        st.subheader("🆕 Tambah Peserta Baru")
 
     nama = st.text_input("Nama")
     nostaf = st.text_input("No Staf")
