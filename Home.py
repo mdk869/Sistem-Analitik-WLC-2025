@@ -82,7 +82,7 @@ with colB:
     <ul>
     """, unsafe_allow_html=True)
 
-    for tip in nutrisi:
+    for tip in get_tips_nutrisi:
         st.markdown(f"<li>{tip}</li>", unsafe_allow_html=True)
 
     st.markdown("</ul></div>", unsafe_allow_html=True)
