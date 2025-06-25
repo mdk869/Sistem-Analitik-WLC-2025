@@ -117,7 +117,7 @@ def papar_footer(owner="MKR Dev Team", version="v3.0.0", last_update=None):
             📅 Kemas kini terakhir: <strong>{tarikh_kemas_kini}</strong><br>
             ⚙️ Powered by Streamlit + Google Cloud<br><br>
 
-            Tagline = "Transforming Data Into Action."
+            ✨ <em> Transforming Data Into Action. </em>
 
             <span style="font-size:12px;">
             &copy; {tahun_sekarang} {owner}. All rights reserved.<br>
