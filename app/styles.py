@@ -111,7 +111,5 @@ def papar_footer(owner="MKR", date=None):
             👥 Pengguna aktif: <strong>{user_count}</strong> | Powered by Streamlit + Google Cloud
         </div>
     """.format(
-        last_update=last_update,
-        user_count=st.session_state.user_count
     ), unsafe_allow_html=True)
 
