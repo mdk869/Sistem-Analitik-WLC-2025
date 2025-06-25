@@ -47,7 +47,7 @@ def get_motivasi_harian():
     return random.choice(motivasi_list)
 
 def get_tips_nutrisi(jumlah=1):
-    nutrisi_list += [
+    nutrisi_list = [
     "🥤 Minum air kosong sekurang-kurangnya 2-3 liter sehari, elakkan air manis.",
     "🍚 Kawal saiz hidangan, guna konsep suku-suku-separuh.",
     "🥩 Cukupkan sumber protein dalam setiap hidangan (ayam, ikan, telur, tempe, kekacang).",
