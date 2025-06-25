@@ -15,17 +15,14 @@ def get_motivasi_harian():
     ]
     return random.choice(motivasi_list)
 
-def get_tips_nutrisi():
+def get_tips_nutrisi(jumlah=2):
     nutrisi_list = [
-        "🍽️ Kawal Saiz Hidangan",
-        "🥚 Cukupkan Protein",
-        "🚫 Kurangkan- Minuman manis (teh tarik, air gas, sirap). "
-        "- Makanan bergoreng dan berminyak."
-        "- Gula tersembunyi (biskut, kek, roti putih)."
-        "- Garam berlebihan (jajan, makanan segera)."
-        
-        
-        
-       
+        "🚫 Kurangkan minuman manis (teh tarik, air gas, sirap).",
+        "🍟 Elakkan makanan bergoreng dan berminyak.",
+        "🍪 Hadkan gula tersembunyi (biskut, kek, roti putih).",
+        "🧂 Kurangkan garam berlebihan (jajan, makanan segera).",
+        "🥗 Lebihkan sayur dan buah dalam setiap hidangan.",
+        "🚶‍♂️ Banyakkan aktiviti fizikal, sekurang-kurangnya 30 minit sehari."  
     ]
+    jumlah = min(jumlah, len(nutrisi_list))
     return random.choice(nutrisi_list)
