@@ -73,7 +73,7 @@ with colA:
     """)
 
 with colB:
-    st.image("https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png", use_column_width=True)
+    st.image("https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png", use_container_width=True)
     st.info("""
     ### 🍎 Tips Nutrisi
     - Minum air secukupnya (2-3L sehari).
