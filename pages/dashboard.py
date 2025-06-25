@@ -8,7 +8,7 @@ import pytz
 
 from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
-from app.helper_logic import tambah_kiraan_peserta
+from app.helper_logic import tambah_kiraan_peserta, proses_leaderboard
 
 # === Setup Paparan ===
 st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
@@ -77,7 +77,7 @@ if not df.empty:
         st.plotly_chart(fig, use_container_width=True)
 
     with tab2:
-        st.subheader("Leaderboard")
+        st.subheader("🏆 Leaderboard")
 
         # Pilihan untuk filter berapa peserta nak paparkan
         pilihan_top = st.selectbox(
@@ -100,6 +100,7 @@ if not df.empty:
         )
 
         st.subheader("🏅 10 Terbaik - % Penurunan Berat")
+
         top10 = df_rank.head(10)
         fig_top10 = px.bar(top10, x="Nama", y="% Penurunan",
                        title="Top 10 Peserta Berdasarkan % Penurunan Berat",
