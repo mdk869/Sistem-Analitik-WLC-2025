@@ -113,6 +113,6 @@ def papar_footer(owner="MKR Dev Team", version="v3.0.0", last_update=None):
             📅 Kemas kini terakhir: <strong>{update}</strong><br>
             ⚙️ Powered by Streamlit + Google Cloud
         </div>
-        """.format(owner=owner, version=version, update=update_info),
+        """(owner=owner, version=version, update=update_info),
         unsafe_allow_html=True
     )
