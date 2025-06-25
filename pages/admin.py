@@ -130,7 +130,7 @@ st.divider()
 st.markdown("### 🗂️ Sejarah Rekod Berat")
 
 # Pilih kolum yang ingin dipaparkan
-kolum_pilihan = ['Nama', 'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori']
+kolum_pilihan = ['Nama', 'BeratAwal', 'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori']
 
 # Papar dataframe dengan kolum terpilih dan numbering No.
 st.dataframe(
