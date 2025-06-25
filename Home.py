@@ -66,7 +66,7 @@ with colA:
 
     st.subheader("🏃‍♂️**Tips Kesihatan Harian**")
     st.info("\n".join([f"- {tip}" for tip in health_list]))
-    
+
 
     with st.expander("### 🎯 Matlamat WLC 2025"):
         st.success("""
@@ -76,17 +76,8 @@ with colA:
         - Menyediakan data analitik untuk peserta dan penganjur.
         """)
 
-    with st.expander("### 📌 Kenapa Gunakan Sistem Ini?"):    
-        st.warning("""
-        - Memudahkan pemantauan progres.
-        - Data direkod secara cloud (Google Sheets).
-        - Paparan leaderboard automatik.
-        - Privasi data terjamin.
-        """)
     
-
-
-
+    
 with colB:
     st.image(
         "https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png",
@@ -97,6 +88,15 @@ with colB:
 
     st.subheader("🍎 **Tips Nutrisi Hari Ini**")
     st.info("\n".join([f"- {tip}" for tip in nutrisi_list]))
+
+
+    with st.expander("### 📌 Kenapa Gunakan Sistem Ini?"):    
+        st.warning("""
+        - Memudahkan pemantauan progres.
+        - Data direkod secara cloud (Google Sheets).
+        - Paparan leaderboard automatik.
+        - Privasi data terjamin.
+        """)
 
 
 # === Popup Memo / Changelog ===
