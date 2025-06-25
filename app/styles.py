@@ -97,12 +97,35 @@ def papar_kandungan_home():
 def papar_header(teks):
     st.markdown(f"<div class='wlc-header'>{teks}</div>", unsafe_allow_html=True)
     
-def papar_footer(owner="MKR Dev Team", version="v3.0.0", last_update=None):
+def papar_footer(
+    owner="MKR Dev Team",
+    version="v3.0.0",
+    last_update=None,
+    tagline="Transforming Data Into Action."
+):
+    """
+    Papar footer dengan informasi versi, kemas kini, hak cipta dan signature.
+
+    Args:
+        owner (str): Nama pemilik atau dev team.
+        version (str): Versi sistem.
+        last_update (str): Tarikh kemas kini terakhir. Jika None, guna tarikh hari ini.
+        tagline (str): Tagline atau moto sistem.
+    """
+
     # Timezone Malaysia
     tz = pytz.timezone('Asia/Kuala_Lumpur')
 
-    tarikh_kemas_kini = last_update if last_update else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Tarikh kemas kini terakhir
+    tarikh_kemas_kini = (
+        last_update if last_update
+        else datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
+    )
+
+    # Tahun sekarang untuk copyright
     tahun_sekarang = datetime.now(tz).strftime("%Y")
+
+    # Papar Footer
     st.markdown(
         f"""
         <hr style="border: 1px solid #444;">
@@ -117,11 +140,11 @@ def papar_footer(owner="MKR Dev Team", version="v3.0.0", last_update=None):
             📅 Kemas kini terakhir: <strong>{tarikh_kemas_kini}</strong><br>
             ⚙️ Powered by Streamlit + Google Cloud<br><br>
 
-            ✨ <em> Transforming Data Into Action. </em>
+            <em style="color:#888888;">✨ {tagline}</em><br><br>
 
             <span style="font-size:12px;">
             &copy; {tahun_sekarang} {owner}. All rights reserved.<br>
-            Made with 💻☕ by <strong>MKR Dev Team</strong>.
+            Made with 💻☕ by <strong>{owner}</strong>.
             </span>
         </div>
         """,

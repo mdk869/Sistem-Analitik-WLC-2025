@@ -144,4 +144,9 @@ st.dataframe(
 )
 
 
-papar_footer("MKR")
+papar_footer(
+    owner="MKR Dev Team",
+    version="v3.2.5",
+    last_update="2025-06-26",
+    tagline="Empowering Data-Driven Decisions."
+)

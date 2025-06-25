@@ -125,7 +125,8 @@ if st.session_state.show_memo:
 # === Footer ===
 footer_date = hari_ini.strftime("%d/%m/%Y")
 papar_footer(
-    owner="MKR",
-    version="v3.0.0",
-    last_update=footer_date
+    owner="MKR Dev Team",
+    version="v3.2.5",
+    last_update="2025-06-26",
+    tagline="Empowering Data-Driven Decisions."
 )

@@ -181,5 +181,9 @@ else:
     st.warning("Google Sheet kosong atau tiada data.")
 
 # === Footer ===
-footer_date = datetime.now(local_tz).strftime("%d/%m/%Y")
-papar_footer("MKR", footer_date)
+papar_footer(
+    owner="MKR Dev Team",
+    version="v3.2.5",
+    last_update="2025-06-26",
+    tagline="Empowering Data-Driven Decisions."
+)
