@@ -135,7 +135,6 @@ def papar_footer(
             color:#bbbbbb;
             line-height:1.6;
             ">
-            Dibangunkan dengan ❤️ oleh <strong style="color:#FFD700;">{owner}</strong><br>
             🚀 <em>Sistem Analitik WLC 2025</em> | Versi: <strong>{version}</strong><br>
             📅 Kemas kini terakhir: <strong>{tarikh_kemas_kini}</strong><br>
             ⚙️ Powered by Streamlit + Google Cloud<br><br>
