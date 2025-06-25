@@ -27,7 +27,6 @@ ws_rekod = sheet.worksheet("rekod_berat")
 def load_data_cloud_or_local():
     try:
         df = load_data_peserta()
-        st.success("✔️ Data dimuat dari Google Sheet")
     except Exception as e:
         st.warning(f"⚠️ Gagal load dari Google Sheet: {e}")
         # Cuba load dari fail Excel lokal sebagai backup
