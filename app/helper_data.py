@@ -91,11 +91,12 @@ def get_berat_terkini():
         return pd.DataFrame(columns=["Nama", "Berat", "Tarikh"])
 
     df_rekod["Tarikh"] = pd.to_datetime(df_rekod["Tarikh"], errors="coerce")
+    df_rekod = df_rekod.dropna(subset=["Tarikh"])
 
     df_latest = (
         df_rekod.sort_values('Tarikh', ascending=False)
-        .drop_duplicates('Nama')
-        .reset_index(drop=True)
+        .groupby('Nama', as_index=False)
+        .first()
     )
 
     return df_latest[["Nama", "Berat", "Tarikh"]]

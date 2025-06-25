@@ -7,21 +7,12 @@ from datetime import datetime
 import pytz
 
 from app.styles import paparkan_tema, papar_footer, papar_header
-from app.helper_data import load_data_peserta
+from app.helper_data import load_data_peserta, get_berat_terkini
 from app.helper_logic import tambah_kiraan_peserta
-
-from app.helper_data import (
-    load_data_peserta,
-    load_rekod_berat,
-    get_berat_terkini,
-    list_ranking_sheets,
-    load_ranking_bulanan,
-    simpan_ranking_bulanan
-)
-
-from app.helper_logic import (
-    proses_leaderboard,
-    tambah_kiraan_peserta
+from app.helper_ranking import (
+    create_ranking_snapshot,
+    save_ranking_to_sheet,
+    load_ranking_history
 )
 
 # === Setup Paparan ===
@@ -33,11 +24,8 @@ st.set_page_config(page_title="Dashboard WLC 2025", layout="wide")
 st.title("📊 Dashboard Weight Loss Challenge 2025")
 paparkan_tema()
 
-# === Data ===
-df = load_data_peserta
+# === Load Data
 df_peserta = load_data_peserta()
-df_rekod = load_rekod_berat()
-
 df_berat_terkini = get_berat_terkini()
 
 # Gabungkan berat awal + berat terkini
@@ -164,36 +152,27 @@ if not df.empty:
             st.dataframe(df_senarai, use_container_width=True)
 
     with tab2:
-        st.subheader("🏆 Leaderboard dengan History Trend")
+        st.subheader("🏆 Leaderboard")
+        df_rank = df_merge.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
+        df_rank["Ranking"] = df_rank.index + 1
 
-        # Load ranking history jika ada
-        ranking_sheets = list_ranking_sheets()
-        if ranking_sheets:
-            pilihan_bulan = st.selectbox(
-                "Pilih Ranking Sebelum (Bulan)",
-                [s.split('_')[1] for s in ranking_sheets]
-            )
-            df_ranking_sebelum = load_ranking_bulanan(pilihan_bulan)
+        st.dataframe(df_rank[["Ranking", "Nama", "% Penurunan"]].head(10), use_container_width=True)
+
+        # === Buat Snapshot Ranking Sekarang
+        df_ranking_now = create_ranking_snapshot(df_merge)
+
+        st.subheader("💾 Simpan Ranking Bulanan")
+        if st.button("Simpan Ranking Ini ke Google Sheet"):
+            result = save_ranking_to_sheet(df_ranking_now)
+            st.success(result)
+
+        st.subheader("📜 Sejarah Ranking")
+        df_ranking_history = load_ranking_history()
+
+        if not df_ranking_history.empty:
+            st.dataframe(df_ranking_history)
         else:
-            df_ranking_sebelum = None
-
-        # Proses leaderboard semasa
-        df_rank = proses_leaderboard(df_merge, df_ranking_sebelum)
-
-        # Pilihan jumlah Top Ranking
-        top_n = st.selectbox("Pilih jumlah Top Ranking:", [5, 10, 20, 50], index=1)
-
-        # Papar leaderboard
-        st.dataframe(
-            df_rank.head(top_n)[["Ranking_Trend", "Nama", "% Penurunan"]],
-            use_container_width=True,
-            hide_index=True
-        )
-
-        # Butang simpan ranking
-        if st.button("💾 Simpan Ranking Terkini Bulan Ini"):
-            df_simpan = df_rank[["Ranking", "Nama", "% Penurunan"]]
-            simpan_ranking_bulanan(df_simpan)
+            st.info("Belum ada data ranking disimpan.")
 
     with tab3:
         st.subheader("📊 Analisis BMI Peserta")
