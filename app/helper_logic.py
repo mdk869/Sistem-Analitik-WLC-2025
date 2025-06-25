@@ -1,13 +1,10 @@
+# app/helper_logic.py
 import pandas as pd
 
-
-# === Kiraan BMI ===
 def kira_bmi(berat: float, tinggi_cm: float) -> float:
     tinggi_m = tinggi_cm / 100
     return round(berat / (tinggi_m ** 2), 1)
 
-
-# === Kategori BMI Asia ===
 def kategori_bmi_asia(bmi: float) -> str:
     if bmi < 18.5:
         return "Kurang Berat Badan"
@@ -22,29 +19,17 @@ def kategori_bmi_asia(bmi: float) -> str:
     else:
         return "Obesiti Morbid"
 
-
-# === Kiraan % Penurunan Berat dan BMI ===
 def tambah_kiraan_peserta(df):
-    df = df.copy()
-
-    # Isi BeratTerkini kosong
-    df["BeratTerkini"] = df["BeratTerkini"].fillna(df["BeratAwal"])
-
-    # Kiraan penurunan berat
-    df["PenurunanKg"] = (df["BeratAwal"] - df["BeratTerkini"]).round(2)
-    df["% Penurunan"] = ((df["PenurunanKg"] / df["BeratAwal"]) * 100).round(2)
-
-    # Kiraan BMI dan Kategori
-    df["BMI"] = df.apply(
-        lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]),
-        axis=1
-    )
+    """Tambah kolum pengiraan BMI dan % penurunan berat."""
+    df["PenurunanKg"] = df["BeratAwal"] - df["BeratTerkini"]
+    df["% Penurunan"] = (df["PenurunanKg"] / df["BeratAwal"] * 100).round(2)
+    df["BMI"] = df.apply(lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]), axis=1)
     df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
 
     return df
 
 
-# === Status Timbang (Naik/Turun/Kekal) ===
+# === Kiraan Status Timbang (Naik, Turun, Kekal) ===
 def kira_status_ranking(berat_awal, berat_terkini):
     if berat_terkini < berat_awal:
         return "Turun"
@@ -54,7 +39,7 @@ def kira_status_ranking(berat_awal, berat_terkini):
         return "Kekal"
 
 
-# === Kiraan Trend Leaderboard ===
+# === Kiraan Trend Naik/Turun untuk Leaderboard ===
 def kira_trend(ranking_semasa, ranking_sebelum):
     if pd.isna(ranking_sebelum):
         return "🆕"
@@ -66,7 +51,7 @@ def kira_trend(ranking_semasa, ranking_sebelum):
         return "➖"
 
 
-# === Medal untuk Top 3 ===
+# === Medal 🥇🥈🥉 ===
 def tambah_medal(rank):
     if rank == 1:
         return "🥇"
@@ -112,8 +97,5 @@ __all__ = [
     "kira_bmi",
     "kategori_bmi_asia",
     "tambah_kiraan_peserta",
-    "kira_status_ranking",
-    "kira_trend",
-    "tambah_medal",
-    "proses_leaderboard"
+    "kira_status_ranking"
 ]
