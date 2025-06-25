@@ -69,12 +69,78 @@ if not df.empty:
     tab1, tab2, tab3 = st.tabs(["📉 Penurunan Berat", "🏆 Leaderboard", "🧍‍♂️ BMI"])
 
     with tab1:
-        st.subheader("Perbandingan Berat Setiap Peserta")
-        df_plot = df_tapis.sort_values("PenurunanKg", ascending=False)
-        fig = px.bar(df_plot, x="Nama", y=["BeratAwal", "BeratTerkini"],
-                     barmode="group", title="Perbandingan Berat Awal dan Terkini",
-                     labels={"value": "Berat (kg)", "variable": "Kategori Berat"})
+        st.subheader("📊 Info Program & Perkembangan Peserta")
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Jumlah Peserta", len())
+        with col2:
+            st.metric("Tarikh Mula", "18 Mei 2025")
+        with col3:
+            st.metric("Tarikh Timbang Seterusnya", "20 Julai 2025")
+
+        st.info("📅 **Sila bersedia untuk sesi timbang seterusnya pada 20 Julai 2025.**")
+
+        st.divider()
+
+        # === Paparan Progress Penurunan Berat ===
+        st.subheader("📉 Trend Penurunan Berat Program Ini")
+        df_plot = ()
+
+        fig = px.bar(
+            df_plot.sort_values("PenurunanKg", ascending=False),
+            x="Nama",
+            y="PenurunanKg",
+            title="Jumlah Penurunan Berat Setakat Ini",
+            labels={"PenurunanKg": "Penurunan (kg)"},
+            color="PenurunanKg",
+            color_continuous_scale="Tealgrn"
+        )
         st.plotly_chart(fig, use_container_width=True)
+
+        st.divider()
+
+        # === Health Tips / Nutrition ===
+        st.subheader("💡 Tips Kesihatan & Nutrisi")
+
+        tips = [
+            "✅ Minum air sekurang-kurangnya 2-3 liter sehari.",
+            "✅ Kurangkan gula dan makanan bergoreng.",
+            "✅ Tingkatkan aktiviti fizikal sekurang-kurangnya 30 minit sehari.",
+            "✅ Tidur yang cukup 6-8 jam untuk metabolisme yang lebih baik.",
+            "✅ Amalkan suku-suku separuh dalam setiap hidangan."
+        ]
+
+        for tip in tips:
+            st.success(tip)
+
+        st.divider()
+
+        # === Interaktif Kad Maklumat ===
+        st.subheader("🩺 Info Nutrisi & Kesihatan")
+
+        info_col1, info_col2 = st.columns(2)
+
+        with info_col1:
+            st.info("🍎 **Kalori Harian:**\nAnggaran kalori untuk kekal sihat adalah sekitar 1800-2200 kcal sehari bergantung pada aktiviti harian.")
+            st.info("💧 **Keperluan Air:**\nMinum 30-35ml air per kg berat badan. Contoh: 70kg × 35ml = 2.45 liter sehari.")
+
+        with info_col2:
+            st.info("🚶‍♂️ **Aktiviti Disarankan:**\n- Jalan kaki 8000-10000 langkah sehari.\n- Senaman 3-4 kali seminggu.")
+            st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
+
+        st.divider()
+
+        # === Cadangan API Integrasi ===
+        with st.expander("🌐 Cadangan API untuk Tips Kesihatan"):
+            st.markdown("""
+            **API Sumber Data Kesihatan (boleh diintegrasi):**
+            - [WHO API](https://dev.who.int) *(Global health data)*
+            - [MOH Malaysia Open Data](https://www.data.gov.my) *(Cari: nutrition, obesity, health tips)*
+            - [Nutritionix API](https://developer.nutritionix.com/) *(Maklumat nutrisi makanan)*
+            - [OpenFoodFacts API](https://world.openfoodfacts.org/data) *(Data produk makanan)*
+            """)
+
 
     with tab2:
         st.subheader("🏆 Leaderboard")
