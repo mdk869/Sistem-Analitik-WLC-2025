@@ -48,9 +48,6 @@ with col1:
 ---
     """)
 
-with col2:
-    st.image("https://i.ibb.co/hZV4QF6/healthy.png", use_column_width=True)
-
 
 # === Maklumat Tambahan ===
 st.markdown("""
