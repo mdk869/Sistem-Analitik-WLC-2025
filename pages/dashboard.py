@@ -84,21 +84,21 @@ if not df.empty:
         st.divider()
 
         # === Paparan Progress Penurunan Berat ===
-        st.subheader("📉 Trend Penurunan Berat Program Ini")
-        df_plot = (df_tapis)
+        with st.expander("📉 Trend Penurunan Berat Program Ini"):
+            df_plot = (df_tapis)
 
-        fig = px.bar(
-            df_plot.sort_values("PenurunanKg", ascending=False),
-            x="Nama",
-            y="PenurunanKg",
-            title="Jumlah Penurunan Berat Setakat Ini",
-            labels={"PenurunanKg": "Penurunan (kg)"},
-            color="PenurunanKg",
-            color_continuous_scale="Tealgrn"
-        )
-        st.plotly_chart(fig, use_container_width=True)
+            fig = px.bar(
+                df_plot.sort_values("PenurunanKg", ascending=False),
+                x="Nama",
+                y="PenurunanKg",
+                title="Jumlah Penurunan Berat Setakat Ini",
+                labels={"PenurunanKg": "Penurunan (kg)"},
+                color="PenurunanKg",
+                color_continuous_scale="Tealgrn"
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
-        st.divider()
+            st.divider()
 
         # === Interaktif Kad Maklumat ===
         st.subheader("🩺 Info Nutrisi & Kesihatan")
@@ -114,17 +114,6 @@ if not df.empty:
             st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
 
         st.divider()
-
-        # === Cadangan API Integrasi ===
-        with st.expander("🌐 Cadangan API untuk Tips Kesihatan"):
-            st.markdown("""
-            **API Sumber Data Kesihatan (boleh diintegrasi):**
-            - [WHO API](https://dev.who.int) *(Global health data)*
-            - [MOH Malaysia Open Data](https://www.data.gov.my) *(Cari: nutrition, obesity, health tips)*
-            - [Nutritionix API](https://developer.nutritionix.com/) *(Maklumat nutrisi makanan)*
-            - [OpenFoodFacts API](https://world.openfoodfacts.org/data) *(Data produk makanan)*
-            """)
-
 
     with tab2:
         st.subheader("🏆 Leaderboard")
