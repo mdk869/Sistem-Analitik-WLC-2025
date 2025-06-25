@@ -85,11 +85,17 @@ def sejarah_berat(nama):
 
 # === Fungsi: Padam Peserta
 def padam_peserta_dari_sheet(nama):
-    data = ws_peserta.get_all_records()
-    for idx, row in enumerate(data):
-        if row["Nama"] == nama:
-            ws_peserta.delete_row(idx + 2)
-            break
+    try:
+        data = ws_peserta.get_all_records()
+        for idx, row in enumerate(data):
+            if row.get("Nama") == nama:
+                ws_peserta.delete_rows(idx + 2)  # +2 sebab header pada row 1
+                return True
+        return False
+    except Exception as e:
+        print(f"Error padam peserta: {e}")
+        return False
+
 
 
 # === Fungsi: Dapatkan Berat Terkini Semua Peserta
