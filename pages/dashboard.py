@@ -7,7 +7,7 @@ from datetime import datetime
 import pytz
 
 from app.styles import paparkan_tema, papar_footer, papar_header
-from app.helper_data import load_data_cloud_or_local as load_data
+from app.helper_data import load_data_peserta
 from app.helper_logic import tambah_kiraan_peserta
 
 from app.helper_data import (
@@ -34,7 +34,7 @@ st.title("📊 Dashboard Weight Loss Challenge 2025")
 paparkan_tema()
 
 # === Data ===
-df = load_data()
+df = load_data_peserta
 df_peserta = load_data_peserta()
 df_rekod = load_rekod_berat()
 
