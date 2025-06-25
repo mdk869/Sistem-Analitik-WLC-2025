@@ -75,15 +75,10 @@ with colA:
 with colB:
     st.image("https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png", use_container_width=True)
     nutrisi = get_tips_nutrisi()
-    st.info(f"""
-    🍎 **Tips Nutrisi Hari Ini:**
-    
-    {nutrisi}
-    """)
     
     st.info("🍎 **Tips Nutrisi Hari Ini:**")
-    for tip in get_tips_nutrisi:
-        st.markdown(f"- {tip}")
+    for nutrisi in get_tips_nutrisi:
+        st.markdown(f"- {nutrisi}")
 
 # === Popup Memo / Changelog ===
 if "show_memo" not in st.session_state:
