@@ -129,13 +129,18 @@ st.divider()
 # === Papar Sejarah Rekod Berat ===
 st.markdown("### 🗂️ Sejarah Rekod Berat")
 
+# Pilih kolum yang ingin dipaparkan
+kolum_pilihan = ['Nama', 'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori']
+
+# Papar dataframe dengan kolum terpilih dan numbering No.
 st.dataframe(
-    data_rekod.set_index(
+    data_rekod[kolum_pilihan].set_index(
         pd.Index(range(1, len(data_rekod) + 1), name="No.")
     ),
     use_container_width=True
 )
 
 st.divider()
+
 
 papar_footer("MKR")
