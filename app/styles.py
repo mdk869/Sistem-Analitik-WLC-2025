@@ -98,7 +98,7 @@ def papar_header(teks):
     st.markdown(f"<div class='wlc-header'>{teks}</div>", unsafe_allow_html=True)
     
 def papar_footer(owner="MKR", date=None):
-    st.markdown("""
+    st.markdown(f"""
         <hr style="border: 1px solid #444;">
         <div style="
             text-align:center;
