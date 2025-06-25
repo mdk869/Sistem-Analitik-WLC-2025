@@ -91,18 +91,18 @@ with st.expander("### ➕ Tambah Peserta Baru"):
 st.divider()
 
 # === Kemaskini Berat ===
-st.markdown("### ⚖️ Kemaskini Berat Terkini")
+with st.expander("### ⚖️ Kemaskini Berat Terkini"):
 
-if len(data_peserta) > 0:
-    nama_list = data_peserta["Nama"].tolist()
-    nama_dipilih = st.selectbox("Pilih Nama", nama_list)
-    berat_baru = st.number_input("Masukkan Berat Terkini (kg)", min_value=30.0, max_value=300.0)
-    tarikh_baru = st.date_input("Tarikh Timbang Terkini")
+    if len(data_peserta) > 0:
+        nama_list = data_peserta["Nama"].tolist()
+        nama_dipilih = st.selectbox("Pilih Nama", nama_list)
+        berat_baru = st.number_input("Masukkan Berat Terkini (kg)", min_value=30.0, max_value=300.0)
+        tarikh_baru = st.date_input("Tarikh Timbang Terkini")
 
-if st.button("💾 Simpan Berat Terkini"):
-    kemaskini_berat_peserta(nama_dipilih, berat_baru, tarikh_baru)
-    st.success(f"✅ Berat {nama_dipilih} berjaya dikemaskini.")
-    st.rerun()
+    if st.button("💾 Simpan Berat Terkini"):
+        kemaskini_berat_peserta(nama_dipilih, berat_baru, tarikh_baru)
+        st.success(f"✅ Berat {nama_dipilih} berjaya dikemaskini.")
+        st.rerun()
 
 st.divider()
 
