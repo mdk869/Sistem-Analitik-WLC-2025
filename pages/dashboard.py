@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 import pytz
 
+from app.helper_auth import check_login
 from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
 from app.helper_logic import tambah_kiraan_peserta, proses_leaderboard
@@ -173,10 +174,16 @@ if not df.empty:
         fig = px.pie(Kategori_df, names="KategoriBMI", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")
         st.plotly_chart(fig, use_container_width=True)
 
+        # ✅ Kawalan Akses untuk Table BMI
         with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
-            df_bmi_table = df_tapis[["Nama", "BMI", "KategoriBMI"]].sort_values("KategoriBMI", na_position="last").reset_index(drop=True)
-            df_bmi_table.index = df_bmi_table.index + 1
-            st.dataframe(df_bmi_table, use_container_width=True)
+            if check_login:  # ✅ hanya admin boleh lihat
+                df_bmi_table = df_tapis[["Nama", "BMI", "KategoriBMI"]].sort_values(
+                    "KategoriBMI", na_position="last"
+                ).reset_index(drop=True)
+                df_bmi_table.index = df_bmi_table.index + 1
+                st.dataframe(df_bmi_table, use_container_width=True)
+            else:
+                st.warning("⚠️ Akses Terhad! Hanya Admin boleh melihat senarai nama peserta dan BMI.")
 else:
     st.warning("Google Sheet kosong atau tiada data.")
 
