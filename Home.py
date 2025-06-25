@@ -56,6 +56,18 @@ st.markdown("## 🔍 **Informasi Program & Tips Kesihatan**")
 colA, colB = st.columns(2)
 
 with colA:
+
+    st.image(
+        "https://i.ibb.co/rK49V8yW/poster-Tips-Kesihatan-Harian.jpg",
+        use_container_width=True
+    )
+    
+    health_list = get_tips_kesihatan(jumlah=2)
+
+    st.subheader("🏃‍♂️**Tips Kesihatan Harian**")
+    st.info("\n".join([f"- {tip}" for tip in health_list]))
+    
+
     with st.expander("### 🎯 Matlamat WLC 2025"):
         st.success("""
         - Memupuk gaya hidup sihat.
@@ -72,15 +84,7 @@ with colA:
         - Privasi data terjamin.
         """)
     
-    st.image(
-        "https://i.ibb.co/rK49V8yW/poster-Tips-Kesihatan-Harian.jpg",
-        use_container_width=True
-    )
-    
-    health_list = get_tips_kesihatan(jumlah=2)
 
-    st.subheader("🏃‍♂️**Tips Kesihatan Harian**")
-    st.info("\n".join([f"- {tip}" for tip in health_list]))
 
 
 with colB:
