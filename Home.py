@@ -77,7 +77,8 @@ with colB:
     nutrisi = get_tips_nutrisi(jumlah=2)
     
     st.subheader("🍎 **Tips Nutrisi Hari Ini**")
-    st.info(f"🍎 **Tips Nutrisi Hari Ini**{nutrisi}")
+    st.info(f"{nutrisi}")
+    st.info(f"{nutrisi}")
 
 # === Popup Memo / Changelog ===
 if "show_memo" not in st.session_state:
