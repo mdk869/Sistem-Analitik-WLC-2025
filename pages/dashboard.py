@@ -199,7 +199,7 @@ with tab3:
         # Paparan metrik kategori BMI dengan gaya mengikut warna
         cols = st.columns(6)
         kategori_bmi_data = [
-            ("Kurang Berat Badan", "kurang", (df_tapis["KategoriBMI"] == "Kurang Berat Badan",).sum()),
+            ("Kurang Berat Badan", "kurang", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum()),
             ("Normal", "normal", (df_tapis["KategoriBMI"] == "Normal").sum()),
             ("Lebih Berat Badan", "lebih", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum()),
             ("Obesiti Tahap 1", "obes1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum()),
