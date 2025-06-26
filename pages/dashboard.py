@@ -221,14 +221,11 @@ with tab3:
 
         # === Senarai Nama Peserta Mengikut Kategori BMI (Akses Admin Sahaja) ===
         with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
-            if is_admin:
                 df_bmi_table = df_tapis[["NoStaf", "BMI", "KategoriBMI"]].sort_values(
                     "KategoriBMI", na_position="last"
                 ).reset_index(drop=True)
                 df_bmi_table.index = df_bmi_table.index + 1
                 st.dataframe(df_bmi_table, use_container_width=True)
-            else:
-                st.warning("🔒 Jadual BMI dilindungi untuk privasi peserta. Sila login sebagai Admin untuk akses.")
 
 # === Footer ===
 papar_footer(
