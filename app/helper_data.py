@@ -71,6 +71,17 @@ def load_data_cloud_or_local():
         st.info("Data dimuat dari backup Excel")
     return df
 
+# === Semak Jika Peserta Wujud
+def check_peserta_wujud(nama):
+    try:
+        data = ws_peserta.get_all_records()
+        for row in data:
+            if row["Nama"].strip().lower() == nama.strip().lower():
+                return True
+        return False
+    except Exception as e:
+        st.error(f"Gagal semak peserta: {e}")
+        return False
 
 # === Tambah Peserta Baru
 def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tarikh_daftar):
