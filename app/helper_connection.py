@@ -69,3 +69,13 @@ def list_files_in_folder(folder_id=DRIVE_FOLDER_ID):
     results = DRIVE.files().list(q=query, fields="files(id, name)").execute()
     items = results.get('files', [])
     return items
+
+# -------------------- WORKSHEET CHECK & CREATE --------------------
+
+def check_or_create_worksheet(spreadsheet, worksheet_name, header):
+    try:
+        ws = spreadsheet.worksheet(worksheet_name)
+    except gspread.exceptions.WorksheetNotFound:
+        ws = spreadsheet.add_worksheet(title=worksheet_name, rows="1000", cols=str(len(header)))
+        ws.append_row(header)
+    return ws
