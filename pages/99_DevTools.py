@@ -5,7 +5,7 @@ import pandas as pd
 import datetime
 import traceback
 from app.styles import papar_footer
-from app.helper_connection import peserta, dev_log, rekod_ranking, DRIVE, DRIVE_FOLDER_ID
+from app.helper_connection import data_peserta, log_dev, rekod_ranking, DRIVE, DRIVE_FOLDER_ID
 from googleapiclient.errors import HttpError
 
 # ===============================
@@ -18,13 +18,13 @@ st.caption("⚙️ Sistem ini dibangunkan khas untuk DevTeam sahaja. Tidak diaks
 st.subheader("🔗 Status Sambungan")
 
 try:
-    peserta.worksheets()
+    data_peserta.worksheets()
     st.success("✅ Data Peserta: OK")
 except:
     st.error("❌ Data Peserta: Gagal")
 
 try:
-    dev_log.worksheets()
+    log_dev.worksheets()
     st.success("✅ Log Dev: OK")
 except:
     st.error("❌ Log Dev: Gagal")
@@ -52,7 +52,7 @@ except:
 # ===============================
 def log_event(event, detail):
     try:
-        log_sheet = sheet_conn.worksheet("log_event")
+        log_sheet = log_dev.worksheet("log_event")
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_sheet.append_row([now, event, detail])
     except Exception as e:
@@ -61,7 +61,7 @@ def log_event(event, detail):
 
 def log_error(error_detail):
     try:
-        error_sheet = sheet_conn.worksheet("log_error")
+        error_sheet = log_dev.worksheet("log_error")
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         error_sheet.append_row([now, error_detail])
     except Exception as e:
@@ -103,9 +103,9 @@ def check_system_health():
 def load_log(log_type="event"):
     try:
         if log_type == "event":
-            sheet = sheet_conn.worksheet("log_event")
+            sheet = log_dev.worksheet("log_event")
         else:
-            sheet = sheet_conn.worksheet("log_error")
+            sheet = log_dev.worksheet("log_error")
 
         data = sheet.get_all_records()
         df = pd.DataFrame(data)
