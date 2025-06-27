@@ -180,7 +180,7 @@ with tab2:
         df_rank = df_rank.head(int(pilihan_top))
 
     st.dataframe(
-        df_rank[["Ranking", "Nama", "% Penurunan"]],
+        df_rank.columns[["Ranking", "Nama", "% Penurunan"]],
         use_container_width=True,
         hide_index=True
     )
