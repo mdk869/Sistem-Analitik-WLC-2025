@@ -39,39 +39,40 @@ ws_rekod = check_or_create_worksheet(
     ["Nama", "Tarikh", "Berat"]
 )
 
-def audit_header(sheet_name="data_peserta"):
-    try:
-        sh = connect_gsheet()
-        worksheet = sh.worksheet("data_peserta")
-        headers = worksheet.row_values(1)
-
-        expected_headers = ['Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan',
-                            'Tinggi', 'BeratAwal', 'TarikhDaftar',
-                            'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori']
-
-        missing = [h for h in expected_headers if h not in headers]
-
-        if missing:
-            st.error(f"❌ Header berikut hilang dalam {sheet_name}: {missing}")
-        else:
-            st.success(f"✅ Header dalam {sheet_name} adalah lengkap.")
-
-        return headers
-
-    except Exception as e:
-        st.error(f"❌ Gagal audit header: {e}")
-
-
-
-# === Load Data Peserta
+# =============================
+# ✅ Load Data Peserta
+# =============================
 def load_data_peserta():
     try:
-        df = pd.DataFrame(ws_peserta.get_all_records())
-        return df
-    except Exception as e:
-        st.error(f"❌ Gagal load data peserta: {e}")
-        return pd.DataFrame()
+        sheet = connect_gsheet()
+        if sheet is None:
+            return pd.DataFrame()
 
+        worksheet = sheet.worksheet("data_peserta")
+
+        # Pastikan header betul
+        header_row = worksheet.row_values(1)
+        if not header_row or "" in header_row:
+            raise Exception(f"Header dalam worksheet 'data_peserta' ada yang kosong atau tidak lengkap: {header_row}")
+
+        data = worksheet.get_all_records()
+
+        df = pd.DataFrame(data)
+
+        # Pastikan kolum kritikal wujud
+        expected_columns = ['Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan',
+                             'Tinggi', 'BeratAwal', 'TarikhDaftar',
+                             'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori']
+
+        for col in expected_columns:
+            if col not in df.columns:
+                df[col] = None
+
+        return df
+
+    except Exception as e:
+        st.warning(f"⚠️ Gagal load dari Google Sheet: {e}")
+        return pd.DataFrame()
 
 # === Load Rekod Berat
 def load_rekod_berat():
@@ -83,21 +84,55 @@ def load_rekod_berat():
         return pd.DataFrame()
 
 
-# === Backup Data jika Cloud gagal
+# =============================
+# ✅ Load Data Cloud or Local
+# =============================
 def load_data_cloud_or_local():
-    try:
-        df = load_data_peserta()
-        if df.empty:
-            raise Exception("Data Google Sheet kosong")
-    except Exception as e:
-        st.warning(f"⚠️ Gagal load dari Google Sheet: {e}")
+    df = load_data_peserta()
+
+    if df.empty:
+        st.warning("⚠️ Gagal load data dari Google Sheet. Cuba load dari backup Excel...")
         try:
             df = pd.read_excel("data_peserta_backup.xlsx")
-            st.info("Data dimuat dari backup Excel")
-        except FileNotFoundError:
-            st.error("❌ Backup Excel tidak ditemui. Sila semak file 'data_peserta_backup.xlsx'.")
-            return pd.DataFrame() # Return dataframe kosong untuk elak crash
+            st.info("✅ Data dimuat dari backup Excel")
+        except Exception as e:
+            st.error(f"❌ Backup Excel tidak ditemui atau gagal dibaca: {e}")
+            return pd.DataFrame()
+
     return df
+
+# =============================
+# ✅ Save Backup Excel
+# =============================
+def save_backup_excel(df):
+    try:
+        df.to_excel("data_peserta_backup.xlsx", index=False)
+        st.success("✅ Backup ke Excel berjaya disimpan.")
+    except Exception as e:
+        st.error(f"❌ Gagal simpan backup Excel: {e}")
+
+
+# =============================
+# ✅ Save to Google Sheet
+# =============================
+def save_data_to_gsheet(df):
+    try:
+        sheet = connect_gsheet()
+        if sheet is None:
+            st.error("❌ Gagal connect ke Google Sheet")
+            return
+
+        worksheet = sheet.worksheet("data_peserta")
+        worksheet.clear()
+
+        # Tulis header + data
+        worksheet.update([df.columns.values.tolist()] + df.values.tolist())
+
+        st.success("✅ Data berjaya disimpan ke Google Sheet.")
+
+    except Exception as e:
+        st.error(f"❌ Gagal simpan ke Google Sheet: {e}")
+
 
 # === Semak Jika Peserta Wujud
 def check_peserta_wujud(nama):
