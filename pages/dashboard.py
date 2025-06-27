@@ -185,6 +185,13 @@ with tab2:
         # ✅ Format % Penurunan — kosong jadi 0.00
         df_display['% Penurunan'] = df_display['% Penurunan'].fillna(0).round(2)
 
+        # ✅ Susun semula kolum — Ranking di depan
+        cols = df_display.columns.tolist()
+        if 'Ranking' in cols and 'Nama' in cols:
+            cols.insert(0, cols.pop(cols.index('Ranking')))  # Bawa Ranking ke depan
+            cols.insert(1, cols.pop(cols.index('Nama')))     # Nama selepas Ranking
+            df_display = df_display[cols]
+
         # 🔝 Highlight Top3 - berdasarkan Ranking ada emoji 🥇🥈🥉
         def highlight_top3(row):
             if str(row['Ranking']).startswith("🥇"):
