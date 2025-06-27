@@ -18,6 +18,15 @@ def get_bulan_sekarang():
     return datetime.now(tz).strftime('%Y-%m')
 
 
+def check_or_create_worksheet(sheet, sheet_name, header: list):
+    try:
+        ws = sheet.worksheet(sheet_name)
+    except Exception:
+        ws = sheet.add_worksheet(title=sheet_name, rows="1000", cols=str(len(header)))
+        ws.append_row(header)
+    return ws
+
+
 # ============================================
 # ✅ Kiraan BMI
 # ============================================
