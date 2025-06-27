@@ -1,32 +1,31 @@
 # app/helper_log.py
 
-from datetime import datetime
 import pytz
-import streamlit as st
+from datetime import datetime
 from app.helper_connection import SHEET_LOG
+from app.helper_utils import check_or_create_worksheet
 
 
 # ============================================
-# ✅ Setup Sheet Log
+# ✅ Sheet & Worksheet Setup
 # ============================================
 SHEET_NAME = "log_wlc_dev"
+HEADER = ["Tarikh", "Modul", "Aktiviti", "Status", "Catatan"]
 
-try:
-    ws_log = SHEET_LOG.worksheet(SHEET_NAME)
-except:
-    ws_log = SHEET_LOG.add_worksheet(title=SHEET_NAME, rows="1000", cols="5")
-    ws_log.append_row(["Tarikh", "Modul", "Aktiviti", "Status", "Catatan"])
+ws_log = check_or_create_worksheet(SHEET_LOG, SHEET_NAME, HEADER)
+
+local_tz = pytz.timezone("Asia/Kuala_Lumpur")
 
 
 # ============================================
-# ✅ Fungsi Log Aktiviti Developer
+# ✅ Logging Function
 # ============================================
-def log_dev(modul, aktiviti, status="Selesai", catatan=""):
-    waktu = datetime.now(pytz.timezone('Asia/Kuala_Lumpur')).strftime('%Y-%m-%d %H:%M:%S')
+def log_dev(modul, aktiviti, status="OK", catatan="-"):
     try:
-        ws_log.append_row([waktu, modul, aktiviti, status, catatan])
+        now = datetime.now(local_tz).strftime('%Y-%m-%d %H:%M:%S')
+        ws_log.append_row([now, modul, aktiviti, status, catatan])
     except Exception as e:
-        st.warning(f"⚠️ Gagal log aktiviti dev: {e}")
+        print(f"[Log Error] {e}")
 
 
 # ============================================
