@@ -3,7 +3,7 @@
 import streamlit as st
 import pandas as pd
 import datetime
-from app.helper_connection import SHEET_PESERTA, get_worksheet
+from app.helper_connection import SPREADSHEET_PESERTA, get_worksheet
 from app.helper_utils import save_dataframe_to_excel
 
 
@@ -12,7 +12,7 @@ from app.helper_utils import save_dataframe_to_excel
 # ------------------------------------
 def load_data_peserta():
     try:
-        ws = get_worksheet(SHEET_PESERTA, "data")
+        ws = get_worksheet(SPREADSHEET_PESERTA, "data")
         data = ws.get_all_records()
         df = pd.DataFrame(data)
 
