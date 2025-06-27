@@ -28,7 +28,6 @@ ws_peserta = sheet_peserta.worksheet("peserta")
 ws_rekod = sheet_peserta.worksheet("rekod_berat")
 
 
-
 def load_data_cloud_or_local():
     try:
         df = load_data_peserta()
