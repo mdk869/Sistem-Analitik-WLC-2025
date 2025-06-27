@@ -163,43 +163,64 @@ with tab1:
             st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
 
 with tab2:
-        st.subheader("Leaderboard Penurunan Berat (%)")
+    st.subheader("Leaderboard Penurunan Berat (%)")
 
-        df_leaderboard = leaderboard_dengan_status()
+    df_leaderboard = leaderboard_dengan_status()
 
-        if df_leaderboard.empty:
-            st.warning("❌ Tiada data untuk leaderboard.")
-        else:
-            col1, col2 = st.columns(2)
+    if df_leaderboard.empty:
+        st.warning("❌ Tiada data untuk leaderboard.")
+    else:
+        # 🔥 Sediakan dataframe untuk paparan
+        df_display = df_leaderboard.copy()
 
-            with col1:
-                st.dataframe(df_leaderboard, hide_index=True, use_container_width=True)
+        # 🧹 Sembunyikan kolum tidak perlu
+        df_display = df_display.drop(columns=['Jabatan', 'BeratAwal', 'BeratTerkini'], errors='ignore')
 
-            with col2:
-                fig = px.bar(
-                    df_leaderboard.sort_values('% Penurunan', ascending=False),
-                    x='Nama',
-                    y='% Penurunan',
-                    color='Ranking_Trend',
-                    text='Ranking_Trend',
-                    color_discrete_map={
-                        "Naik": "green",
-                        "Turun": "red",
-                        "Mendatar": "gray",
-                        "Baru": "blue"
-                    },
-                    title="Leaderboard Terkini dengan Status"
-                )
-                fig.update_layout(xaxis={'categoryorder': 'total descending'})
-                st.plotly_chart(fig, use_container_width=True)
+        # 🎖️ Ganti ranking No. 1,2,3 dengan medal + trend
+        medal_map = {1: "🥇", 2: "🥈", 3: "🥉"}
 
-            col3, col4 = st.columns([1, 3])
-            with col3:
-                if st.button("💾 Simpan Ranking Bulanan"):
-                    simpan_ranking_bulanan(df_leaderboard)
-                    st.success("Ranking bulanan berjaya disimpan!")
+        df_display['Ranking'] = [
+            f"{medal_map.get(rank, rank)} {trend}" if rank in medal_map else f"{rank} {trend}"
+            for rank, trend in zip(df_leaderboard['Ranking'], df_leaderboard['Ranking_Trend'])
+        ]
 
-            log_dev("Leaderboard", "Paparan leaderboard semasa")
+        # 🔝 Highlight Top3 - Tambah warna pada baris
+        def highlight_top3(row):
+            if row['Ranking'].startswith("🥇"):
+                return ['background-color: gold'] * len(row)
+            elif row['Ranking'].startswith("🥈"):
+                return ['background-color: silver'] * len(row)
+            elif row['Ranking'].startswith("🥉"):
+                return ['background-color: #cd7f32'] * len(row)  # bronze
+            else:
+                return [''] * len(row)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.dataframe(
+                df_display.style.apply(highlight_top3, axis=1),
+                hide_index=True,
+                use_container_width=True
+            )
+
+        with col2:
+            fig = px.bar(
+                df_leaderboard.sort_values('% Penurunan', ascending=False),
+                x='Nama',
+                y='% Penurunan',
+                color='Jantina',  # ✅ Legend ditukar kepada Jantina
+                text='Ranking_Trend',
+                title="Leaderboard Terkini Berdasarkan % Penurunan Berat"
+            )
+            fig.update_layout(
+                xaxis={'categoryorder': 'total descending'},
+                legend_title="Jantina"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        log_dev("Leaderboard", "Paparan leaderboard semasa")
+
 
 with tab3:
         st.subheader("📊 Analisis BMI Peserta")
