@@ -21,9 +21,9 @@ def get_secret_id(key):
     return st.secrets["gsheet"].get(key, None)
 
 # Connect to target sheets
-SHEET_PESERTA = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
-SHEET_LOG = gc.open_by_key(st.secrets["gsheet"]["log_wlc_dev_id"])
-SHEET_REKOD_RANKING = gc.open_by_key(st.secrets["gsheet"]["rekod_ranking"])
+peserta = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
+dev_log = gc.open_by_key(st.secrets["gsheet"]["log_wlc_dev_id"])
+rekod_ranking = gc.open_by_key(st.secrets["gsheet"]["rekod_ranking"])
 
 # -------------------- GOOGLE DRIVE CONNECTION --------------------
 
