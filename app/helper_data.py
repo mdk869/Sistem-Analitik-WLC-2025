@@ -67,8 +67,12 @@ def load_data_cloud_or_local():
             raise Exception("Data Google Sheet kosong")
     except Exception as e:
         st.warning(f"⚠️ Gagal load dari Google Sheet: {e}")
-        df = pd.read_excel("data_peserta_backup.xlsx")
-        st.info("Data dimuat dari backup Excel")
+        try:
+            df = pd.read_excel("data_peserta_backup.xlsx")
+            st.info("Data dimuat dari backup Excel")
+        except FileNotFoundError:
+            st.error("❌ Backup Excel tidak ditemui. Sila semak file 'data_peserta_backup.xlsx'.")
+            return pd.DataFrame() # Return dataframe kosong untuk elak crash
     return df
 
 # === Semak Jika Peserta Wujud
