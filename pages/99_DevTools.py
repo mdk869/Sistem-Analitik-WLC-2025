@@ -5,7 +5,7 @@ import pandas as pd
 import datetime
 import traceback
 from app.styles import papar_footer
-from app.helper_connection import SPREADSHEET_RANKING, SPREADSHEET_LOG, SPREADSHEET_PESERTA, DRIVE, DRIVE_FOLDER_ID
+from app.helper_connection import SPREADSHEET_RANKING, SPREADSHEET_LOG, SPREADSHEET_PESERTA, DRIVE, DRIVE_FOLDER_ID, get_worksheet, list_files_in_folder
 from app.helper_data import load_data_peserta
 from googleapiclient.errors import HttpError
 
@@ -43,10 +43,12 @@ except:
     st.error("❌ Google Drive: Gagal")
 
 try:
-    DRIVE_FOLDER_ID.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
-    st.success("✅ Google Drive: OK")
-except:
-    st.error("❌ Google Drive: Gagal")
+    files = list_files_in_folder()
+    st.success(f"✅ Google Drive OK: {len(files)} file dalam folder.")
+    for file in files:
+        st.write(f"📄 {file['name']} (ID: {file['id']})")
+except Exception as e:
+    st.error(f"❌ Google Drive GAGAL: {e}")
 
 # ===============================
 # ✅ Logger Function
