@@ -10,8 +10,7 @@ from app.helper_auth import check_login
 from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
 from app.helper_logic import tambah_kiraan_peserta
-from app.helper_ranking import leaderboard_dengan_status, sejarah_ranking
-from app.helper_ranking import leaderboard_dengan_status, simpan_ranking_bulanan
+from app.helper_ranking import leaderboard_dengan_status, sejarah_ranking, simpan_ranking_bulanan
 from app.helper_log import log_dev
 
 # ✅ Login check
@@ -179,7 +178,7 @@ with tab2:
             with col2:
                 st.markdown("### 📊 Carta Leaderboard")
                 fig = px.bar(
-                    df_leaderboard.sort_values('% Turun', ascending=False),
+                    df_leaderboard.sort_values('BeratTerkini', ascending=False),
                     x='Nama',
                     y='% Turun',
                     color='Status',
