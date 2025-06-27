@@ -159,7 +159,7 @@ with tab2:
         )
         st.plotly_chart(fig, use_container_width=True)
 
-        log_dev("Dashboard", "Buka Tab Leaderboard", "Success")
+    log_dev("Dashboard", "Buka Tab Leaderboard", "Success")
 
 # =====================================================================================
 # TAB 3: Status Timbang
