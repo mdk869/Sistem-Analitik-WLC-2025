@@ -186,7 +186,7 @@ with tab2:
 
         # 🔝 Highlight Top3 - Tambah warna pada baris
         def highlight_top3(row):
-            if row['Ranking'].startswith(""):
+            if row['Ranking'].startswith("🥇"):
                 return ['background-color: gold'] * len(row)
             elif row['Ranking'].startswith("🥈"):
                 return ['background-color: silver'] * len(row)
