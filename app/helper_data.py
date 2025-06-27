@@ -1,9 +1,9 @@
 # app/helper_data.py
 import pandas as pd
 import streamlit as st
+
 from app.helper_connection import SHEET_PESERTA
 from app.helper_log import log_dev
-
 from app.helper_utils import (
     kira_bmi,
     kategori_bmi_asia,
@@ -55,19 +55,31 @@ def get_berat_terkini():
 # =============================
 # ✅ Load Data Cloud or Local
 # =============================
-def load_data_cloud_or_local():
-    df = load_data_peserta()
+def load_data_cloud_or_local(sheet_name="data_peserta", worksheet_name="data", backup_file="data_peserta_backup.xlsx"):
+    try:
+        ws = check_or_create_worksheet(SHEET_PESERTA, worksheet_name,
+                                        ["Nama", "NoStaf", "Umur", "Jantina", "Jabatan",
+                                         "Tinggi", "BeratAwal", "TarikhDaftar", "BeratTerkini",
+                                         "TarikhTimbang", "BMI", "Kategori"])
+        data = ws.get_all_records()
+        df = pd.DataFrame(data)
+        log_dev("Data", f"Load data dari Google Sheet {sheet_name}", "Success")
+        return df
 
-    if df.empty:
-        st.warning("⚠️ Gagal load dari Google Sheet. Cuba load dari backup Excel...")
+    except Exception as e:
+        st.warning(f"⚠️ Gagal load dari Google Sheet. {e}")
+        log_dev("Data", "Load dari Google Sheet", "Fail", str(e))
+
         try:
-            df = pd.read_excel("data_peserta_backup.xlsx")
-            st.info("✅ Data dimuat dari backup Excel.")
-        except Exception as e:
-            st.error(f"❌ Backup Excel tidak ditemui atau gagal dibaca: {e}")
-            return pd.DataFrame()
+            df = pd.read_excel(backup_file)
+            st.info(f"🗂️ Data dimuatkan dari backup Excel: {backup_file}")
+            log_dev("Data", f"Load data dari Backup Excel {backup_file}", "Success")
+            return df
 
-    return df
+        except Exception as e2:
+            st.error(f"❌ Tiada data untuk dipaparkan. {e2}")
+            log_dev("Data", "Load backup Excel", "Fail", str(e2))
+            return pd.DataFrame()
 
 
 # =============================

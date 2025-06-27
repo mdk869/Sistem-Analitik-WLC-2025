@@ -5,7 +5,7 @@ import pandas as pd
 import datetime
 import traceback
 from app.styles import papar_footer
-from app.helper_connection import connection_checker, connect_drive, connect_gsheet
+from app.helper_connection import SHEET_PESERTA, SHEET_LOG, SHEET_REKOD_RANKING, DRIVE
 from googleapiclient.errors import HttpError
 
 # ===============================
@@ -15,36 +15,31 @@ st.set_page_config(page_title="🛠️ WLC DevTools", layout="wide")
 st.title("🛠️ Developer Tools - WLC 2025")
 st.caption("⚙️ Sistem ini dibangunkan khas untuk DevTeam sahaja. Tidak diakses oleh penganjur atau umum.")
 
-st.subheader("🔌 Health Check: Connection Status")
+st.subheader("🔗 Status Sambungan")
 
-status = connection_checker()
+try:
+    SHEET_PESERTA.worksheets()
+    st.success("✅ Data Peserta: OK")
+except:
+    st.error("❌ Data Peserta: Gagal")
 
-for key, value in status.items():
-    if "✅" in value:
-        st.success(f"{key}: {value}")
-    else:
-        st.error(f"{key}: {value}")
+try:
+    SHEET_LOG.worksheets()
+    st.success("✅ Log Dev: OK")
+except:
+    st.error("❌ Log Dev: Gagal")
 
-st.divider()
+try:
+    SHEET_REKOD_RANKING.worksheets()
+    st.success("✅ Rekod Ranking: OK")
+except:
+    st.error("❌ Rekod Ranking: Gagal")
 
-st.info("🟢 Status ini menunjukkan sama ada sistem dapat berhubung dengan Google Sheets dan Google Drive dengan betul.")
-
-# ===============================
-# ✅ Connection Google Sheet/Drive
-# ===============================
-@st.cache_resource
-def init_connection():
-    try:
-        sheet_conn = connect_gsheet()
-        drive_conn = connect_drive()
-        return sheet_conn, drive_conn
-    except Exception as e:
-        st.error("❌ Gagal sambung ke Google Sheet/Drive.")
-        st.stop()
-
-
-sheet_conn, drive_conn = init_connection()
-
+try:
+    DRIVE.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
+    st.success("✅ Google Drive: OK")
+except:
+    st.error("❌ Google Drive: Gagal")
 
 # ===============================
 # ✅ Logger Function
