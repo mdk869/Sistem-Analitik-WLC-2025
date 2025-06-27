@@ -210,7 +210,7 @@ with tab2:
                 x='Nama',
                 y='% Penurunan',
                 color='Jantina',  # ✅ Legend ditukar kepada Jantina
-                text='Ranking_Trend',
+                text='Jantina',
                 title="Leaderboard Terkini Berdasarkan % Penurunan Berat"
             )
             fig.update_layout(
