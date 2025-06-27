@@ -5,7 +5,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import streamlit as st
 from datetime import datetime
-from app.helper_utils import kira_bmi, kategori_bmi_asia
+from app.helper_utils import kira_bmi, kategori_bmi_asia, check_or_create_worksheet
 
 # === Setup sambungan Google Sheet
 scope = [
@@ -21,17 +21,6 @@ gc = gspread.authorize(credentials)
 # === Sambungan ke Spreadsheet Data Peserta
 sheet_peserta = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
 
-
-# === Fungsi Check dan Auto Create Worksheet
-def check_or_create_worksheet(sheet, name, header):
-    try:
-        ws = sheet.worksheet(name)
-    except:
-        ws = sheet.add_worksheet(title=name, rows="1000", cols="20")
-        ws.append_row(header)
-    return ws
-
-
 # === Worksheet utama
 ws_peserta = check_or_create_worksheet(
     sheet_peserta,
@@ -45,7 +34,6 @@ ws_rekod = check_or_create_worksheet(
     "rekod_berat",
     ["Nama", "Tarikh", "Berat"]
 )
-
 
 # === Load Data Peserta
 def load_data_peserta():
