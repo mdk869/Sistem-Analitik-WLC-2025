@@ -72,6 +72,26 @@ DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
 
 from app.helper_connection import gc, connect_drive, SHEET_PESERTA, SHEET_LOG, SHEET_RANKING, DRIVE_FOLDER_ID
 
+def check_or_create_worksheet(spreadsheet, worksheet_name, header: list = None):
+    """
+    Fungsi untuk semak sama ada worksheet wujud dalam spreadsheet.
+    Jika tidak wujud, ia akan cipta worksheet baru dengan nama dan header yang diberikan.
+
+    Args:
+        spreadsheet: objek spreadsheet (gspread).
+        worksheet_name (str): Nama worksheet yang hendak diperiksa/dicreate.
+        header (list, optional): Senarai header untuk row pertama. Default None.
+
+    Returns:
+        worksheet object (gspread.models.Worksheet)
+    """
+    try:
+        ws = spreadsheet.worksheet(worksheet_name)
+    except Exception:
+        ws = spreadsheet.add_worksheet(title=worksheet_name, rows="1000", cols="20")
+        if header:
+            ws.append_row(header)
+    return ws
 
 def connection_checker():
     status = {}
