@@ -183,7 +183,7 @@ with tab2:
         df_display = df_display.rename(columns={'Ranking_Trend': 'Ranking'})
 
         # ✅ Format % Penurunan — kosong jadi 0.00
-        df_display['% Penurunan'] = df_display['% Penurunan'].fillna(0).round(2)
+        df_display['% Penurunan'] = df_display['% Penurunan'].fillna(0).round(1)
 
         # ✅ Susun semula kolum — Ranking di depan
         cols = df_display.columns.tolist()
