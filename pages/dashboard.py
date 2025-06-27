@@ -173,7 +173,7 @@ with tab2:
     )
     bulan_pilih = st.selectbox("Banding Dengan Bulan Sebelumnya:", options=list_ranking_sheets())
 
-    df_rank = leaderboard_dengan_status()
+    df_rank = leaderboard_dengan_status(df_tapis)
         
     # Top N filter
     if pilihan_top != "Semua":
