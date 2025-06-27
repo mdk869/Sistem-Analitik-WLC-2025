@@ -180,7 +180,7 @@ with tab2:
         medal_map = {1: "🥇", 2: "🥈", 3: "🥉"}
 
         df_display['Ranking'] = [
-            f"{medal_map.get(rank, rank)} {trend}" if rank in medal_map else f"{rank} {trend}"
+            f"{medal_map.get(rank)} {trend}" if rank in medal_map else f"{rank} {trend}"
             for rank, trend in zip(df_leaderboard['Ranking'], df_leaderboard['Ranking_Trend'])
         ]
 
@@ -210,7 +210,7 @@ with tab2:
                 x='Nama',
                 y='% Penurunan',
                 color='Jantina',  # ✅ Legend ditukar kepada Jantina
-                text='Jantina',
+                text='Ranking_Trend',
                 title="Leaderboard Terkini Berdasarkan % Penurunan Berat"
             )
             fig.update_layout(
