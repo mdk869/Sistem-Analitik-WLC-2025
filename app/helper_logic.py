@@ -3,6 +3,7 @@
 import pandas as pd
 from app.helper_utils import kira_bmi, kategori_bmi_asia
 
+
 # === Tambah Kiraan BMI dan % Penurunan Berat ===
 def tambah_kiraan_peserta(df):
     df["PenurunanKg"] = (df["BeratAwal"] - df["BeratTerkini"]).round(2)
@@ -10,6 +11,7 @@ def tambah_kiraan_peserta(df):
     df["BMI"] = df.apply(lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]), axis=1)
     df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
     return df
+
 
 # === Kiraan Status Berat (Naik/Turun/Kekal) ===
 def kira_status_ranking(berat_awal, berat_terkini):
@@ -20,12 +22,9 @@ def kira_status_ranking(berat_awal, berat_terkini):
     else:
         return "Kekal"
 
+
 # === Export Fungsi ===
 __all__ = [
-    "kira_bmi",
-    "kategori_bmi_asia",
     "tambah_kiraan_peserta",
-    "kira_status_ranking",
-    "kira_trend",
-    "tambah_medal"
+    "kira_status_ranking"
 ]
