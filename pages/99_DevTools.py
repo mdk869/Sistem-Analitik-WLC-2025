@@ -4,7 +4,8 @@ import streamlit as st
 import pandas as pd
 import datetime
 import traceback
-from helper_data import connect_gsheet, connect_drive, load_data
+from app.styles import papar_footer
+from app.helper_connection import connection_checker, connect_drive, connect_gsheet
 from googleapiclient.errors import HttpError
 
 # ===============================
@@ -14,6 +15,19 @@ st.set_page_config(page_title="🛠️ WLC DevTools", layout="wide")
 st.title("🛠️ Developer Tools - WLC 2025")
 st.caption("⚙️ Sistem ini dibangunkan khas untuk DevTeam sahaja. Tidak diakses oleh penganjur atau umum.")
 
+st.subheader("🔌 Health Check: Connection Status")
+
+status = connection_checker()
+
+for key, value in status.items():
+    if "✅" in value:
+        st.success(f"{key}: {value}")
+    else:
+        st.error(f"{key}: {value}")
+
+st.divider()
+
+st.info("🟢 Status ini menunjukkan sama ada sistem dapat berhubung dengan Google Sheets dan Google Drive dengan betul.")
 
 # ===============================
 # ✅ Connection Google Sheet/Drive
@@ -127,3 +141,10 @@ def debug_console():
 
 # ===============================
 # ✅ La
+
+papar_footer(
+    owner="MKR Dev Team",
+    version="v3.2.5",
+    last_update="2025-06-27",
+    tagline="Empowering Data-Driven Decisions."
+)
