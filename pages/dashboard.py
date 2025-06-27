@@ -11,7 +11,9 @@ from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
 from app.helper_logic import tambah_kiraan_peserta, proses_leaderboard
 from app.helper_ranking import leaderboard_dengan_status, sejarah_ranking
-from app.helper_data import list_ranking_sheets
+from app.helper_ranking import leaderboard_dengan_status, simpan_ranking_bulanan
+from app.helper_log import log_dev
+
 
 # ✅ Login check
 is_admin = check_login()
@@ -163,39 +165,44 @@ with tab1:
             st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
 
 with tab2:
-    st.subheader("🏆 Leaderboard")
+    st.subheader("🏆 Leaderboard Penurunan Berat (%)")
 
-    # Pilihan untuk filter berapa peserta nak paparkan
-    pilihan_top = st.selectbox(
-        "Pilih jumlah peserta untuk dipaparkan:",
-        options=[5, 10, 20, "Semua"],
-        index=1
-    )
-    bulan_pilih = st.selectbox("Banding Dengan Bulan Sebelumnya:", options=list_ranking_sheets())
+    df_leaderboard = leaderboard_dengan_status()
 
-    df_rank = leaderboard_dengan_status(df_tapis)
-        
-    # Top N filter
-    if pilihan_top != "Semua":
-        df_rank = df_rank.head(int(pilihan_top))
+    if df_leaderboard.empty:
+        st.warning("❌ Tiada data untuk leaderboard.")
+    else:
+        col1, col2 = st.columns(2)
 
-    st.dataframe(
-        df_rank.columns,
-        use_container_width=True,
-        hide_index=True
-    )
-    nama_pilih = st.selectbox("Pilih Nama:", options=df_rank["Nama"].unique())
-    df_sejarah = sejarah_ranking(nama_pilih)
-    st.line_chart(df_sejarah.set_index("Bulan")["Ranking"])
+        with col1:
+            st.dataframe(df_leaderboard, use_container_width=True)
 
-    st.subheader("🏅 10 Terbaik - % Penurunan Berat")
+        with col2:
+            st.markdown("### 📊 Carta Leaderboard")
+            fig = px.bar(
+                df_leaderboard.sort_values('% Turun', ascending=False),
+                x='Nama',
+                y='% Turun',
+                color='Status',
+                text='Status',
+                color_discrete_map={
+                    "Naik": "green",
+                    "Turun": "red",
+                    "Mendatar": "gray",
+                    "Baru": "blue"
+                },
+                title="Leaderboard Terkini dengan Status"
+            )
+            fig.update_layout(xaxis={'categoryorder':'total descending'})
+            st.plotly_chart(fig, use_container_width=True)
 
-    top10 = df_rank.head(10)
-    fig_top10 = px.bar(top10, x="Nama", y="% Penurunan",
-                    title="Top 10 Peserta Berdasarkan % Penurunan Berat",
-                    labels={"% Penurunan": "% Turun"},
-                    color="% Penurunan", color_continuous_scale="Blues")
-    st.plotly_chart(fig_top10, use_container_width=True)
+        col3, col4 = st.columns([1, 3])
+        with col3:
+            if st.button("💾 Simpan Ranking Bulanan"):
+                simpan_ranking_bulanan(df_leaderboard)
+                st.success("Ranking bulanan berjaya disimpan!")
+
+        log_dev("Leaderboard", "Paparan leaderboard semasa")
 
 with tab3:
         st.subheader("📊 Analisis BMI Peserta")

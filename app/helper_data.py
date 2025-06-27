@@ -1,3 +1,5 @@
+# helper_data.py
+
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
@@ -18,12 +20,32 @@ credentials = Credentials.from_service_account_info(
 )
 gc = gspread.authorize(credentials)
 
-# === Sambungan ke Spreadsheet
+# === Sambungan ke Spreadsheet Data Peserta
 sheet_peserta = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
 
-ws_peserta = sheet_peserta.worksheet("peserta")
-ws_rekod = sheet_peserta.worksheet("rekod_berat")
+# === Check dan create worksheet jika tidak wujud
+def check_or_create_worksheet(sheet, name, header):
+    try:
+        ws = sheet.worksheet(name)
+    except:
+        ws = sheet.add_worksheet(title=name, rows="1000", cols="20")
+        ws.append_row(header)
+    return ws
 
+# === Worksheet peserta
+ws_peserta = check_or_create_worksheet(
+    sheet_peserta,
+    "peserta",
+    ["Nama", "NoStaf", "Umur", "Jantina", "Jabatan", "Tinggi",
+     "BeratAwal", "TarikhDaftar", "BeratTerkini", "TarikhTimbang", "BMI", "Kategori"]
+)
+
+# === Worksheet rekod berat
+ws_rekod = check_or_create_worksheet(
+    sheet_peserta,
+    "rekod_berat",
+    ["Nama", "Tarikh", "Berat"]
+)
 
 # === Load Data Peserta
 def load_data_peserta():
@@ -33,7 +55,7 @@ def load_data_peserta():
 def load_rekod_berat():
     return pd.DataFrame(ws_rekod.get_all_records())
 
-# === Load Backup jika error
+# === Load Data Backup jika error
 def load_data_cloud_or_local():
     try:
         df = load_data_peserta()
@@ -43,8 +65,7 @@ def load_data_cloud_or_local():
         st.info("Data dimuat dari backup Excel")
     return df
 
-
-# === Tambah Peserta
+# === Tambah Peserta Baru
 def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tarikh_daftar):
     berat_terkini = berat_awal
     tarikh_timbang = tarikh_daftar
@@ -60,8 +81,7 @@ def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, be
     ws_peserta.append_row(data_baru)
     ws_rekod.append_row([nama, str(tarikh_timbang), berat_terkini])
 
-
-# === Kemaskini Berat
+# === Kemaskini Berat Terkini
 def kemaskini_berat_peserta(nama, berat_baru, tarikh_baru):
     data = ws_peserta.get_all_records()
 
@@ -77,7 +97,6 @@ def kemaskini_berat_peserta(nama, berat_baru, tarikh_baru):
 
     ws_rekod.append_row([nama, str(tarikh_baru), berat_baru])
 
-
 # === Padam Peserta
 def padam_peserta_dari_sheet(nama):
     data = ws_peserta.get_all_records()
@@ -87,7 +106,6 @@ def padam_peserta_dari_sheet(nama):
             ws_peserta.delete_rows(idx + 2)
             return True
     return False
-
 
 # === Get Berat Terkini
 def get_berat_terkini():
@@ -105,7 +123,6 @@ def get_berat_terkini():
 
     return df_latest[["Nama", "Berat", "Tarikh"]]
 
-
 # === Sejarah Berat Individu
 def sejarah_berat(nama):
     rekod = pd.DataFrame(ws_rekod.get_all_records())
@@ -116,47 +133,3 @@ def sejarah_berat(nama):
     rekod["Tarikh"] = pd.to_datetime(rekod["Tarikh"], format="mixed", errors="coerce")
     rekod = rekod.dropna(subset=["Tarikh"])
     return rekod[rekod["Nama"] == nama].sort_values("Tarikh")
-
-
-# === Ranking History (Auto Save)
-def simpan_ranking_bulanan(df_ranking):
-    bulan_ini = datetime.now().strftime('%Y-%m')
-    nama_sheet = f'Ranking_{bulan_ini}'
-
-    try:
-        try:
-            ws_exist = sheet_peserta.worksheet(nama_sheet)
-            sheet_peserta.del_worksheet(ws_exist)
-        except:
-            pass
-
-        ws_new = sheet_peserta.add_worksheet(title=nama_sheet, rows=1000, cols=10)
-        data = [df_ranking.columns.values.tolist()] + df_ranking.values.tolist()
-        ws_new.update('A1', data)
-
-        st.success(f'Ranking disimpan ke sheet "{nama_sheet}"')
-    except Exception as e:
-        st.error(f"Gagal simpan ranking: {e}")
-
-
-# === Load Ranking History
-def load_ranking_bulanan(bulan):
-    nama_sheet = f'Ranking_{bulan}'
-
-    try:
-        ws = sheet_peserta.worksheet(nama_sheet)
-        data = ws.get_all_records()
-        df = pd.DataFrame(data)
-        return df
-    except Exception:
-        st.warning(f'Sheet {nama_sheet} tidak dijumpai.')
-        return None
-
-
-# === List Sheet Ranking
-def list_ranking_sheets():
-    worksheet_list = sheet_peserta.worksheets()
-    ranking_sheets = [
-        ws.title for ws in worksheet_list if ws.title.startswith('Ranking_')
-    ]
-    return ranking_sheets
