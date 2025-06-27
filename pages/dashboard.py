@@ -9,7 +9,7 @@ import pytz
 from app.helper_auth import check_login
 from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
-from app.helper_logic import tambah_kiraan_peserta, proses_leaderboard
+from app.helper_logic import tambah_kiraan_peserta
 from app.helper_ranking import leaderboard_dengan_status, sejarah_ranking
 from app.helper_ranking import leaderboard_dengan_status, simpan_ranking_bulanan
 from app.helper_log import log_dev
@@ -164,44 +164,44 @@ with tab1:
             st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
 
 with tab2:
-    st.subheader("🏆 Leaderboard Penurunan Berat (%)")
+        st.subheader("🏆 Leaderboard Penurunan Berat (%)")
 
-    df_leaderboard = leaderboard_dengan_status()
+        df_leaderboard = leaderboard_dengan_status()
 
-    if df_leaderboard.empty:
-        st.warning("❌ Tiada data untuk leaderboard.")
-    else:
-        col1, col2 = st.columns(2)
+        if df_leaderboard.empty:
+            st.warning("❌ Tiada data untuk leaderboard.")
+        else:
+            col1, col2 = st.columns(2)
 
-        with col1:
-            st.dataframe(df_leaderboard, hide_index=True, use_container_width=True)
+            with col1:
+                st.dataframe(df_leaderboard, hide_index=True, use_container_width=True)
 
-        with col2:
-            st.markdown("### 📊 Carta Leaderboard")
-            fig = px.bar(
-                df_leaderboard.sort_values('% Turun', ascending=False),
-                x='Nama',
-                y='% Turun',
-                color='Status',
-                text='Status',
-                color_discrete_map={
-                    "Naik": "green",
-                    "Turun": "red",
-                    "Mendatar": "gray",
-                    "Baru": "blue"
-                },
-                title="Leaderboard Terkini dengan Status"
-            )
-            fig.update_layout(xaxis={'categoryorder':'total descending'})
-            st.plotly_chart(fig, use_container_width=True)
+            with col2:
+                st.markdown("### 📊 Carta Leaderboard")
+                fig = px.bar(
+                    df_leaderboard.sort_values('% Turun', ascending=False),
+                    x='Nama',
+                    y='% Turun',
+                    color='Status',
+                    text='Status',
+                    color_discrete_map={
+                        "Naik": "green",
+                        "Turun": "red",
+                        "Mendatar": "gray",
+                        "Baru": "blue"
+                    },
+                    title="Leaderboard Terkini dengan Status"
+                )
+                fig.update_layout(xaxis={'categoryorder': 'total descending'})
+                st.plotly_chart(fig, use_container_width=True)
 
-        col3, col4 = st.columns([1, 3])
-        with col3:
-            if st.button("💾 Simpan Ranking Bulanan"):
-                simpan_ranking_bulanan(df_leaderboard)
-                st.success("Ranking bulanan berjaya disimpan!")
+            col3, col4 = st.columns([1, 3])
+            with col3:
+                if st.button("💾 Simpan Ranking Bulanan"):
+                    simpan_ranking_bulanan(df_leaderboard)
+                    st.success("Ranking bulanan berjaya disimpan!")
 
-        log_dev("Leaderboard", "Paparan leaderboard semasa")
+            log_dev("Leaderboard", "Paparan leaderboard semasa")
 
 with tab3:
         st.subheader("📊 Analisis BMI Peserta")
