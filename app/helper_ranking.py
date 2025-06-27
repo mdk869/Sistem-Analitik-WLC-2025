@@ -2,13 +2,12 @@
 
 import pandas as pd
 from datetime import datetime
-from app.helper_utils import kira_bmi, kategori_bmi_asia
+from app.helper_utils import kira_bmi, kategori_bmi_asia, kira_trend, tambah_medal
 from app.helper_data import (
     load_data_peserta,
     get_berat_terkini,
     load_data_ranking_bulanan,
     simpan_data_ranking_bulanan,
-    check_or_create_worksheet
 )
 from app.helper_log import log_dev
 
