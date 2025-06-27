@@ -2,8 +2,7 @@
 
 import pandas as pd
 from datetime import datetime
-from app.helper_logic import tambah_medal, kira_trend
-from app.helper_utils import kira_peratus_turun, get_bulan_sekarang
+from app.helper_utils import kira_bmi, kategori_bmi_asia
 from app.helper_data import (
     load_data_peserta,
     get_berat_terkini,
@@ -129,6 +128,31 @@ def sejarah_ranking(nama):
     df_nama = df_ranking[df_ranking["Nama"] == nama][["Bulan", "Ranking"]]
     df_nama = df_nama.sort_values("Bulan")
     return df_nama.reset_index(drop=True)
+
+
+# === Kiraan Trend Naik/Turun untuk Leaderboard ===
+def kira_trend(ranking_semasa, ranking_sebelum):
+    if pd.isna(ranking_sebelum):
+        return "🆕"
+    elif ranking_semasa < ranking_sebelum:
+        return "📈"
+    elif ranking_semasa > ranking_sebelum:
+        return "📉"
+    else:
+        return "➖"
+
+
+# === Medal 🥇🥈🥉 ===
+def tambah_medal(rank):
+    if rank == 1:
+        return "🥇"
+    elif rank == 2:
+        return "🥈"
+    elif rank == 3:
+        return "🥉"
+    else:
+        return str(rank)
+
 
 
 # === Export Fungsi ===
