@@ -20,11 +20,11 @@ gc = gspread.authorize(credentials)
 sheet_log = gc.open_by_key(st.secrets["gsheet"]["log_wlc_dev_id"])
 
 # Worksheet untuk log
-ws_log = sheet_log.worksheet("log_dev")
+ws_log = sheet_log.worksheet("log_wlc_dev")
 
 
 # === Fungsi Logging Aktiviti Developer
-def log_dev(aktiviti, keterangan):
+def log_wlc_dev(aktiviti, keterangan):
     waktu = datetime.now(pytz.timezone('Asia/Kuala_Lumpur')).strftime('%Y-%m-%d %H:%M:%S')
     try:
         ws_log.append_row([waktu, aktiviti, keterangan])
