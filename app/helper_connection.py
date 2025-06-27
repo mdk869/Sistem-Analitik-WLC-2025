@@ -27,15 +27,39 @@ gc = gspread.authorize(CREDENTIALS)
 # ===========================
 def connect_drive():
     try:
-        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as temp:
-            json.dump(st.secrets["gcp_service_account"], temp)
+        # Create temporary client_secrets.json
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as temp:
+            credentials = {
+                "client_id": st.secrets["gcp_service_account"]["client_id"],
+                "client_email": st.secrets["gcp_service_account"]["client_email"],
+                "private_key": st.secrets["gcp_service_account"]["private_key"],
+                "private_key_id": st.secrets["gcp_service_account"]["private_key_id"],
+                "type": st.secrets["gcp_service_account"]["type"],
+                "project_id": st.secrets["gcp_service_account"]["project_id"],
+                "auth_uri": st.secrets["gcp_service_account"]["auth_uri"],
+                "token_uri": st.secrets["gcp_service_account"]["token_uri"],
+                "auth_provider_x509_cert_url": st.secrets["gcp_service_account"]["auth_provider_x509_cert_url"],
+                "client_x509_cert_url": st.secrets["gcp_service_account"]["client_x509_cert_url"],
+            }
+
+            config = {
+                "client_config_backend": "service",
+                "service_config": {
+                    "client_id": credentials["client_id"],
+                    "client_email": credentials["client_email"],
+                    "private_key": credentials["private_key"],
+                }
+            }
+
+            json.dump(config, temp)
             temp.flush()
 
+            # Auth Drive
             gauth = GoogleAuth()
             gauth.LoadServiceConfigFile(temp.name)
             drive = GoogleDrive(gauth)
 
-        return drive
+            return drive
 
     except Exception as e:
         st.error(f"❌ Gagal sambung ke Google Drive: {e}")
