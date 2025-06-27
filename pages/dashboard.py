@@ -174,7 +174,7 @@ with tab2:
         df_display = df_leaderboard.copy()
 
         # 🧹 Sembunyikan kolum tidak perlu
-        df_display = df_display.drop(columns=['Jabatan', 'BeratAwal', 'BeratTerkini', "Ranking_Trend"], errors='ignore')
+        df_display = df_display.drop(columns=['Jabatan', 'BeratAwal', 'BeratTerkini', "Ranking_Trend", "Jantina"], errors='ignore')
 
         # 🎖️ Ganti ranking No. 1,2,3 dengan medal + trend
         medal_map = {1: "🥇", 2: "🥈", 3: "🥉"}
