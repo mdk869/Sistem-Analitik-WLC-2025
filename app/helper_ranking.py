@@ -6,8 +6,10 @@ from app.helper_utils import kira_bmi, kategori_bmi_asia, kira_trend, tambah_med
 from app.helper_data import (
     load_data_peserta,
     get_berat_terkini,
+)
+from app.helper_ranking_db import(
     load_data_ranking_bulanan,
-    simpan_data_ranking_bulanan,
+    simpan_data_ranking_bulanan
 )
 from app.helper_log import log_dev
 
@@ -128,31 +130,6 @@ def sejarah_ranking(nama):
     df_nama = df_ranking[df_ranking["Nama"] == nama][["Bulan", "Ranking"]]
     df_nama = df_nama.sort_values("Bulan")
     return df_nama.reset_index(drop=True)
-
-
-# === Kiraan Trend Naik/Turun untuk Leaderboard ===
-def kira_trend(ranking_semasa, ranking_sebelum):
-    if pd.isna(ranking_sebelum):
-        return "🆕"
-    elif ranking_semasa < ranking_sebelum:
-        return "📈"
-    elif ranking_semasa > ranking_sebelum:
-        return "📉"
-    else:
-        return "➖"
-
-
-# === Medal 🥇🥈🥉 ===
-def tambah_medal(rank):
-    if rank == 1:
-        return "🥇"
-    elif rank == 2:
-        return "🥈"
-    elif rank == 3:
-        return "🥉"
-    else:
-        return str(rank)
-
 
 
 # === Export Fungsi ===
