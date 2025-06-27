@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-from app.helper_connection import SHEET_REKOD_RANKING, get_worksheet
+from app.helper_connection import SPREADSHEET_RANKING, get_worksheet
 from app.helper_data import load_data_peserta
 from app.helper_utils import save_dataframe_to_excel
 
@@ -14,7 +14,7 @@ from app.helper_utils import save_dataframe_to_excel
 # ====================================================
 def load_rekod_ranking():
     try:
-        ws = get_worksheet(SHEET_REKOD_RANKING, "rekod")
+        ws = get_worksheet(SPREADSHEET_RANKING, "rekod")
         data = ws.get_all_records()
         df = pd.DataFrame(data)
         return df
@@ -28,7 +28,7 @@ def load_rekod_ranking():
 # ====================================================
 def save_rekod_ranking(df):
     try:
-        ws = get_worksheet(SHEET_REKOD_RANKING, "rekod")
+        ws = get_worksheet(SPREADSHEET_RANKING, "rekod")
         ws.clear()
         ws.update([df.columns.values.tolist()] + df.values.tolist())
         st.success("✅ Rekod ranking berjaya disimpan.")
