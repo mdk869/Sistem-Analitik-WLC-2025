@@ -174,7 +174,7 @@ with tab2:
         col1, col2 = st.columns(2)
 
         with col1:
-            st.dataframe(df_leaderboard, use_container_width=True)
+            st.dataframe(df_leaderboard, hide_index=True, use_container_width=True)
 
         with col2:
             st.markdown("### 📊 Carta Leaderboard")
