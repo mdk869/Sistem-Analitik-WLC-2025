@@ -24,7 +24,20 @@ def load_data_peserta():
         st.error(f"❌ Gagal load data peserta: {e}")
         return pd.DataFrame()
 
+def load_data_cloud_or_local():
+    try:
+        ws = get_worksheet(SPREADSHEET_PESERTA, "data")
+        data = ws.get_all_records()
+        df = pd.DataFrame(data)
 
+        if df.empty:
+            st.warning("🚫 Data peserta kosong.")
+        return df
+
+    except Exception as e:
+        st.error(f"❌ Gagal load data peserta: {e}")
+        return pd.DataFrame()
+    
 # ------------------------------------
 # ✅ Simpan Dataframe ke Sheet Peserta
 # ------------------------------------
@@ -89,7 +102,7 @@ def kemaskini_berat_peserta(nama, berat_baru, tarikh_baru):
     df = load_data_peserta()
 
     if nama in df['Nama'].values:
-        idx = df[df['Nama'] == nama].index[0]
+        idx = df[df['Nama'] == nama].index[0] 
         df.at[idx, 'BeratTerkini'] = berat_baru
         df.at[idx, 'TarikhTimbang'] = str(tarikh_baru)
 
