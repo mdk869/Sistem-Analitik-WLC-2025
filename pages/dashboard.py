@@ -128,47 +128,49 @@ def paparan_info_program(df):
         df_belum.index += 1
         st.dataframe(df_belum, use_container_width=True)
 
-with tab2:
-    st.subheader("Leaderboard Penurunan Berat (%)")
+# ==========================
+# ✅ Function Tab 2 — Leaderboard
+# ==========================
 
-    df_leaderboard = leaderboard_dengan_status()
+def paparan_leaderboard(df):
+    with tab2:
+        st.subheader("Leaderboard Penurunan Berat (%)")
 
-    if df_leaderboard.empty:
-        st.warning("❌ Tiada data untuk leaderboard.")
-    else:
-        # 🔥 Sediakan dataframe untuk paparan
+        df_leaderboard = leaderboard_dengan_status()
+
+        if df_leaderboard.empty:
+            st.warning("❌ Tiada data untuk leaderboard.")
+            return
+
         df_display = df_leaderboard.copy()
 
-        # 🧹 Sembunyikan kolum tidak perlu
+        # Buang kolum tak perlu
         df_display = df_display.drop(
             columns=['Jabatan', 'BeratAwal', 'TarikhTimbang', 'BeratTerkini', 'Ranking', 'Jantina'],
             errors='ignore'
         )
 
-        # ✅ Guna terus kolum Ranking_Trend sebagai Ranking
         df_display = df_display.rename(columns={'Ranking_Trend': 'Ranking'})
-
-        # ✅ Format % Penurunan — kosong jadi 0.00
         df_display['% Penurunan'] = df_display['% Penurunan'].fillna(0).round(2)
 
-        # ✅ Ambil hanya Top 10
+        # Top 10
         df_display = df_display.sort_values(by='% Penurunan', ascending=False).head(10).reset_index(drop=True)
 
-        # ✅ Susun semula kolum — Ranking di depan
+        # Susun kolum
         cols = df_display.columns.tolist()
         if 'Ranking' in cols and 'Nama' in cols:
-            cols.insert(0, cols.pop(cols.index('Ranking')))  # Bawa Ranking ke depan
-            cols.insert(1, cols.pop(cols.index('Nama')))     # Nama selepas Ranking
+            cols.insert(0, cols.pop(cols.index('Ranking')))
+            cols.insert(1, cols.pop(cols.index('Nama')))
             df_display = df_display[cols]
 
-        # 🔝 Highlight Top3 - berdasarkan Ranking ada emoji 🥇🥈🥉
+        # Highlight Top3
         def highlight_top3(row):
             if str(row['Ranking']).startswith("🥇"):
                 return ['background-color: gold'] * len(row)
             elif str(row['Ranking']).startswith("🥈"):
                 return ['background-color: silver'] * len(row)
             elif str(row['Ranking']).startswith("🥉"):
-                return ['background-color: #cd7f32'] * len(row)  # bronze
+                return ['background-color: #cd7f32'] * len(row)
             else:
                 return [''] * len(row)
 
@@ -186,7 +188,7 @@ with tab2:
                 df_leaderboard.sort_values('% Penurunan', ascending=False),
                 x='Nama',
                 y='% Penurunan',
-                color='Jantina',  # ✅ Legend ikut Jantina
+                color='Jantina',
                 text='Ranking_Trend',
                 title="Leaderboard Terkini Berdasarkan % Penurunan Berat"
             )
@@ -196,43 +198,55 @@ with tab2:
             )
             st.plotly_chart(fig, use_container_width=True)
 
-        log_dev("Leaderboard", "Paparan leaderboard semasa")
+# ==========================
+# ✅ Function Tab 3 — BMI
+# ==========================
 
-
-with tab3:
+def paparan_bmi(df):
+    with tab3:
         st.subheader("📊 Analisis BMI Peserta")
-        col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-        # Paparan metrik kategori BMI dengan gaya mengikut warna
-        cols = st.columns(6)
         kategori_bmi_data = [
-            ("Kurang Berat Badan", "kurang", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum()),
-            ("Normal", "normal", (df_tapis["KategoriBMI"] == "Normal").sum()),
-            ("Lebih Berat Badan", "lebih", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum()),
-            ("Obesiti Tahap 1", "obes1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum()),
-            ("Obesiti Tahap 2", "obes2", (df_tapis["KategoriBMI"] == "Obesiti Tahap 2").sum()),
-            ("Obesiti Morbid", "morbid", (df_tapis["KategoriBMI"] == "Obesiti Morbid").sum()),
+            ("Kurang Berat Badan", (df["KategoriBMI"] == "Kurang Berat Badan").sum()),
+            ("Normal", (df["KategoriBMI"] == "Normal").sum()),
+            ("Lebih Berat Badan", (df["KategoriBMI"] == "Lebih Berat Badan").sum()),
+            ("Obesiti Tahap 1", (df["KategoriBMI"] == "Obesiti Tahap 1").sum()),
+            ("Obesiti Tahap 2", (df["KategoriBMI"] == "Obesiti Tahap 2").sum()),
+            ("Obesiti Morbid", (df["KategoriBMI"] == "Obesiti Morbid").sum()),
         ]
 
-        for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
-            col.markdown(f"""
-            <div class="bmi-box {css_class}">
-                <div class="bmi-title">{label}</div>
-                <div class="bmi-value">{value}</div>
-            </div>
-            """, unsafe_allow_html=True)
+        cols = st.columns(6)
 
-        Kategori_df = df_tapis.groupby("KategoriBMI").size().reset_index(name="Bilangan")
+        for col, (label, value) in zip(cols, kategori_bmi_data):
+            col.metric(label, value)
+
+        # Pie chart BMI
+        Kategori_df = df.groupby("KategoriBMI").size().reset_index(name="Bilangan")
         fig = px.pie(Kategori_df, names="KategoriBMI", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")
         st.plotly_chart(fig, use_container_width=True)
 
-        # === Senarai Nama Peserta Mengikut Kategori BMI (Akses Admin Sahaja) ===
         with st.expander("📋 Lihat Senarai Peserta Mengikut Kategori BMI"):
-                df_bmi_table = df_tapis[["NoStaf", "BMI", "KategoriBMI"]].sort_values(
-                    "KategoriBMI", na_position="last"
-                ).reset_index(drop=True)
-                df_bmi_table.index = df_bmi_table.index + 1
-                st.dataframe(df_bmi_table, use_container_width=True)
+            df_bmi_table = df[["NoStaf", "BMI", "KategoriBMI"]].sort_values(
+                "KategoriBMI", na_position="last"
+            ).reset_index(drop=True)
+            df_bmi_table.index += 1
+            st.dataframe(df_bmi_table, use_container_width=True)
+
+# ==========================
+# ✅ Paparkan Tab
+# ==========================
+
+if not df.empty:
+    paparan_info_program(df)
+    paparan_leaderboard(df)
+    paparan_bmi(df)
+else:
+    with tab1:
+        st.warning("❌ Tiada data peserta untuk dipaparkan.")
+    with tab2:
+        st.warning("❌ Tiada data leaderboard untuk dipaparkan.")
+    with tab3:
+        st.warning("❌ Tiada data BMI untuk dipaparkan.")
 
 # === Footer ===
 papar_footer(
