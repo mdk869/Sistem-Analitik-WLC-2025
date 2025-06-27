@@ -181,8 +181,8 @@ with tab2:
                     df_leaderboard.sort_values('% Penurunan', ascending=False),
                     x='Nama',
                     y='% Penurunan',
-                    color='Status',
-                    text='Status',
+                    color='Ranking_Trend',
+                    text='Ranking_Trend',
                     color_discrete_map={
                         "Naik": "green",
                         "Turun": "red",
