@@ -5,7 +5,6 @@ from datetime import datetime
 import streamlit as st
 import pytz
 
-# Import logik tambahan (bmi, ranking)
 from app.helper_logic import kira_bmi, kategori_bmi_asia
 
 
@@ -21,35 +20,31 @@ gc = gspread.authorize(credentials)
 
 # === Sambungan ke Spreadsheet
 sheet_peserta = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
-sheet_log = gc.open_by_key(st.secrets["gsheet"]["log_wlc_dev_id"])
 
-# === Worksheet Utama
 ws_peserta = sheet_peserta.worksheet("peserta")
 ws_rekod = sheet_peserta.worksheet("rekod_berat")
 
 
+# === Load Data Peserta
+def load_data_peserta():
+    return pd.DataFrame(ws_peserta.get_all_records())
+
+# === Load Rekod Berat
+def load_rekod_berat():
+    return pd.DataFrame(ws_rekod.get_all_records())
+
+# === Load Backup jika error
 def load_data_cloud_or_local():
     try:
         df = load_data_peserta()
     except Exception as e:
         st.warning(f"⚠️ Gagal load dari Google Sheet: {e}")
-        # Cuba load dari fail Excel lokal sebagai backup
         df = pd.read_excel("data_peserta_backup.xlsx")
-        st.info("Data dimuat dari fail lokal sebagai backup")
+        st.info("Data dimuat dari backup Excel")
     return df
 
 
-# === Fungsi: Load Data Peserta
-def load_data_peserta():
-    return pd.DataFrame(ws_peserta.get_all_records())
-
-
-# === Fungsi: Load Rekod Berat
-def load_rekod_berat():
-    return pd.DataFrame(ws_rekod.get_all_records())
-
-
-# === Fungsi: Tambah Peserta Baru
+# === Tambah Peserta
 def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tarikh_daftar):
     berat_terkini = berat_awal
     tarikh_timbang = tarikh_daftar
@@ -66,7 +61,7 @@ def tambah_peserta_google_sheet(nama, nostaf, umur, jantina, jabatan, tinggi, be
     ws_rekod.append_row([nama, str(tarikh_timbang), berat_terkini])
 
 
-# === Fungsi: Kemaskini Berat Peserta + Simpan ke Rekod
+# === Kemaskini Berat
 def kemaskini_berat_peserta(nama, berat_baru, tarikh_baru):
     data = ws_peserta.get_all_records()
 
@@ -74,28 +69,16 @@ def kemaskini_berat_peserta(nama, berat_baru, tarikh_baru):
         if row["Nama"] == nama:
             bmi_baru = kira_bmi(berat_baru, row["Tinggi"])
             kategori_baru = kategori_bmi_asia(bmi_baru)
-            ws_peserta.update(f"I{idx+2}", berat_baru)  # BeratTerkini
-            ws_peserta.update(f"J{idx+2}", str(tarikh_baru))  # TarikhTimbang
-            ws_peserta.update(f"K{idx+2}", bmi_baru)  # BMI
-            ws_peserta.update(f"L{idx+2}", kategori_baru)  # Kategori
+            ws_peserta.update(f"I{idx+2}", berat_baru)
+            ws_peserta.update(f"J{idx+2}", str(tarikh_baru))
+            ws_peserta.update(f"K{idx+2}", bmi_baru)
+            ws_peserta.update(f"L{idx+2}", kategori_baru)
             break
 
     ws_rekod.append_row([nama, str(tarikh_baru), berat_baru])
 
 
-# === Fungsi: Sejarah Berat Individu
-def sejarah_berat(nama):
-    rekod = pd.DataFrame(ws_rekod.get_all_records())
-    rekod.columns = [str(col).strip() for col in rekod.columns]
-
-    if rekod.empty or "Tarikh" not in rekod.columns:
-        return pd.DataFrame()
-    rekod["Tarikh"] = pd.to_datetime(rekod["Tarikh"], format="mixed", errors="coerce")
-    rekod = rekod.dropna(subset=["Tarikh"])
-    return rekod[rekod["Nama"] == nama].sort_values("Tarikh")
-
-
-# === Fungsi: Padam Peserta
+# === Padam Peserta
 def padam_peserta_dari_sheet(nama):
     data = ws_peserta.get_all_records()
 
@@ -106,7 +89,7 @@ def padam_peserta_dari_sheet(nama):
     return False
 
 
-# === Fungsi: Dapatkan Berat Terkini Semua Peserta
+# === Get Berat Terkini
 def get_berat_terkini():
     df_rekod = load_rekod_berat()
     if df_rekod.empty:
@@ -123,21 +106,31 @@ def get_berat_terkini():
     return df_latest[["Nama", "Berat", "Tarikh"]]
 
 
-# === FUNGSI: RANKING HISTORY (MENGIKUT BULAN) ===
+# === Sejarah Berat Individu
+def sejarah_berat(nama):
+    rekod = pd.DataFrame(ws_rekod.get_all_records())
+    rekod.columns = [str(col).strip() for col in rekod.columns]
 
-# Simpan Ranking History ke Sheet Mengikut Bulan
+    if rekod.empty or "Tarikh" not in rekod.columns:
+        return pd.DataFrame()
+    rekod["Tarikh"] = pd.to_datetime(rekod["Tarikh"], format="mixed", errors="coerce")
+    rekod = rekod.dropna(subset=["Tarikh"])
+    return rekod[rekod["Nama"] == nama].sort_values("Tarikh")
+
+
+# === Ranking History (Auto Save)
 def simpan_ranking_bulanan(df_ranking):
     bulan_ini = datetime.now().strftime('%Y-%m')
     nama_sheet = f'Ranking_{bulan_ini}'
 
     try:
         try:
-            ws_exist = sheet.worksheet(nama_sheet)
-            sheet.del_worksheet(ws_exist)
+            ws_exist = sheet_peserta.worksheet(nama_sheet)
+            sheet_peserta.del_worksheet(ws_exist)
         except:
-            pass  # Sheet belum wujud
+            pass
 
-        ws_new = sheet.add_worksheet(title=nama_sheet, rows=1000, cols=10)
+        ws_new = sheet_peserta.add_worksheet(title=nama_sheet, rows=1000, cols=10)
         data = [df_ranking.columns.values.tolist()] + df_ranking.values.tolist()
         ws_new.update('A1', data)
 
@@ -146,12 +139,12 @@ def simpan_ranking_bulanan(df_ranking):
         st.error(f"Gagal simpan ranking: {e}")
 
 
-# Load Ranking History berdasarkan bulan
+# === Load Ranking History
 def load_ranking_bulanan(bulan):
     nama_sheet = f'Ranking_{bulan}'
 
     try:
-        ws = sheet.worksheet(nama_sheet)
+        ws = sheet_peserta.worksheet(nama_sheet)
         data = ws.get_all_records()
         df = pd.DataFrame(data)
         return df
@@ -160,9 +153,9 @@ def load_ranking_bulanan(bulan):
         return None
 
 
-# Senarai Sheet Ranking History
+# === List Sheet Ranking
 def list_ranking_sheets():
-    worksheet_list = sheet.worksheets()
+    worksheet_list = sheet_peserta.worksheets()
     ranking_sheets = [
         ws.title for ws in worksheet_list if ws.title.startswith('Ranking_')
     ]
