@@ -17,6 +17,8 @@ from app.helper_logic import (
     kategori_bmi_asia
 )
 
+from app.helper_utils import check_header_consistency
+
 from app.styles import paparkan_tema, papar_header, papar_footer
 
 # ✅ Check login
@@ -40,6 +42,27 @@ st.subheader("🔧 Pengurusan Peserta")
 # === Load Data ===
 data_peserta = load_data_peserta()
 data_rekod = load_data_cloud_or_local()
+
+HEADER_PESERTA = [
+    'Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan', 'Tinggi',
+    'BeratAwal', 'TarikhDaftar', 'BeratTerkini', 'TarikhTimbang',
+    'BMI', 'Kategori'
+]
+
+# Check sebelum proses data
+if check_header_consistency(data_peserta, HEADER_PESERTA, "Data Peserta"):
+    # Papar dataframe jika header betul
+    kolum_pilihan = ['Nama', 'NoStaf', 'Umur', 'Jantina', 'Tinggi', 'BeratAwal', 'TarikhDaftar']
+
+    st.dataframe(
+        data_peserta[kolum_pilihan].set_index(
+            pd.Index(range(1, len(data_peserta) + 1), name="No.")
+        ),
+        use_container_width=True,
+    )
+else:
+    st.stop()
+
 
 # === Papar Senarai Peserta ===
 st.markdown("### 📋 Senarai Peserta")
