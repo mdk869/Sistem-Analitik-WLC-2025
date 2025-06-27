@@ -36,7 +36,7 @@ def create_drive_service():
     service = build('drive', 'v3', credentials=drive_creds)
     return service
 
-DRIVE_SERVICE = create_drive_service()
+DRIVE = create_drive_service()
 DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
 
 # Upload file to Google Drive
@@ -46,7 +46,7 @@ def upload_to_drive(file_path, file_name, folder_id=DRIVE_FOLDER_ID):
         'parents': [folder_id]
     }
     media = MediaFileUpload(file_path, resumable=True)
-    file = DRIVE_SERVICE.files().create(
+    file = DRIVE.files().create(
         body=file_metadata,
         media_body=media,
         fields='id'
@@ -55,7 +55,7 @@ def upload_to_drive(file_path, file_name, folder_id=DRIVE_FOLDER_ID):
 
 # Download file from Google Drive
 def download_from_drive(file_id, destination_path):
-    request = DRIVE_SERVICE.files().get_media(fileId=file_id)
+    request = DRIVE.files().get_media(fileId=file_id)
     fh = io.FileIO(destination_path, 'wb')
     downloader = MediaIoBaseDownload(fh, request)
     done = False
@@ -66,6 +66,6 @@ def download_from_drive(file_id, destination_path):
 # List files inside Drive folder
 def list_files_in_folder(folder_id=DRIVE_FOLDER_ID):
     query = f"'{folder_id}' in parents and trashed = false"
-    results = DRIVE_SERVICE.files().list(q=query, fields="files(id, name)").execute()
+    results = DRIVE.files().list(q=query, fields="files(id, name)").execute()
     items = results.get('files', [])
     return items
