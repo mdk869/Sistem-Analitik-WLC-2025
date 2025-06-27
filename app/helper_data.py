@@ -1,10 +1,10 @@
+# app/helper_data.py
 import pandas as pd
 import streamlit as st
-from app.helper_connection import SHEET_PESERTA
+from app.helper_connection import SHEET_PESERTA, check_or_create_worksheet
 from app.helper_log import log_dev
 
 from app.helper_utils import (
-    check_or_create_worksheet,
     kira_bmi,
     kategori_bmi_asia
 )
