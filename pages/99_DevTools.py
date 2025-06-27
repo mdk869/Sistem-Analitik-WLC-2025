@@ -5,7 +5,8 @@ import pandas as pd
 import datetime
 import traceback
 from app.styles import papar_footer
-from app.helper_connection import data_peserta, log_dev, rekod_ranking, DRIVE, DRIVE_FOLDER_ID
+from app.helper_connection import SPREADSHEET_RANKING, SPREADSHEET_LOG, SPREADSHEET_PESERTA, DRIVE, DRIVE_FOLDER_ID
+from app.helper_data import load_data_peserta
 from googleapiclient.errors import HttpError
 
 # ===============================
@@ -18,19 +19,19 @@ st.caption("⚙️ Sistem ini dibangunkan khas untuk DevTeam sahaja. Tidak diaks
 st.subheader("🔗 Status Sambungan")
 
 try:
-    data_peserta.worksheets()
+    SPREADSHEET_PESERTA.worksheets()
     st.success("✅ Data Peserta: OK")
 except:
     st.error("❌ Data Peserta: Gagal")
 
 try:
-    log_dev.worksheets()
+    SPREADSHEET_LOG.worksheets()
     st.success("✅ Log Dev: OK")
 except:
     st.error("❌ Log Dev: Gagal")
 
 try:
-    rekod_ranking.worksheets()
+    SPREADSHEET_RANKING.worksheets()
     st.success("✅ Rekod Ranking: OK")
 except:
     st.error("❌ Rekod Ranking: Gagal")
@@ -52,7 +53,7 @@ except:
 # ===============================
 def log_event(event, detail):
     try:
-        log_sheet = log_dev.worksheet("log_event")
+        log_sheet = SPREADSHEET_LOG.worksheet("log_event")
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_sheet.append_row([now, event, detail])
     except Exception as e:
@@ -61,7 +62,7 @@ def log_event(event, detail):
 
 def log_error(error_detail):
     try:
-        error_sheet = log_dev.worksheet("log_error")
+        error_sheet = SPREADSHEET_LOG.worksheet("log_error")
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         error_sheet.append_row([now, error_detail])
     except Exception as e:
@@ -73,7 +74,7 @@ def log_error(error_detail):
 # ===============================
 def check_system_health():
     try:
-        df = load_data()
+        df = load_data_peserta()
 
         missing_bmi = df['BMI'].isnull().sum()
         missing_berat = df['BeratTerkini'].isnull().sum()
@@ -103,9 +104,9 @@ def check_system_health():
 def load_log(log_type="event"):
     try:
         if log_type == "event":
-            sheet = log_dev.worksheet("log_event")
+            sheet = SPREADSHEET_LOG.worksheet("log_event")
         else:
-            sheet = log_dev.worksheet("log_error")
+            sheet = SPREADSHEET_LOG.worksheet("log_error")
 
         data = sheet.get_all_records()
         df = pd.DataFrame(data)
