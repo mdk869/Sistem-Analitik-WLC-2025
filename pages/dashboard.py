@@ -176,7 +176,6 @@ with tab2:
                 st.dataframe(df_leaderboard, hide_index=True, use_container_width=True)
 
             with col2:
-                st.markdown("### 📊 Carta Leaderboard")
                 fig = px.bar(
                     df_leaderboard.sort_values('% Penurunan', ascending=False),
                     x='Nama',
