@@ -1,8 +1,7 @@
 import pandas as pd
-import gspread
-from google.oauth2.service_account import Credentials
 import streamlit as st
-from datetime import datetime
+from app.helper_connection import SHEET_PESERTA
+from app.helper_log import log_dev
 
 from app.helper_utils import (
     check_or_create_worksheet,
@@ -10,90 +9,47 @@ from app.helper_utils import (
     kategori_bmi_asia
 )
 
-# =============================
-# ✅ Sambungan Google Sheet
-# =============================
-def connect_gsheet():
-    try:
-        scope = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-        credentials = Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"],
-            scopes=scope
-        )
-        gc = gspread.authorize(credentials)
-        sheet = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
-        return sheet
-    except Exception as e:
-        st.error(f"❌ Gagal sambung Google Sheet: {e}")
-        return None
-
-
-# =============================
-# ✅ Setup Worksheet
-# =============================
-sheet = connect_gsheet()
-
-if sheet:
-    ws_peserta = check_or_create_worksheet(
-        sheet,
-        "peserta",
-        ["Nama", "NoStaf", "Umur", "Jantina", "Jabatan", "Tinggi",
-         "BeratAwal", "TarikhDaftar", "BeratTerkini", "TarikhTimbang", "BMI", "Kategori"]
-    )
-
-    ws_rekod = check_or_create_worksheet(
-        sheet,
-        "rekod_berat",
-        ["Nama", "Tarikh", "Berat"]
-    )
-else:
-    ws_peserta, ws_rekod = None, None
-
-
-# =============================
+# ============================================
 # ✅ Load Data Peserta
-# =============================
+# ============================================
 def load_data_peserta():
     try:
-        worksheet = sheet.worksheet("peserta")
+        ws = SHEET_PESERTA.worksheet("data_peserta")
+        data = ws.get_all_records()
 
-        header_row = worksheet.row_values(1)
-        if not header_row or "" in header_row:
-            raise Exception(f"Header dalam worksheet 'peserta' ada yang kosong atau tidak lengkap: {header_row}")
+        if not data:
+            st.warning("⚠️ Data peserta kosong!")
+            return pd.DataFrame()
 
-        data = worksheet.get_all_records()
         df = pd.DataFrame(data)
 
-        # Pastikan kolum kritikal wujud
-        expected_columns = ["Nama", "NoStaf", "Umur", "Jantina", "Jabatan", "Tinggi",
-                             "BeratAwal", "TarikhDaftar", "BeratTerkini", "TarikhTimbang", "BMI", "Kategori"]
-
-        for col in expected_columns:
-            if col not in df.columns:
-                df[col] = None
+        log_dev("Load Data", "Data peserta berjaya dimuat naik")
 
         return df
 
     except Exception as e:
-        st.warning(f"⚠️ Gagal load data peserta dari Google Sheet: {e}")
+        st.error(f"❌ Gagal load data peserta: {e}")
         return pd.DataFrame()
 
-
-# =============================
-# ✅ Load Rekod Berat
-# =============================
-def load_rekod_berat():
+# ============================================
+# ✅ Load Berat Terkini
+# ============================================
+def get_berat_terkini():
     try:
-        worksheet = sheet.worksheet("rekod_berat")
-        df = pd.DataFrame(worksheet.get_all_records())
-        return df
-    except Exception as e:
-        st.warning(f"⚠️ Gagal load rekod berat: {e}")
-        return pd.DataFrame()
+        ws = SHEET_PESERTA.worksheet("rekod_berat")
+        data = ws.get_all_records()
 
+        if not data:
+            st.warning("⚠️ Data rekod berat kosong!")
+            return pd.DataFrame()
+
+        df = pd.DataFrame(data)
+
+        return df
+
+    except Exception as e:
+        st.error(f"❌ Gagal load rekod berat: {e}")
+        return pd.DataFrame()
 
 # =============================
 # ✅ Load Data Cloud or Local
@@ -250,3 +206,8 @@ def sejarah_berat(nama):
     except Exception as e:
         st.error(f"Gagal load sejarah berat: {e}")
         return pd.DataFrame()
+
+# ============================================
+# ✅ Export
+# ============================================
+__all__ = ["load_data_peserta", "get_berat_terkini"]
