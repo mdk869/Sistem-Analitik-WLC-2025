@@ -1,18 +1,59 @@
+# pages/00_Connection_Checker.py
+
 import streamlit as st
-from app.helper_connection import connection_checker
+from app.helper_connection import (
+    SHEET_PESERTA, SHEET_LOG, SHEET_REKOD_RANKING,
+    get_worksheet, list_files_in_folder
+)
 
+st.set_page_config(page_title="Connection Checker", page_icon="🔗", layout="wide")
 
-st.set_page_config(page_title="Health Check", layout="wide")
-st.title("🔧 Sistem Health Check")
+st.title("🔗 Connection Checker | WLC 2025")
 
-st.info("Panel ini memeriksa sambungan ke Google Sheets dan Google Drive.")
+st.markdown("Semak status sambungan ke Google Sheets & Google Drive")
 
-status = connection_checker()
+st.divider()
 
-for name, stat in status.items():
-    if "✅" in stat:
-        st.success(f"{name}: {stat}")
-    else:
-        st.error(f"{name}: {stat}")
+# ================================
+# ✅ Check Google Sheets
+# ================================
+st.subheader("📄 Google Sheets")
 
-st.caption("Dibangunkan oleh MKR Dev Team")
+try:
+    ws_peserta = get_worksheet(SHEET_PESERTA, "data")
+    peserta = ws_peserta.get_all_records()
+    st.success(f"✅ Data Peserta: {len(peserta)} rekod dijumpai")
+except Exception as e:
+    st.error(f"❌ Data Peserta GAGAL: {e}")
+
+try:
+    ws_log = get_worksheet(SHEET_LOG, "log")
+    log = ws_log.get_all_records()
+    st.success(f"✅ Log Dev: {len(log)} rekod")
+except Exception as e:
+    st.error(f"❌ Log Dev GAGAL: {e}")
+
+try:
+    ws_ranking = get_worksheet(SHEET_REKOD_RANKING, "rekod")
+    rekod = ws_ranking.get_all_records()
+    st.success(f"✅ Rekod Ranking: {len(rekod)} rekod")
+except Exception as e:
+    st.error(f"❌ Rekod Ranking GAGAL: {e}")
+
+# ================================
+# ✅ Check Google Drive
+# ================================
+st.divider()
+st.subheader("🗂️ Google Drive")
+
+try:
+    files = list_files_in_folder()
+    st.success(f"✅ Google Drive OK: {len(files)} file dalam folder.")
+    for file in files:
+        st.write(f"📄 {file['name']} (ID: {file['id']})")
+except Exception as e:
+    st.error(f"❌ Google Drive GAGAL: {e}")
+
+st.divider()
+
+st.info("🔄 Jika ada masalah, sila semak kembali konfigurasi `st.secrets`.")

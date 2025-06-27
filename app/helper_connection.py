@@ -7,39 +7,76 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 import io
 
-# -------------------- GOOGLE SHEETS CONNECTION --------------------
+# ----------------------------
+# ✅ Google Sheets Connection
+# ----------------------------
 
-# Setup Google Sheets Service
+# Setup credentials
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
 credentials = service_account.Credentials.from_service_account_info(
     st.secrets["gcp_service_account"],
-    scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+    scopes=scope
 )
 
+# Authorize gspread
 gc = gspread.authorize(credentials)
 
+
+# 🔑 Fungsi dapatkan ID dari st.secrets
 def get_secret_id(key):
     return st.secrets["gsheet"].get(key, None)
 
-# Connect to target sheets
-data_peserta = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
-log_dev = gc.open_by_key(st.secrets["gsheet"]["log_wlc_dev_id"])
-rekod_ranking = gc.open_by_key(st.secrets["gsheet"]["rekod_ranking"])
 
-# -------------------- GOOGLE DRIVE CONNECTION --------------------
+# 🗒️ Connect ke Spreadsheet
+SHEET_PESERTA = gc.open_by_key(get_secret_id("data_peserta_id"))
+SHEET_LOG = gc.open_by_key(get_secret_id("log_wlc_dev_id"))
+SHEET_REKOD_RANKING = gc.open_by_key(get_secret_id("rekod_ranking"))
 
-# Create Google Drive Service (no PyDrive2, use googleapiclient)
+# -----------------------------------------
+# ✅ Fungsi dapat worksheet secara dinamik
+# -----------------------------------------
+def get_worksheet(sheet, worksheet_name):
+    """
+    Fungsi untuk dapatkan worksheet tertentu.
+    Jika tidak wujud, akan auto create worksheet tersebut.
+    """
+    try:
+        ws = sheet.worksheet(worksheet_name)
+    except gspread.exceptions.WorksheetNotFound:
+        ws = sheet.add_worksheet(title=worksheet_name, rows="1000", cols="20")
+    return ws
+
+# Contoh penggunaan:
+# ws_peserta = get_worksheet(SHEET_PESERTA, "data")
+
+
+# ----------------------------
+# ✅ Google Drive Connection
+# ----------------------------
+
+# Create Google Drive service
 def create_drive_service():
     drive_creds = service_account.Credentials.from_service_account_info(
         st.secrets["gcp_service_account"],
-        scopes=['https://www.googleapis.com/auth/drive']
+        scopes=["https://www.googleapis.com/auth/drive"]
     )
     service = build('drive', 'v3', credentials=drive_creds)
     return service
 
+
+# Initialize Drive
 DRIVE = create_drive_service()
+
+# Dapatkan folder ID dari secrets
 DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
 
-# Upload file to Google Drive
+
+# -----------------------------------
+# ✅ Upload file ke Google Drive
+# -----------------------------------
 def upload_to_drive(file_path, file_name, folder_id=DRIVE_FOLDER_ID):
     file_metadata = {
         'name': file_name,
@@ -53,7 +90,10 @@ def upload_to_drive(file_path, file_name, folder_id=DRIVE_FOLDER_ID):
     ).execute()
     return file.get('id')
 
-# Download file from Google Drive
+
+# -----------------------------------
+# ✅ Download file dari Google Drive
+# -----------------------------------
 def download_from_drive(file_id, destination_path):
     request = DRIVE.files().get_media(fileId=file_id)
     fh = io.FileIO(destination_path, 'wb')
@@ -63,19 +103,12 @@ def download_from_drive(file_id, destination_path):
         status, done = downloader.next_chunk()
     fh.close()
 
-# List files inside Drive folder
+
+# -----------------------------------
+# ✅ Senarai file dalam folder Drive
+# -----------------------------------
 def list_files_in_folder(folder_id=DRIVE_FOLDER_ID):
     query = f"'{folder_id}' in parents and trashed = false"
     results = DRIVE.files().list(q=query, fields="files(id, name)").execute()
     items = results.get('files', [])
     return items
-
-# -------------------- WORKSHEET CHECK & CREATE --------------------
-
-def check_or_create_worksheet(data_peserta, peserta, header):
-    try:
-        ws = data_peserta.worksheet(peserta)
-    except gspread.exceptions.WorksheetNotFound:
-        ws = data_peserta.add_worksheet(title=peserta, rows="1000", cols=str(len(header)))
-        ws.append_row(header)
-    return ws

@@ -1,9 +1,10 @@
+# pages/admin.py
+
 import streamlit as st
 import pandas as pd
-from datetime import datetime
-import pytz
+from datetime import date
+
 from app.helper_auth import check_login
-from app.helper_log import log_dev
 from app.helper_data import (
     load_data_peserta,
     load_data_cloud_or_local,
@@ -11,58 +12,67 @@ from app.helper_data import (
     kemaskini_berat_peserta,
     padam_peserta_dari_sheet
 )
-
-from app.helper_logic import (
-    kira_bmi,
-    kategori_bmi_asia
-)
-
+from app.helper_logic import kira_bmi, kategori_bmi_asia
+from app.helper_log import log_dev
 from app.helper_utils import check_header_consistency
-
 from app.styles import paparkan_tema, papar_header, papar_footer
 
-# ✅ Check login
+
+# =============================================================
+# ✅ Semakan Login
+# =============================================================
 is_admin = check_login()
 
-# 🔐 Sekat akses jika bukan admin
 if not is_admin:
     st.error("❌ Akses ditolak! Halaman ini hanya untuk Admin.")
-    st.stop()  # 🚫 Hentikan load page ini
+    st.stop()
 
-# ✅ Jika admin, teruskan paparan fungsi admin
-st.title("👑 Halaman Admin")
 
-st.markdown("Selamat datang ke Panel Admin. Anda mempunyai akses penuh ke fungsi berikut:")
-
+# =============================================================
+# ✅ Layout
+# =============================================================
 paparkan_tema()
 papar_header("Admin Panel | WLC 2025")
 
-st.subheader("🔧 Pengurusan Peserta")
+st.title("👑 Halaman Admin")
+st.markdown("Selamat datang ke Panel Admin. Anda mempunyai akses penuh ke fungsi berikut:")
 
-# === Load Data ===
+# =============================================================
+# ✅ Load Data
+# =============================================================
 data_peserta = load_data_peserta()
 data_rekod = load_data_cloud_or_local()
 
-# === Papar Senarai Peserta ===
-st.markdown("### 📋 Senarai Peserta")
+HEADER_PESERTA = [
+    'Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan',
+    'Tinggi', 'BeratAwal', 'TarikhDaftar',
+    'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori'
+]
 
-kolum_pilihan = ['Nama', 'NoStaf', 'Umur', 'Jantina', 'Tinggi', 'BeratAwal', 'TarikhDaftar']
+# =============================================================
+# ✅ Papar Senarai Peserta
+# =============================================================
+st.subheader("📋 Senarai Peserta")
 
-# Papar dataframe dengan kolum terpilih dan numbering No.
-st.dataframe(
-    data_peserta[kolum_pilihan].set_index(
-        pd.Index(range(1, len(data_peserta) + 1), name="No.")
-    ),
-    use_container_width=True
-)
+if check_header_consistency(data_peserta, HEADER_PESERTA, "Data Peserta"):
+    kolum_pilihan = ['Nama', 'NoStaf', 'Umur', 'Jantina', 'Tinggi', 'BeratAwal', 'TarikhDaftar']
+
+    st.dataframe(
+        data_peserta[kolum_pilihan].set_index(
+            pd.Index(range(1, len(data_peserta) + 1), name="No.")
+        ),
+        use_container_width=True
+    )
 
 st.divider()
 
-# === Tambah Peserta ===
-with st.expander("### ➕ Tambah Peserta Baru"):
+# =============================================================
+# ✅ Tambah Peserta
+# =============================================================
+with st.expander("➕ Tambah Peserta Baru"):
 
     with st.form("form_tambah_peserta", clear_on_submit=True):
-        st.subheader("🆕 Tambah Peserta Baru")
+        st.subheader("🆕 Tambah Peserta")
 
         nama = st.text_input("Nama")
         nostaf = st.text_input("No Staf")
@@ -71,49 +81,55 @@ with st.expander("### ➕ Tambah Peserta Baru"):
         jabatan = st.text_input("Jabatan")
         tinggi = st.number_input("Tinggi (cm)", min_value=100, max_value=250)
         berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=300.0)
-        tarikh_daftar = st.date_input("Tarikh Daftar")
+        tarikh_daftar = st.date_input("Tarikh Daftar", value=date.today())
 
-        # Berat terkini sama dengan berat awal semasa daftar
         berat_terkini = berat_awal
-
-        # === Kiraan BMI dan Kategori BMI ===
         bmi = kira_bmi(berat_awal, tinggi)
         kategori = kategori_bmi_asia(bmi)
 
-        # === Papar Hasil Kiraan ===
         st.info(f"BMI: {bmi} ({kategori})")
 
-        submitted = st.form_submit_button("➕ Tambah Peserta")
+        submit = st.form_submit_button("➕ Tambah Peserta")
 
-        if submitted:
+        if submit:
             if nama and nostaf and jabatan:
                 tambah_peserta_google_sheet(
                     nama, nostaf, umur, jantina, jabatan,
                     tinggi, berat_awal, tarikh_daftar
                 )
+                log_dev("Admin", f"Tambah peserta {nama}", "Success")
                 st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
                 st.rerun()
             else:
                 st.warning("⚠️ Sila isi semua maklumat peserta.")
-                
-        log_dev("Dashboard", "Buka Tab Status Timbang", "Success")
 
-# === Kemaskini Berat ===
-with st.expander("### ⚖️ Kemaskini Berat Terkini"):
+st.divider()
+
+# =============================================================
+# ✅ Kemaskini Berat Terkini
+# =============================================================
+with st.expander("⚖️ Kemaskini Berat Terkini"):
 
     if len(data_peserta) > 0:
         nama_list = data_peserta["Nama"].tolist()
         nama_dipilih = st.selectbox("Pilih Nama", nama_list)
         berat_baru = st.number_input("Masukkan Berat Terkini (kg)", min_value=30.0, max_value=300.0)
-        tarikh_baru = st.date_input("Tarikh Timbang Terkini")
+        tarikh_baru = st.date_input("Tarikh Timbang", value=date.today())
 
-    if st.button("💾 Simpan Berat Terkini"):
-        kemaskini_berat_peserta(nama_dipilih, berat_baru, tarikh_baru)
-        st.success(f"✅ Berat {nama_dipilih} berjaya dikemaskini.")
-        st.rerun()
+        if st.button("💾 Simpan Berat Terkini"):
+            kemaskini_berat_peserta(nama_dipilih, berat_baru, tarikh_baru)
+            log_dev("Admin", f"Kemaskini berat {nama_dipilih}", "Success")
+            st.success(f"✅ Berat {nama_dipilih} berjaya dikemaskini.")
+            st.rerun()
+    else:
+        st.info("🚫 Tiada peserta untuk dikemaskini.")
 
-# === Padam Peserta ===
-with st.expander("### 🗑️ Padam Peserta"):
+st.divider()
+
+# =============================================================
+# ✅ Padam Peserta
+# =============================================================
+with st.expander("🗑️ Padam Peserta"):
 
     if len(data_peserta) > 0:
         nama_list = data_peserta["Nama"].tolist()
@@ -125,6 +141,7 @@ with st.expander("### 🗑️ Padam Peserta"):
             if confirm:
                 berjaya = padam_peserta_dari_sheet(nama_dipilih)
                 if berjaya:
+                    log_dev("Admin", f"Padam peserta {nama_dipilih}", "Success")
                     st.success(f"✅ {nama_dipilih} telah dipadam dari Google Sheet.")
                     st.rerun()
                 else:
@@ -136,24 +153,27 @@ with st.expander("### 🗑️ Padam Peserta"):
 
 st.divider()
 
-# === Papar Sejarah Rekod Berat ===
-st.markdown("### 🗂️ Sejarah Rekod Berat")
+# =============================================================
+# ✅ Papar Sejarah Rekod Berat
+# =============================================================
+st.subheader("🗂️ Sejarah Rekod Berat")
 
-# Pilih kolum yang ingin dipaparkan
-kolum_pilihan = ['Nama', 'BeratAwal', 'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori']
+if check_header_consistency(data_rekod, HEADER_PESERTA, "Rekod Ranking"):
+    kolum_pilihan = ['Nama', 'BeratAwal', 'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori']
 
-# Papar dataframe dengan kolum terpilih dan numbering No.
-st.dataframe(
-    data_rekod[kolum_pilihan].set_index(
-        pd.Index(range(1, len(data_rekod) + 1), name="No.")
-    ),
-    use_container_width=True
-)
+    st.dataframe(
+        data_rekod[kolum_pilihan].set_index(
+            pd.Index(range(1, len(data_rekod) + 1), name="No.")
+        ),
+        use_container_width=True
+    )
 
-
+# =============================================================
+# ✅ Footer
+# =============================================================
 papar_footer(
     owner="MKR Dev Team",
     version="v3.2.5",
-    last_update="2025-06-26",
+    last_update="2025-06-27",
     tagline="Empowering Data-Driven Decisions."
 )

@@ -1,29 +1,20 @@
 # app/helper_log.py
 
-import pytz
+import streamlit as st
 from datetime import datetime
-from app.helper_connection import dev_log
-from app.helper_utils import check_or_create_worksheet
+from app.helper_connection import SHEET_LOG, get_worksheet
 
 
-# ============================================
-# ✅ Sheet & Worksheet Setup
-# ============================================
-SHEET_NAME = "log_wlc_dev"
-HEADER = ["Tarikh", "Modul", "Aktiviti", "Status", "Catatan"]
+# ====================================================
+# ✅ Log Aktiviti Developer
+# ====================================================
+def log_dev(page, aktiviti, status="Success"):
+    try:
+        ws = get_worksheet(SHEET_LOG, "log")
 
-ws_log = check_or_create_worksheet(dev_log, SHEET_NAME, HEADER)
+        sekarang = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-
-# ============================================
-# ✅ Logging Function
-# ============================================
-def log_dev(modul, aktiviti, status, catatan="-"):
-    waktu = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    ws_log.append_row([waktu, modul, aktiviti, status, catatan])
-
-
-# ============================================
-# ✅ Export Fungsi
-# ============================================
-__all__ = ["log_dev"]
+        row = [sekarang, page, aktiviti, status]
+        ws.append_row(row)
+    except Exception as e:
+        st.warning(f"⚠️ Gagal log aktiviti: {e}")
