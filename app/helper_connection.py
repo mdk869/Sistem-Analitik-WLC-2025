@@ -6,6 +6,56 @@ from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 import streamlit as st
 
+# ============================================
+# ✅ Semak Sambungan
+# ============================================
+def connection_checker():
+    status = {}
+
+    # === Check Google Sheet Connection ===
+    try:
+        gc = gspread.authorize(Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=[
+                "https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive",
+            ],
+        ))
+
+        sheets = {
+            "Data Peserta": st.secrets["gsheet"]["data_peserta_id"],
+            "Log Dev": st.secrets["gsheet"]["log_wlc_dev_id"],
+            "Rekod Ranking": st.secrets["gsheet"]["rekod_ranking"],
+        }
+
+        for name, sheet_id in sheets.items():
+            try:
+                gc.open_by_key(sheet_id)
+                status[name] = "✅ OK"
+            except Exception as e:
+                status[name] = f"❌ ERROR: {e}"
+
+    except Exception as e:
+        for name in ["Data Peserta", "Log Dev", "Rekod Ranking"]:
+            status[name] = f"❌ ERROR Auth: {e}"
+
+    # === Check Google Drive Connection ===
+    try:
+        gauth = GoogleAuth()
+        gauth.credentials = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=["https://www.googleapis.com/auth/drive"],
+        )
+        drive = GoogleDrive(gauth)
+
+        folder_id = st.secrets["drive"]["folder_id"]
+        file_list = drive.ListFile({'q': f"'{folder_id}' in parents and trashed=false"}).GetList()
+
+        status["Google Drive"] = "✅ OK"
+    except Exception as e:
+        status["Google Drive"] = f"❌ ERROR: {e}"
+
+    return status
 
 # ============================================
 # ✅ Sambungan Google Sheet
