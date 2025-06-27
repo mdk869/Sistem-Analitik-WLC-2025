@@ -1,60 +1,81 @@
 import streamlit as st
-from app.helper_connection import (
-    SHEET_PESERTA,
-    SHEET_LOG,
-    SHEET_REKOD_RANKING,
-    DRIVE,
-    get_secret_id,
-    list_files_in_folder
+import gspread
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+import io
+
+# ----------------------------
+# ✅ Google Sheets Connection
+# ----------------------------
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"],
+    scopes=scope
 )
 
-st.set_page_config(page_title="Test Connection", page_icon="🔗", layout="wide")
+gc = gspread.authorize(credentials)
 
-st.title("🔗 Ujian Sambungan Google Sheets & Drive")
+# 🔑 Fungsi dapatkan ID dari st.secrets
+def get_secret_id(key):
+    return st.secrets["gsheet"].get(key, None)
 
-# =============================================
-# ✅ Test Google Sheets Connection
-# =============================================
-st.subheader("🗒️ Google Sheets")
+# 🗒️ Connect ke Spreadsheet
+SPREADSHEET_PESERTA = gc.open_by_key(get_secret_id("data_peserta_id"))
+SPREADSHEET_LOG = gc.open_by_key(get_secret_id("log_wlc_dev_id"))
+SPREADSHEET_RANKING = gc.open_by_key(get_secret_id("rekod_ranking"))
 
-try:
-    sheet_list = SHEET_PESERTA.worksheets()
-    st.success(f"✅ Data Peserta - OK ({len(sheet_list)} worksheet dijumpai)")
-except Exception as e:
-    st.error(f"❌ Data Peserta - Gagal\n\n{e}")
+# 🔗 Get Worksheet Function
+def get_worksheet(spreadsheet, worksheet_name):
+    try:
+        ws = spreadsheet.worksheet(worksheet_name)
+    except gspread.exceptions.WorksheetNotFound:
+        ws = spreadsheet.add_worksheet(title=worksheet_name, rows="1000", cols="20")
+    return ws
 
-try:
-    sheet_list = SHEET_LOG.worksheets()
-    st.success(f"✅ Log Dev - OK ({len(sheet_list)} worksheet dijumpai)")
-except Exception as e:
-    st.error(f"❌ Log Dev - Gagal\n\n{e}")
 
-try:
-    sheet_list = SHEET_REKOD_RANKING.worksheets()
-    st.success(f"✅ Rekod Ranking - OK ({len(sheet_list)} worksheet dijumpai)")
-except Exception as e:
-    st.error(f"❌ Rekod Ranking - Gagal\n\n{e}")
+# ----------------------------
+# ✅ Google Drive Connection
+# ----------------------------
+def create_drive_service():
+    drive_creds = service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=["https://www.googleapis.com/auth/drive"]
+    )
+    service = build('drive', 'v3', credentials=drive_creds)
+    return service
 
-# =============================================
-# ✅ Test Google Drive Connection
-# =============================================
-st.subheader("☁️ Google Drive")
 
-try:
-    files = list_files_in_folder()
-    st.success(f"✅ Google Drive - OK ({len(files)} files dijumpai dalam folder)")
-    for file in files:
-        st.write(f"- {file['name']} (ID: {file['id']})")
-except Exception as e:
-    st.error(f"❌ Google Drive - Gagal\n\n{e}")
+DRIVE = create_drive_service()
+DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
 
-# =============================================
-# 🔍 Debug Info (Pilihan)
-# =============================================
-with st.expander("🔑 Debug Secret ID"):
-    st.code(st.secrets)
+# ✅ Upload
+def upload_to_drive(file_path, file_name, folder_id=DRIVE_FOLDER_ID):
+    file_metadata = {'name': file_name, 'parents': [folder_id]}
+    media = MediaFileUpload(file_path, resumable=True)
+    file = DRIVE.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
+    ).execute()
+    return file.get('id')
 
-with st.expander("📄 Debug Sheet ID"):
-    st.write(f"ID Data Peserta: {get_secret_id('data_peserta_id')}")
-    st.write(f"ID Log Dev: {get_secret_id('log_wlc_dev_id')}")
-    st.write(f"ID Rekod Ranking: {get_secret_id('rekod_ranking')}")
+# ✅ Download
+def download_from_drive(file_id, destination_path):
+    request = DRIVE.files().get_media(fileId=file_id)
+    fh = io.FileIO(destination_path, 'wb')
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while not done:
+        status, done = downloader.next_chunk()
+    fh.close()
+
+# ✅ List Files
+def list_files_in_folder(folder_id=DRIVE_FOLDER_ID):
+    query = f"'{folder_id}' in parents and trashed = false"
+    results = DRIVE.files().list(q=query, fields="files(id, name)").execute()
+    items = results.get('files', [])
+    return items
