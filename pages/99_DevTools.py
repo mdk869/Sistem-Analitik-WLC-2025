@@ -5,7 +5,7 @@ import pandas as pd
 import datetime
 import traceback
 from app.styles import papar_footer
-from app.helper_connection import SHEET_PESERTA, DRIVE_FOLDER_ID, DRIVE_SERVICE, SHEET_LOG, SHEET_REKOD_RANKING
+from app.helper_connection import SHEET_PESERTA, DRIVE_FOLDER_ID, DRIVE, SHEET_LOG, SHEET_REKOD_RANKING
 from googleapiclient.errors import HttpError
 
 # ===============================
@@ -36,7 +36,7 @@ except:
     st.error("❌ Rekod Ranking: Gagal")
 
 try:
-    DRIVE_SERVICE.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
+    DRIVE.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
     st.success("✅ Google Drive: OK")
 except:
     st.error("❌ Google Drive: Gagal")
