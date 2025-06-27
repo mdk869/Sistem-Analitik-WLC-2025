@@ -72,10 +72,10 @@ def list_files_in_folder(folder_id=DRIVE_FOLDER_ID):
 
 # -------------------- WORKSHEET CHECK & CREATE --------------------
 
-def check_or_create_worksheet(spreadsheet, worksheet_name, header):
+def check_or_create_worksheet(data_peserta, peserta, header):
     try:
-        ws = spreadsheet.worksheet(worksheet_name)
+        ws = data_peserta.worksheet(peserta)
     except gspread.exceptions.WorksheetNotFound:
-        ws = spreadsheet.add_worksheet(title=worksheet_name, rows="1000", cols=str(len(header)))
+        ws = data_peserta.add_worksheet(title=peserta, rows="1000", cols=str(len(header)))
         ws.append_row(header)
     return ws
