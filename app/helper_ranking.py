@@ -50,6 +50,10 @@ def leaderboard_dengan_status():
 
     bulan_sebelum = f"{tahun}-{bulan_int:02d}"
 
+    # Load data peserta untuk dapatkan kolum Jantina
+    df_peserta = load_data_peserta()  # ✅ pastikan fungsi ini ada return Jantina
+
+    # Leaderboard bulan ini
     df_current = generate_leaderboard()
 
     if df_current.empty:
@@ -73,11 +77,16 @@ def leaderboard_dengan_status():
         df_merge = df_current.copy()
         df_merge["Trend"] = "🆕"
 
+    # Label Ranking + Medal + Trend
     df_merge["Ranking_Label"] = df_merge["Ranking"].apply(tambah_medal)
     df_merge["Ranking_Trend"] = df_merge["Ranking_Label"] + " " + df_merge["Trend"]
 
+    # Merge dengan leaderboard current + info trend
     df_final = pd.merge(df_current, df_merge[["Nama", "Ranking_Trend"]], on="Nama", how="left")
 
+    # ✅ Tambah info Jantina dari data peserta
+    df_final = pd.merge(df_final, df_peserta[['Nama', 'Jantina']], on='Nama', how='left')
+    
     return df_final
 
 
