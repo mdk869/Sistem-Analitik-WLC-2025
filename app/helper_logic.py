@@ -6,6 +6,7 @@ from app.helper_utils import kira_bmi, kategori_bmi_asia
 
 # === Tambah Kiraan BMI dan % Penurunan Berat ===
 def tambah_kiraan_peserta(df):
+    df["BeratTerkini"] = df["BeratTerkini"].fillna(0)
     df["PenurunanKg"] = (df["BeratAwal"] - df["BeratTerkini"]).round(2)
     df["% Penurunan"] = ((df["PenurunanKg"] / df["BeratAwal"]) * 100).round(2)
     df["BMI"] = df.apply(lambda row: kira_bmi(row["BeratTerkini"], row["Tinggi"]), axis=1)
