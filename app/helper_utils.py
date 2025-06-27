@@ -18,12 +18,17 @@ def get_bulan_sekarang():
     return datetime.now(tz).strftime('%Y-%m')
 
 
-def check_or_create_worksheet(spreadsheet, sheet_name):
+def check_or_create_worksheet(spreadsheet, sheet_name, header=None):
+    """
+    Semak jika worksheet ada, jika tiada sistem akan cipta.
+    Jika header disediakan, sistem akan set header jika worksheet baru dicipta.
+    """
     try:
         worksheet = spreadsheet.worksheet(sheet_name)
     except Exception:
         worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="1000", cols="20")
-    return worksheet
+        if header:
+            worksheet.append_row(header)
 
 
 # ============================================
