@@ -175,7 +175,7 @@ with tab2:
 
         # 🧹 Sembunyikan kolum tidak perlu
         df_display = df_display.drop(
-            columns=['Jabatan', 'BeratAwal', 'BeratTerkini', 'Ranking', "Jantina"],
+            columns=['Jabatan', 'BeratAwal', 'BeratTerkini', "Jantina"],
             errors='ignore'
         )
 
