@@ -159,7 +159,7 @@ with tab2:
         )
         st.plotly_chart(fig, use_container_width=True)
 
-        log_dev("Dashboard", "Buka Tab Leaderboard")
+        log_dev("Dashboard", "Buka Tab Leaderboard", "Success")
 
 # =====================================================================================
 # TAB 3: Status Timbang
@@ -199,7 +199,7 @@ with tab3:
         df_belum_timbang.index = df_belum_timbang.index + 1
         st.dataframe(df_belum_timbang, use_container_width=True)
 
-    log_dev("Dashboard", "Buka Tab Status Timbang")
+    log_dev("Dashboard", "Buka Tab Status Timbang", "Success")
 
 # =====================================================================================
 # TAB 4: BMI Analysis

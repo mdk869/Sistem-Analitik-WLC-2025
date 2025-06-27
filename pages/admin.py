@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 import pytz
 from app.helper_auth import check_login
-
+from app.helper_log import log_dev
 from app.helper_data import (
     load_data_peserta,
     load_data_cloud_or_local,
@@ -95,6 +95,8 @@ with st.expander("### ➕ Tambah Peserta Baru"):
                 st.rerun()
             else:
                 st.warning("⚠️ Sila isi semua maklumat peserta.")
+                
+        log_dev("Dashboard", "Buka Tab Status Timbang", "Success")
 
 # === Kemaskini Berat ===
 with st.expander("### ⚖️ Kemaskini Berat Terkini"):
