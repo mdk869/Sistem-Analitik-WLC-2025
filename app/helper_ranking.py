@@ -6,6 +6,7 @@ from app.helper_utils import kira_bmi, kategori_bmi_asia, kira_trend, tambah_med
 from app.helper_data import (
     load_data_peserta,
     get_berat_terkini,
+    save_data_to_gsheet,
 )
 from app.helper_ranking_db import(
     load_data_ranking_bulanan,
@@ -37,76 +38,70 @@ def generate_leaderboard():
     return df
 
 
-# === Leaderboard Dengan Status (Naik/Turun/Baru) ===
+# ===========================================
+# ✅ Fungsi Leaderboard dengan Status Trend
+# ===========================================
 def leaderboard_dengan_status():
-    bulan_ini = datetime.now().strftime('%Y-%m')
-    tahun, bulan = bulan_ini.split("-")
+    try:
+        sh = connect_gsheet()
+        worksheet = sh.worksheet("data_peserta")
+        df = pd.DataFrame(worksheet.get_all_records())
 
-    # Kira bulan sebelum
-    bulan_int = int(bulan) - 1
-    if bulan_int == 0:
-        bulan_int = 12
-        tahun = str(int(tahun) - 1)
+        if df.empty:
+            return pd.DataFrame()
 
-    bulan_sebelum = f"{tahun}-{bulan_int:02d}"
+        df = tambah_kiraan_peserta(df)
 
-    # Load data peserta untuk dapatkan kolum Jantina
-    df_peserta = load_data_peserta()  # ✅ pastikan fungsi ini ada return Jantina
+        # Kiraan Ranking berdasarkan % Penurunan
+        df = df.copy()
+        df["Ranking"] = df["% Penurunan"].rank(method='min', ascending=False).astype(int)
 
-    # Leaderboard bulan ini
-    df_current = generate_leaderboard()
+        # Susun ikut ranking
+        df = df.sort_values(by='Ranking')
 
-    if df_current.empty:
+        # Tentukan trend
+        df["Ranking_Trend"] = df["Ranking"].apply(tambah_medal)
+
+        return df
+
+    except Exception as e:
+        st.warning(f"❌ Gagal jana leaderboard: {e}")
         return pd.DataFrame()
 
-    # Load ranking bulan sebelum
-    df_previous = load_ranking_bulan(bulan_sebelum)
 
-    if df_previous is not None and not df_previous.empty:
-        df_merge = pd.merge(
-            df_current[["Nama", "Ranking"]],
-            df_previous[["Nama", "Ranking"]],
-            on="Nama",
-            how="left",
-            suffixes=("", "_Sebelum")
-        )
-
-        df_merge["Trend"] = df_merge.apply(
-            lambda x: kira_trend(x["Ranking"], x["Ranking_Sebelum"]), axis=1
-        )
-    else:
-        df_merge = df_current.copy()
-        df_merge["Trend"] = "🆕"
-
-    # Label Ranking + Medal + Trend
-    df_merge["Ranking_Label"] = df_merge["Ranking"].apply(tambah_medal)
-    df_merge["Ranking_Trend"] = df_merge["Ranking_Label"] + " " + df_merge["Trend"]
-
-    # Merge dengan leaderboard current + info trend
-    df_final = pd.merge(df_current, df_merge[["Nama", "Ranking_Trend"]], on="Nama", how="left")
-
-    # ✅ Tambah info Jantina dari data peserta
-    df_final = pd.merge(df_final, df_peserta[['Nama', 'Jantina']], on='Nama', how='left')
-    
-    return df_final
-
-
-# === Simpan Ranking Bulanan ===
+# ===========================================
+# ✅ Fungsi Simpan Ranking Bulanan ke Google Sheet
+# ===========================================
 def simpan_ranking_bulanan(df_ranking):
-    bulan_ini = datetime.now().strftime('%Y-%m')
-    df_simpan = df_ranking[["Nama", "Ranking"]].copy()
-    df_simpan["Bulan"] = bulan_ini
+    try:
+        if df_ranking.empty:
+            st.warning("❌ Data ranking kosong, tidak dapat disimpan.")
+            return
 
-    df_ranking_bulanan = load_data_ranking_bulanan()
+        local_tz = pytz.timezone("Asia/Kuala_Lumpur")
+        tarikh = datetime.now(local_tz).strftime("%Y-%m-%d")
 
-    if df_ranking_bulanan is not None:
-        df_ranking_bulanan = pd.concat([df_ranking_bulanan, df_simpan], ignore_index=True)
-    else:
-        df_ranking_bulanan = df_simpan
+        df_simpan = df_ranking.copy()
+        df_simpan["Tarikh"] = tarikh
 
-    simpan_data_ranking_bulanan(df_ranking_bulanan)
-    log_dev("Simpan Ranking", f'Ranking bulan {bulan_ini} berjaya disimpan')
+        sh = connect_gsheet()
+        worksheet = sh.worksheet("rekod_ranking")
 
+        # Load rekod semasa
+        rekod = pd.DataFrame(worksheet.get_all_records())
+
+        # Combine
+        df_final = pd.concat([rekod, df_simpan], ignore_index=True)
+
+        # Overwrite balik ke Google Sheet
+        worksheet.update(
+            [df_final.columns.values.tolist()] + df_final.values.tolist()
+        )
+
+        st.success("✅ Ranking berjaya disimpan ke Google Sheet.")
+
+    except Exception as e:
+        st.warning(f"❌ Gagal simpan ranking: {e}")
 
 # === Load Ranking Bulan Tertentu ===
 def load_ranking_bulan(bulan):
@@ -130,17 +125,44 @@ def load_ranking_terakhir():
         return None
 
 
-# === Sejarah Ranking Individu ===
-def sejarah_ranking(nama):
-    df_ranking = load_data_ranking_bulanan()
+# ===========================================
+# ✅ Fungsi Sejarah Ranking
+# ===========================================
+def sejarah_ranking():
+    try:
+        sh = connect_gsheet()
+        worksheet = sh.worksheet("rekod_ranking")
+        df = pd.DataFrame(worksheet.get_all_records())
 
-    if df_ranking is None or df_ranking.empty:
+        if df.empty:
+            return pd.DataFrame()
+
+        return df
+
+    except Exception as e:
+        st.warning(f"❌ Gagal load sejarah ranking: {e}")
         return pd.DataFrame()
 
-    df_nama = df_ranking[df_ranking["Nama"] == nama][["Bulan", "Ranking"]]
-    df_nama = df_nama.sort_values("Bulan")
-    return df_nama.reset_index(drop=True)
+# ===========================================
+# ✅ Fungsi Backup Ranking ke Google Drive (Excel)
+# ===========================================
+def backup_ranking_to_drive(df_ranking):
+    try:
+        if df_ranking.empty:
+            st.warning("❌ Data ranking kosong untuk backup.")
+            return
 
+        local_tz = pytz.timezone("Asia/Kuala_Lumpur")
+        tarikh = datetime.now(local_tz).strftime("%Y-%m-%d")
+
+        nama_fail = f"rekod_ranking_{tarikh}.xlsx"
+
+        save_to_gdrive(df_ranking, nama_fail, folder_id=st.secrets["gdrive_folder_id"])
+
+        st.success(f"✅ Backup Ranking disimpan ke Google Drive sebagai {nama_fail}")
+
+    except Exception as e:
+        st.warning(f"❌ Gagal backup ranking ke Google Drive: {e}")
 
 # === Export Fungsi ===
 __all__ = [
