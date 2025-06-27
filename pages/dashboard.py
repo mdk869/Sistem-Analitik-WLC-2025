@@ -72,97 +72,61 @@ if not df.empty:
             <div class="wlc-value">{purata_kg} kg</div>
         </div>""", unsafe_allow_html=True)
 
-# Tabs
+# ==========================
+# ✅ Tabs
+# ==========================
+
 tab1, tab2, tab3 = st.tabs(["📊 Info Program", "🏆 Leaderboard", "🧍‍♂️ BMI"])
+
+# ==========================
+# ✅ Function Tab 1 — Info Program
+# ==========================
+
 
 def paparan_info_program(df):
     with tab1:
         st.subheader("Info Program & Perkembangan Peserta")
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Jumlah Peserta", len(df_tapis))
-    with col2:
-        st.metric("Tarikh Mula", "18 Mei 2025")
-    with col3:
-        st.metric("Tarikh Timbang Seterusnya", "20 Julai 2025")
-
-    st.warning("📅 Sila bersedia untuk sesi timbangan seterusnya pada **20 Julai 2025.**")
-
-    st.divider()
-
-    with st.expander("📋 Aktiviti Timbang / Progres Timbang", expanded=True):
-        st.subheader("📈 Statistik Progres Timbang Peserta")
-
-        # === Kiraan Statistik Timbangan ===
-        total_peserta = df.shape[0]
-        sudah_timbang = df["TarikhTimbang"].notna().sum()
-        belum_timbang = total_peserta - sudah_timbang
-
-        peratus_sudah = (sudah_timbang / total_peserta * 100).round(1) if total_peserta != 0 else 0
-        peratus_belum = (belum_timbang / total_peserta * 100).round(1) if total_peserta != 0 else 0
-
-        # === Paparan Metrik ===
         col1, col2, col3 = st.columns(3)
-        col1.metric("👥 Jumlah Peserta", total_peserta)
-        col2.metric("✅ Sudah Timbang", f"{sudah_timbang} ({peratus_sudah}%)")
-        col3.metric("❌ Belum Timbang", f"{belum_timbang} ({peratus_belum}%)")
+        col1.metric("Jumlah Peserta", len(df))
+        col2.metric("Tarikh Mula", "18 Mei 2025")
+        col3.metric("Tarikh Timbang Seterusnya", "20 Julai 2025")
+
+        st.warning("📅 Sila bersedia untuk sesi timbangan seterusnya pada **20 Julai 2025.**")
+        st.divider()
+
+        # Kiraan Timbangan
+        total = len(df)
+        sudah = df["TarikhTimbang"].notna().sum()
+        belum = total - sudah
+        peratus_sudah = (sudah / total * 100).round(1) if total else 0
+        peratus_belum = (belum / total * 100).round(1) if total else 0
+
+        # Paparan Metrik
+        col1, col2, col3 = st.columns(3)
+        col1.metric("👥 Jumlah Peserta", total)
+        col2.metric("✅ Sudah Timbang", f"{sudah} ({peratus_sudah}%)")
+        col3.metric("❌ Belum Timbang", f"{belum} ({peratus_belum}%)")
 
         st.divider()
 
-        # === Carta Pie ===
+        # Carta Pie Status Timbang
         df_status = pd.DataFrame({
             "Status": ["Sudah Timbang", "Belum Timbang"],
-            "Bilangan": [sudah_timbang, belum_timbang]
+            "Bilangan": [sudah, belum]
         })
-
-        fig = px.pie(df_status, names="Status", values="Bilangan", 
-                    title="Status Timbangan Peserta",
-                    color_discrete_sequence=["#00cc96", "#EF553B"],
-                    hole=0.4)  # Pie separuh donat
-
+        fig = px.pie(df_status, names="Status", values="Bilangan",
+                     title="Status Timbangan Peserta",
+                     color_discrete_sequence=["#00cc96", "#EF553B"],
+                     hole=0.4)
         st.plotly_chart(fig, use_container_width=True)
-
         st.divider()
 
-        # === Senarai Peserta Belum Timbang ===
+        # Senarai Peserta Belum Timbang
         st.subheader("📋 Senarai Peserta Belum Timbang")
         df_belum = df[df["TarikhTimbang"].isna()][["Nama", "NoStaf", "Jabatan"]].reset_index(drop=True)
-        df_belum.index = df_belum.index + 1
-
+        df_belum.index += 1
         st.dataframe(df_belum, use_container_width=True)
-
-        st.divider()
-
-    # === Paparan Progress Penurunan Berat ===
-    with st.expander("📉 Trend Penurunan Berat Program Ini (Klik Disini)"):
-            df_plot = (df_tapis)
-
-            fig = px.bar(
-                df_plot.sort_values("PenurunanKg", ascending=False),
-                x="Nama",
-                y="PenurunanKg",
-                title="Jumlah Penurunan Berat Setakat Ini",
-                labels={"PenurunanKg": "Penurunan (kg)"},
-                color="PenurunanKg",
-                color_continuous_scale="Tealgrn"
-            )
-            st.plotly_chart(fig, use_container_width=True)
-
-            st.divider()
-
-    # === Interaktif Kad Maklumat ===
-    st.subheader("🩺 Info Nutrisi & Kesihatan")
-
-    info_col1, info_col2 = st.columns(2)
-
-    with info_col1:
-            st.info("🍎 **Kalori Harian:**\nAnggaran kalori untuk kekal sihat adalah sekitar 1800-2200 kcal sehari bergantung pada aktiviti harian.")
-            st.info("💧 **Keperluan Air:**\nMinum 30-35ml air per kg berat badan. Contoh: 70kg × 35ml = 2.45 liter sehari.")
-
-    with info_col2:
-            st.info("🚶‍♂️ **Aktiviti Disarankan:**\n- Jalan kaki 8000-10000 langkah sehari.\n- Senaman 3-4 kali seminggu.")
-            st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
 
 with tab2:
     st.subheader("Leaderboard Penurunan Berat (%)")
