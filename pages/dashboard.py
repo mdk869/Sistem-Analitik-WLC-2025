@@ -180,7 +180,7 @@ with tab2:
                 fig = px.bar(
                     df_leaderboard.sort_values('% Penurunan', ascending=False),
                     x='Nama',
-                    y='% Turun',
+                    y='% Penurunan',
                     color='Status',
                     text='Status',
                     color_discrete_map={
