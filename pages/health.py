@@ -2,7 +2,7 @@
 
 import streamlit as st
 from app.helper_connection import (
-    SHEET_PESERTA, SHEET_LOG, SHEET_REKOD_RANKING,
+    SPREADSHEET_PESERTA, SPREADSHEET_LOG, SPREADSHEET_RANKING,
     get_worksheet, list_files_in_folder
 )
 
@@ -20,21 +20,21 @@ st.divider()
 st.subheader("📄 Google Sheets")
 
 try:
-    ws_peserta = get_worksheet(SHEET_PESERTA, "data")
+    ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "data")
     peserta = ws_peserta.get_all_records()
     st.success(f"✅ Data Peserta: {len(peserta)} rekod dijumpai")
 except Exception as e:
     st.error(f"❌ Data Peserta GAGAL: {e}")
 
 try:
-    ws_log = get_worksheet(SHEET_LOG, "log")
+    ws_log = get_worksheet(SPREADSHEET_LOG, "log")
     log = ws_log.get_all_records()
     st.success(f"✅ Log Dev: {len(log)} rekod")
 except Exception as e:
     st.error(f"❌ Log Dev GAGAL: {e}")
 
 try:
-    ws_ranking = get_worksheet(SHEET_REKOD_RANKING, "rekod")
+    ws_ranking = get_worksheet(SPREADSHEET_RANKING, "rekod")
     rekod = ws_ranking.get_all_records()
     st.success(f"✅ Rekod Ranking: {len(rekod)} rekod")
 except Exception as e:
