@@ -178,7 +178,7 @@ with tab2:
             with col2:
                 st.markdown("### 📊 Carta Leaderboard")
                 fig = px.bar(
-                    df_leaderboard.sort_values('BeratTerkini', ascending=False),
+                    df_leaderboard.sort_values('% Penurunan', ascending=False),
                     x='Nama',
                     y='% Turun',
                     color='Status',
