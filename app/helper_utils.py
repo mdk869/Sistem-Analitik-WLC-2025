@@ -81,6 +81,35 @@ def tambah_medal(rank):
         return str(rank)
 
 
+def check_header_consistency(dataframe, expected_header, nama_sheet="Data"):
+    """
+    Semak samada header dataframe adalah sama seperti expected header.
+    
+    Args:
+        dataframe (pd.DataFrame): Data yang dibaca dari Google Sheet
+        expected_header (list): Senarai header yang sepatutnya
+        nama_sheet (str): Nama sheet untuk paparan mesej
+
+    Returns:
+        bool: True jika sama, False jika tidak
+    """
+    df_header = list(dataframe.columns)
+    missing = [h for h in expected_header if h not in df_header]
+    extra = [h for h in df_header if h not in expected_header]
+
+    if missing or extra:
+        st.error(f"❌ {nama_sheet}: Struktur kolum tidak padan dengan template.")
+        if missing:
+            st.warning(f"🛑 Kolum **TIADA**: {missing}")
+        if extra:
+            st.info(f"ℹ️ Kolum **LEBIH**: {extra}")
+        st.write("📑 Header dalam dataframe:", df_header)
+        return False
+    else:
+        st.success(f"✅ {nama_sheet}: Struktur kolum adalah betul.")
+        return True
+
+
 # ============================================
 # ✅ Export Fungsi
 # ============================================
