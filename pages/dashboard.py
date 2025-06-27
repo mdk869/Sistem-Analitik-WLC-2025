@@ -204,22 +204,22 @@ with tab2:
                 use_container_width=True
             )
 
-        
-    fig = px.bar(
+        with col2:
+            fig = px.bar(
                 df_leaderboard.sort_values('% Penurunan', ascending=False),
                 x='Nama',
                 y='% Penurunan',
                 color='Jantina',  # ✅ Legend ditukar kepada Jantina
                 text='Ranking_Trend',
                 title="Leaderboard Terkini Berdasarkan % Penurunan Berat"
-    )
-    fig.update_layout(
+            )
+            fig.update_layout(
                 xaxis={'categoryorder': 'total descending'},
                 legend_title="Jantina"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
-    log_dev("Leaderboard", "Paparan leaderboard semasa")
+        log_dev("Leaderboard", "Paparan leaderboard semasa")
 
 
 with tab3:
