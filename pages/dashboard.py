@@ -14,7 +14,6 @@ from app.helper_ranking import leaderboard_dengan_status, sejarah_ranking
 from app.helper_ranking import leaderboard_dengan_status, simpan_ranking_bulanan
 from app.helper_log import log_dev
 
-
 # ✅ Login check
 is_admin = check_login()
 
