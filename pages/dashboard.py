@@ -163,7 +163,7 @@ with tab1:
             st.info("🧠 **Kesihatan Mental:**\nRehat mencukupi, kurangkan stres untuk membantu kawalan berat badan.")
 
 with tab2:
-        st.subheader("🏆 Leaderboard Penurunan Berat (%)")
+        st.subheader("Leaderboard Penurunan Berat (%)")
 
         df_leaderboard = leaderboard_dengan_status()
 
