@@ -12,6 +12,7 @@ from app.helper_data import load_data_cloud_or_local as load_data
 from app.helper_logic import tambah_kiraan_peserta
 from app.helper_ranking import leaderboard_dengan_status, sejarah_ranking, simpan_ranking_bulanan
 from app.helper_log import log_dev
+from app.settings import TARIKH_MULA, TARIKH_TIMBANG_SET, VERSI, LAST_UPDATE
 
 # ✅ Login check
 is_admin = check_login()
@@ -71,8 +72,8 @@ if not df.empty:
             <div class="wlc-value">{purata_kg} kg</div>
         </div>""", unsafe_allow_html=True)
 
-    # Tabs
-    tab1, tab2, tab3 = st.tabs(["📊 Info Program", "🏆 Leaderboard", "🧍‍♂️ BMI"])
+# Tabs
+tab1, tab2, tab3 = st.tabs(["📊 Info Program", "🏆 Leaderboard", "🧍‍♂️ BMI"])
 
 with tab1:
     st.subheader("Info Program & Perkembangan Peserta")
