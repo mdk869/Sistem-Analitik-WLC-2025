@@ -174,23 +174,24 @@ with tab2:
         df_display = df_leaderboard.copy()
 
         # 🧹 Sembunyikan kolum tidak perlu
-        df_display = df_display.drop(columns=['Jabatan', 'BeratAwal', 'BeratTerkini', "Ranking_Trend", "Jantina"], errors='ignore')
+        df_display = df_display.drop(
+            columns=['Jabatan', 'BeratAwal', 'BeratTerkini', 'Ranking', "Jantina"],
+            errors='ignore'
+        )
 
-        # 🎖️ Ganti ranking No. 1,2,3 dengan medal + trend
-        medal_map = {1: "🥇", 2: "🥈", 3: "🥉"}
+        # ✅ Guna terus kolum Ranking_Trend sebagai Ranking
+        df_display = df_display.rename(columns={'Ranking_Trend': 'Ranking'})
 
-        df_display['Ranking'] = [
-            f"{medal_map.get(rank)} {trend}" if rank in medal_map else f"{rank} {trend}"
-            for rank, trend in zip(df_leaderboard['Ranking'], df_leaderboard['Ranking_Trend'])
-        ]
+        # ✅ Format % Penurunan — kosong jadi 0.00
+        df_display['% Penurunan'] = df_display['% Penurunan'].fillna(0).round(2)
 
-        # 🔝 Highlight Top3 - Tambah warna pada baris
+        # 🔝 Highlight Top3 - berdasarkan Ranking ada emoji 🥇🥈🥉
         def highlight_top3(row):
-            if row['Ranking'].startswith("🥇"):
+            if str(row['Ranking']).startswith("🥇"):
                 return ['background-color: gold'] * len(row)
-            elif row['Ranking'].startswith("🥈"):
+            elif str(row['Ranking']).startswith("🥈"):
                 return ['background-color: silver'] * len(row)
-            elif row['Ranking'].startswith("🥉"):
+            elif str(row['Ranking']).startswith("🥉"):
                 return ['background-color: #cd7f32'] * len(row)  # bronze
             else:
                 return [''] * len(row)
@@ -209,7 +210,7 @@ with tab2:
                 df_leaderboard.sort_values('% Penurunan', ascending=False),
                 x='Nama',
                 y='% Penurunan',
-                color='Jantina',  # ✅ Legend ditukar kepada Jantina
+                color='Jantina',  # ✅ Legend ikut Jantina
                 text='Ranking_Trend',
                 title="Leaderboard Terkini Berdasarkan % Penurunan Berat"
             )
