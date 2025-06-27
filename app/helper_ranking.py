@@ -3,6 +3,7 @@
 import pandas as pd
 from datetime import datetime
 from app.helper_logic import tambah_medal, kira_trend
+from app.helper_utils import kira_peratus_turun, get_bulan_sekarang
 from app.helper_data import (
     load_data_peserta,
     get_berat_terkini,
