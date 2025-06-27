@@ -75,8 +75,9 @@ if not df.empty:
 # Tabs
 tab1, tab2, tab3 = st.tabs(["📊 Info Program", "🏆 Leaderboard", "🧍‍♂️ BMI"])
 
-with tab1:
-    st.subheader("Info Program & Perkembangan Peserta")
+def paparan_info_program(df):
+    with tab1:
+        st.subheader("Info Program & Perkembangan Peserta")
 
     col1, col2, col3 = st.columns(3)
     with col1:
