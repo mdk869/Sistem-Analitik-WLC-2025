@@ -1,7 +1,6 @@
-# app/helper_utils.py
-
 from datetime import datetime
 import pytz
+import pandas as pd
 
 
 # === Tarikh & Masa Lokal Malaysia ===
@@ -14,13 +13,23 @@ def get_bulan_sekarang():
     return datetime.now(tz).strftime('%Y-%m')
 
 
+# === Check atau Auto Create Worksheet ===
+def check_or_create_worksheet(sheet, name, header):
+    try:
+        ws = sheet.worksheet(name)
+    except:
+        ws = sheet.add_worksheet(title=name, rows="1000", cols="20")
+        ws.append_row(header)
+    return ws
+
+
 # === Kiraan BMI ===
 def kira_bmi(berat: float, tinggi_cm: float) -> float:
     tinggi_m = tinggi_cm / 100
     return round(berat / (tinggi_m ** 2), 1)
 
 
-# === Kategori BMI Asia ===
+# === Kategori BMI ===
 def kategori_bmi_asia(bmi: float) -> str:
     if bmi < 18.5:
         return "Kurang Berat Badan"
@@ -36,6 +45,30 @@ def kategori_bmi_asia(bmi: float) -> str:
         return "Obesiti Morbid"
 
 
+# === Kiraan Trend Naik/Turun ===
+def kira_trend(ranking_semasa, ranking_sebelum):
+    if ranking_sebelum is None or pd.isna(ranking_sebelum):
+        return "🆕"
+    elif ranking_semasa < ranking_sebelum:
+        return "📈"
+    elif ranking_semasa > ranking_sebelum:
+        return "📉"
+    else:
+        return "➖"
+
+
+# === Label Medal 🥇🥈🥉 ===
+def tambah_medal(rank):
+    if rank == 1:
+        return "🥇"
+    elif rank == 2:
+        return "🥈"
+    elif rank == 3:
+        return "🥉"
+    else:
+        return str(rank)
+
+
 # === Kiraan % Penurunan Berat ===
 def kira_peratus_turun(berat_awal, berat_semasa):
     try:
@@ -44,11 +77,14 @@ def kira_peratus_turun(berat_awal, berat_semasa):
         return 0
 
 
-# === Untuk import automatik ===
+# === Export Fungsi ===
 __all__ = [
     "get_tarikh_masa",
     "get_bulan_sekarang",
+    "check_or_create_worksheet",
     "kira_bmi",
     "kategori_bmi_asia",
+    "kira_trend",
+    "tambah_medal",
     "kira_peratus_turun"
 ]
