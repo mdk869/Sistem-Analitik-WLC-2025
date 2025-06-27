@@ -118,7 +118,7 @@ with tab1:
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    log_dev("Dashboard", "Buka Tab Info Program")
+    log_dev("Dashboard", "Buka Tab Info Program", "Success")
 
 # =====================================================================================
 # TAB 2: Leaderboard
@@ -236,7 +236,7 @@ with tab4:
         df_bmi_table.index = df_bmi_table.index + 1
         st.dataframe(df_bmi_table, use_container_width=True)
 
-    log_dev("Dashboard", "Buka Tab BMI")
+    log_dev("Dashboard", "Buka Tab BMI", "Success")
 
 # =====================================================================================
 # Footer
