@@ -3,8 +3,9 @@ import numpy as np
 from datetime import datetime
 import streamlit as st
 
-from app.helper_data import load_data_peserta, get_berat_terkini, load_ranking_bulanan
+from app.helper_data import load_data_peserta, get_berat_terkini, load_ranking_bulanan, load_data_cloud_or_local
 from app.helper_log import log_dev
+
 
 
 # === Fungsi: Kira Peratus Penurunan Berat ===
@@ -16,9 +17,8 @@ def kira_peratus_turun(berat_awal, berat_semasa):
 
 
 # === Fungsi: Generate Leaderboard Semasa ===
-def generate_leaderboard():
+def generate_leaderboard(df_peserta):
     try:
-        df_peserta = load_data_peserta()
         df_berat = get_berat_terkini()
 
         if df_berat.empty:
@@ -26,19 +26,21 @@ def generate_leaderboard():
             return pd.DataFrame()
 
         df = pd.merge(df_peserta, df_berat, on="Nama", how="left")
-        df["% Turun"] = df.apply(lambda x: kira_peratus_turun(x["BeratAwal"], x["Berat"]), axis=1)
+        df["PenurunanKg"] = df["BeratAwal"] - df["Berat"]
+        df["% Penurunan"] = (df["PenurunanKg"] / df["BeratAwal"] * 100).round(2)
+        df["BMI"] = df.apply(lambda row: kira_bmi(row["Berat"], row["Tinggi"]), axis=1)
+        df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
 
-        df = df.sort_values(by="% Turun", ascending=False).reset_index(drop=True)
-        df["Ranking"] = df.index + 1
+        df_rank = proses_leaderboard(df)
 
-        df = df[["Ranking", "Nama", "Jabatan", "BeratAwal", "Berat", "% Turun", "Tarikh"]]
         log_dev("Generate Leaderboard", "Leaderboard semasa berjaya dijana")
-        return df
+        return df_rank
 
     except Exception as e:
         st.error(f"Gagal jana leaderboard: {e}")
         log_dev("Generate Leaderboard", f"Gagal jana leaderboard: {e}")
         return pd.DataFrame()
+
 
 
 # === Fungsi: Banding Ranking Dengan Bulan Sebelum ===
@@ -74,7 +76,7 @@ def tambah_status_ranking(df_current, bulan_sebelum):
 
 
 # === Fungsi: Papar Leaderboard Lengkap Dengan Status ===
-def leaderboard_dengan_status():
+def leaderboard_dengan_status(df_peserta):
     bulan_ini = datetime.now().strftime('%Y-%m')
     tahun, bulan = bulan_ini.split("-")
 
@@ -86,7 +88,8 @@ def leaderboard_dengan_status():
 
     bulan_sebelum = f"{tahun}-{bulan_int:02d}"
 
-    df_current = generate_leaderboard()
+    df_current = generate_leaderboard(df_peserta)
+
     if df_current.empty:
         return pd.DataFrame()
 
