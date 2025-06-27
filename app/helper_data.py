@@ -39,6 +39,30 @@ ws_rekod = check_or_create_worksheet(
     ["Nama", "Tarikh", "Berat"]
 )
 
+def audit_header(sheet_name="data_peserta"):
+    try:
+        sh = connect_gsheet()
+        worksheet = sh.worksheet("data_peserta")
+        headers = worksheet.row_values(1)
+
+        expected_headers = ['Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan',
+                            'Tinggi', 'BeratAwal', 'TarikhDaftar',
+                            'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori']
+
+        missing = [h for h in expected_headers if h not in headers]
+
+        if missing:
+            st.error(f"❌ Header berikut hilang dalam {sheet_name}: {missing}")
+        else:
+            st.success(f"✅ Header dalam {sheet_name} adalah lengkap.")
+
+        return headers
+
+    except Exception as e:
+        st.error(f"❌ Gagal audit header: {e}")
+
+
+
 # === Load Data Peserta
 def load_data_peserta():
     try:
