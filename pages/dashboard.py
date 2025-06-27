@@ -224,7 +224,7 @@ with tab3:
         st.plotly_chart(fig, use_container_width=True)
 
         # === Senarai Nama Peserta Mengikut Kategori BMI (Akses Admin Sahaja) ===
-        with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
+        with st.expander("📋 Lihat Senarai Peserta Mengikut Kategori BMI"):
                 df_bmi_table = df_tapis[["NoStaf", "BMI", "KategoriBMI"]].sort_values(
                     "KategoriBMI", na_position="last"
                 ).reset_index(drop=True)
