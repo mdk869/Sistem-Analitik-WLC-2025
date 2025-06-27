@@ -59,6 +59,7 @@ def leaderboard_dengan_status():
     if df_current.empty:
         return pd.DataFrame()
 
+    # Load ranking bulan sebelum
     df_previous = load_ranking_bulan(bulan_sebelum)
 
     if df_previous is not None and not df_previous.empty:
