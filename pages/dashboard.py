@@ -185,6 +185,9 @@ with tab2:
         # ✅ Format % Penurunan — kosong jadi 0.00
         df_display['% Penurunan'] = df_display['% Penurunan'].fillna(0).round(2)
 
+        # ✅ Ambil hanya Top 10
+        df_display = df_display.sort_values(by='% Penurunan', ascending=False).head(10).reset_index(drop=True)
+
         # ✅ Susun semula kolum — Ranking di depan
         cols = df_display.columns.tolist()
         if 'Ranking' in cols and 'Nama' in cols:
