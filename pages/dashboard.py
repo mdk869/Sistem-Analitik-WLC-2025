@@ -175,14 +175,15 @@ with tab2:
 
         # 🧹 Sembunyikan kolum tidak perlu
         df_display = df_display.drop(
-            columns=['Jabatan', 'BeratAwal', 'BeratTerkini', "Ranking", "Jantina"],
+            columns=['Jabatan', 'BeratAwal', 'TarikhTimbang', 'BeratTerkini', 'Ranking', 'Jantina'],
             errors='ignore'
         )
 
         # ✅ Guna terus kolum Ranking_Trend sebagai Ranking
         df_display = df_display.rename(columns={'Ranking_Trend': 'Ranking'})
 
-       
+        # ✅ Format % Penurunan — kosong jadi 0.00
+        df_display['% Penurunan'] = df_display['% Penurunan'].fillna(0).round(2)
 
         # ✅ Susun semula kolum — Ranking di depan
         cols = df_display.columns.tolist()
