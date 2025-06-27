@@ -2,7 +2,7 @@
 
 import pytz
 from datetime import datetime
-from app.helper_connection import SHEET_LOG
+from app.helper_connection import dev_log
 from app.helper_utils import check_or_create_worksheet
 
 
@@ -12,7 +12,7 @@ from app.helper_utils import check_or_create_worksheet
 SHEET_NAME = "log_wlc_dev"
 HEADER = ["Tarikh", "Modul", "Aktiviti", "Status", "Catatan"]
 
-ws_log = check_or_create_worksheet(SHEET_LOG, SHEET_NAME, HEADER)
+ws_log = check_or_create_worksheet(dev_log, SHEET_NAME, HEADER)
 
 
 # ============================================

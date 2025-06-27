@@ -5,7 +5,7 @@ import pandas as pd
 import datetime
 import traceback
 from app.styles import papar_footer
-from app.helper_connection import SHEET_PESERTA, DRIVE_FOLDER_ID, DRIVE, SHEET_LOG, SHEET_REKOD_RANKING
+from app.helper_connection import peserta, dev_log, rekod_ranking, DRIVE, DRIVE_FOLDER_ID
 from googleapiclient.errors import HttpError
 
 # ===============================
@@ -18,19 +18,19 @@ st.caption("⚙️ Sistem ini dibangunkan khas untuk DevTeam sahaja. Tidak diaks
 st.subheader("🔗 Status Sambungan")
 
 try:
-    SHEET_PESERTA.worksheets()
+    peserta.worksheets()
     st.success("✅ Data Peserta: OK")
 except:
     st.error("❌ Data Peserta: Gagal")
 
 try:
-    SHEET_LOG.worksheets()
+    dev_log.worksheets()
     st.success("✅ Log Dev: OK")
 except:
     st.error("❌ Log Dev: Gagal")
 
 try:
-    SHEET_REKOD_RANKING.worksheets()
+    rekod_ranking.worksheets()
     st.success("✅ Rekod Ranking: OK")
 except:
     st.error("❌ Rekod Ranking: Gagal")

@@ -2,7 +2,7 @@
 import pandas as pd
 import streamlit as st
 
-from app.helper_connection import SHEET_PESERTA
+from app.helper_connection import peserta
 from app.helper_log import log_dev
 from app.helper_utils import (
     kira_bmi,
@@ -15,7 +15,7 @@ from app.helper_utils import (
 # ============================================
 def load_data_peserta():
     try:
-        ws = SHEET_PESERTA.worksheet("data_peserta")
+        ws = peserta.worksheet("data_peserta")
         data = ws.get_all_records()
 
         if not data:
@@ -37,7 +37,7 @@ def load_data_peserta():
 # ============================================
 def get_berat_terkini():
     try:
-        ws = SHEET_PESERTA.worksheet("rekod_berat")
+        ws = peserta.worksheet("rekod_berat")
         data = ws.get_all_records()
 
         if not data:
@@ -57,7 +57,7 @@ def get_berat_terkini():
 # =============================
 def load_data_cloud_or_local(sheet_name="data_peserta", worksheet_name="data", backup_file="data_peserta_backup.xlsx"):
     try:
-        ws = check_or_create_worksheet(SHEET_PESERTA, worksheet_name,
+        ws = check_or_create_worksheet(peserta, worksheet_name,
                                         ["Nama", "NoStaf", "Umur", "Jantina", "Jabatan",
                                          "Tinggi", "BeratAwal", "TarikhDaftar", "BeratTerkini",
                                          "TarikhTimbang", "BMI", "Kategori"])
@@ -98,7 +98,7 @@ def save_backup_excel(df):
 # =============================
 def save_data_to_gsheet(df):
     try:
-        worksheet = sheet.worksheet("peserta")
+        worksheet = worksheet('peserta')
         worksheet.clear()
 
         # Tulis header + data

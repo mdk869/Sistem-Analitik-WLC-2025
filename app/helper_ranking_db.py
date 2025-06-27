@@ -6,17 +6,18 @@ from datetime import datetime
 import tempfile
 import os
 
-from app.helper_connection import SHEET_REKOD_RANKING, DRIVE, get_secret_id
+from app.helper_connection import rekod_ranking, DRIVE, get_secret_id
 from app.helper_utils import get_tarikh_masa
+from app.helper_log import log_dev
 
 
 # ============================================
 # ✅ Worksheet Ranking
 # ============================================
 try:
-    ws_ranking = SHEET_REKOD_RANKING.worksheet("ranking_bulanan")
+    ws_ranking = rekod_ranking.worksheet("ranking_bulanan")
 except:
-    ws_ranking = SHEET_REKOD_RANKING.add_worksheet(title="ranking_bulanan", rows="1000", cols="10")
+    ws_ranking = rekod_ranking.add_worksheet(title="ranking_bulanan", rows="1000", cols="10")
     ws_ranking.append_row(["Nama", "Ranking", "Bulan", "TarikhSimpan"])
 
 
