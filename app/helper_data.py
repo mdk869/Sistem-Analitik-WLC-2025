@@ -30,7 +30,7 @@ def load_data_peserta():
 # ------------------------------------
 def save_data_peserta(df):
     try:
-        ws = get_worksheet(SHEET_PESERTA, "data")
+        ws = get_worksheet(SPREADSHEET_PESERTA, "data")
         ws.clear()
 
         ws.update([df.columns.values.tolist()] + df.values.tolist())
