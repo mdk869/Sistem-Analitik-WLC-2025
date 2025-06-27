@@ -19,9 +19,14 @@ credentials = Credentials.from_service_account_info(
 )
 gc = gspread.authorize(credentials)
 
-sheet = gc.open(st.secrets["gsheet"]["spreadsheet"])
-ws_peserta = sheet.worksheet("peserta")
-ws_rekod = sheet.worksheet("rekod_berat")
+# === Sambungan ke Spreadsheet
+sheet_peserta = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
+sheet_log = gc.open_by_key(st.secrets["gsheet"]["log_wlc_dev_id"])
+
+# === Worksheet Utama
+ws_peserta = sheet_peserta.worksheet("peserta")
+ws_rekod = sheet_peserta.worksheet("rekod_berat")
+
 
 
 def load_data_cloud_or_local():

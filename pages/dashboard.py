@@ -10,6 +10,7 @@ from app.helper_auth import check_login
 from app.styles import paparkan_tema, papar_footer, papar_header
 from app.helper_data import load_data_cloud_or_local as load_data
 from app.helper_logic import tambah_kiraan_peserta, proses_leaderboard
+from app.helper_ranking import leaderboard_dengan_status, sejarah_ranking
 
 # ✅ Login check
 is_admin = check_login()
@@ -112,7 +113,7 @@ with tab1:
             "Bilangan": [sudah_timbang, belum_timbang]
         })
 
-        fig = px.pie(df_status, names="Status", values="Bilangan",
+        fig = px.pie(df_status, names="Status", values="Bilangan", 
                     title="Status Timbangan Peserta",
                     color_discrete_sequence=["#00cc96", "#EF553B"],
                     hole=0.4)  # Pie separuh donat
@@ -166,12 +167,12 @@ with tab2:
     # Pilihan untuk filter berapa peserta nak paparkan
     pilihan_top = st.selectbox(
         "Pilih jumlah peserta untuk dipaparkan:",
-        options=[5, 10, 20, 50, "Semua"],
+        options=[5, 10, 20, "Semua"],
         index=1
     )
+    bulan_pilih = st.selectbox("Banding Dengan Bulan Sebelumnya:", options=list_ranking_sheets())
 
-    df_rank = df_tapis.sort_values("% Penurunan", ascending=False).reset_index(drop=True)
-    df_rank["Ranking"] = df_rank.index + 1
+    df_rank = leaderboard_dengan_status(df_tapis)
         
     # Top N filter
     if pilihan_top != "Semua":
@@ -182,6 +183,9 @@ with tab2:
         use_container_width=True,
         hide_index=True
     )
+    nama_pilih = st.selectbox("Pilih Nama:", options=df_rank["Nama"].unique())
+    df_sejarah = sejarah_ranking(nama_pilih)
+    st.line_chart(df_sejarah.set_index("Bulan")["Ranking"])
 
     st.subheader("🏅 10 Terbaik - % Penurunan Berat")
 
