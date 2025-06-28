@@ -191,7 +191,6 @@ def load_rekod_berat():
         if not df.empty:
             df["TarikhTimbang"] = pd.to_datetime(df["TarikhTimbang"], errors='coerce')
             df = df.rename(columns={
-                "BeratTerkini": "Berat",
                 "TarikhTimbang": "Tarikh"
             })
         return df
