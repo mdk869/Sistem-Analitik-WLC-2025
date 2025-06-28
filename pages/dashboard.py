@@ -75,15 +75,19 @@ with tab1:
 with tab2:
     st.subheader("🏆 Leaderboard Berat Badan")
 
-    leaderboard = leaderboard_dengan_status()
+    # ✅ Load data & proses
+    df = proses_data_peserta(data_peserta)
+
+    # ✅ Load leaderboard
+    leaderboard = leaderboard_dengan_status(df)
 
     if leaderboard is not None and not leaderboard.empty:
+        # ✅ Paparan Leaderboard dengan hide index
         st.dataframe(
             leaderboard.set_index(
                 pd.Index(range(1, len(leaderboard) + 1), name="No.")
             ),
-            use_container_width=True,
-            hide_index=True
+            use_container_width=True
         )
     else:
         st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
