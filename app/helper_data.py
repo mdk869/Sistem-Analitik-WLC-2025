@@ -5,6 +5,7 @@ import pandas as pd
 import datetime
 from app.helper_connection import SPREADSHEET_PESERTA, get_worksheet
 from app.helper_utils import save_dataframe_to_excel, kategori_bmi_asia
+from app.helper_log import log_dev, log_error
 
 
 # ------------------------------------
