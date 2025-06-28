@@ -106,7 +106,7 @@ with tab2:
 with tab3:
     st.subheader("📊 Analitik BMI Peserta")
 
-    if check_header_consistency(data_rekod, HEADER_PESERTA, "Rekod Ranking"):
+    if check_header_consistency(data_peserta, HEADER_PESERTA, "Rekod Ranking"):
         bmi_summary = data_rekod["Kategori"].value_counts().reset_index()
         bmi_summary.columns = ["Kategori", "Bilangan"]
 
