@@ -185,12 +185,17 @@ def update_berat_terkini_peserta(nama, tarikh, berat):
 # =======================
 def load_rekod_berat():
     try:
-        ws = get_worksheet(SPREADSHEET_PESERTA, "peserta")
+        ws = get_worksheet(SPREADSHEET_PESERTA, "data_peserta")
         data = ws.get_all_records()
         df = pd.DataFrame(data)
         if not df.empty:
             df["TarikhTimbang"] = pd.to_datetime(df["TarikhTimbang"], errors='coerce')
+            df = df.rename(columns={
+                "BeratTerkini": "Berat",
+                "TarikhTimbang": "Tarikh"
+            })
         return df
+    
     except Exception as e:
         st.error(f"❌ Gagal load data rekod berat: {e}")
         return pd.DataFrame()
