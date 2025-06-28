@@ -189,7 +189,7 @@ def load_rekod_berat():
         data = ws.get_all_records()
         df = pd.DataFrame(data)
         if not df.empty:
-            df["Tarikh"] = pd.to_datetime(df["Tarikh"], errors='coerce')
+            df["TarikhTimbang"] = pd.to_datetime(df["TarikhTimbang"], errors='coerce')
         return df
     except Exception as e:
         st.error(f"❌ Gagal load data rekod berat: {e}")
