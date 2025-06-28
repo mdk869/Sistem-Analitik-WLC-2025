@@ -85,3 +85,76 @@ def kira_bmi(berat, tinggi):
     bmi = berat / (tinggi_meter ** 2)
     return round(bmi, 1)
 
+# ===========================================================
+# ✅ Bersihkan Data — Semua Whitespace
+# ===========================================================
+def bersihkan_whitespace(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Buang whitespace di semua nilai string dalam dataframe.
+    """
+    return df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+
+
+# ===========================================================
+# ✅ Tukar Kolum kepada Numerik (Contoh: Berat, Tinggi)
+# ===========================================================
+def bersihkan_numerik(df: pd.DataFrame, kolum_list: list) -> pd.DataFrame:
+    """
+    Tukar kolum kepada format numerik. Jika error, tukar jadi NaN.
+    """
+    for kolum in kolum_list:
+        if kolum in df.columns:
+            df[kolum] = pd.to_numeric(df[kolum], errors="coerce")
+    return df
+
+
+# ===========================================================
+# ✅ Semak Status Timbangan
+# ===========================================================
+def check_sudah_timbang(row) -> str:
+    """
+    Return 'Sudah Timbang' jika BeratTerkini dan TarikhTimbang tidak kosong.
+    """
+    return (
+        "Sudah Timbang"
+        if all([
+            pd.notnull(row["BeratTerkini"]),
+            str(row["BeratTerkini"]).strip() != "",
+            pd.notnull(row["TarikhTimbang"]),
+            str(row["TarikhTimbang"]).strip() != ""
+        ])
+        else "Belum Timbang"
+    )
+
+
+# ===========================================================
+# ✅ Pipeline Bersihkan dan Semak Status Timbangan
+# ===========================================================
+def proses_data_peserta(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Bersihkan whitespace, tukar berat/tinggi ke numerik, dan kira status timbang.
+    """
+    df = bersihkan_whitespace(df)
+    df = bersihkan_numerik(df, ["Tinggi", "BeratAwal", "BeratTerkini"])
+
+    # Tambah kolum StatusTimbang
+    df["StatusTimbang"] = df.apply(check_sudah_timbang, axis=1)
+
+    return df
+
+
+# ===========================================================
+# ✅ Semak Header
+# ===========================================================
+def check_header_consistency(df: pd.DataFrame, header_list: list, label: str = "Data") -> bool:
+    """
+    Pastikan header dataframe sama seperti yang dijangka.
+    """
+    df_header = list(df.columns)
+    if all(col in df_header for col in header_list):
+        return True
+    else:
+        print(f"❌ {label}: Header tidak konsisten. Sila semak header Google Sheet.")
+        print(f"Expected: {header_list}")
+        print(f"Found: {df_header}")
+        return False
