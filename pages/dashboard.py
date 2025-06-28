@@ -11,7 +11,7 @@ from app.helper_auth import check_login
 from app.helper_data import load_data_peserta, load_data_cloud_or_local
 from app.helper_ranking import leaderboard_dengan_status
 from app.helper_log import log_dev
-from app.helper_utils import check_header_consistency
+from app.helper_utils import check_header_consistency, kategori_bmi_asia, kira_bmi
 from app.styles import paparkan_tema, papar_header, papar_footer
 
 # ========================================
@@ -125,12 +125,12 @@ with tab3:
         # Paparan metrik kategori BMI dengan gaya mengikut warna
         cols = st.columns(6)
         kategori_bmi_data = [
-            ("Kurang Berat Badan", "kurang", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum()),
-            ("Normal", "normal", (df_tapis["KategoriBMI"] == "Normal").sum()),
-            ("Lebih Berat Badan", "lebih", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum()),
-            ("Obesiti Tahap 1", "obes1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum()),
-            ("Obesiti Tahap 2", "obes2", (df_tapis["KategoriBMI"] == "Obesiti Tahap 2").sum()),
-            ("Obesiti Morbid", "morbid", (df_tapis["KategoriBMI"] == "Obesiti Morbid").sum()),
+            ("Kurang Berat Badan", "kurang", (df_tapis["Kategori"] == "Kurang Berat Badan").sum()),
+            ("Normal", "normal", (df_tapis["Kategori"] == "Normal").sum()),
+            ("Lebih Berat Badan", "lebih", (df_tapis["Kategori"] == "Lebih Berat Badan").sum()),
+            ("Obesiti Tahap 1", "obes1", (df_tapis["Kategori"] == "Obesiti Tahap 1").sum()),
+            ("Obesiti Tahap 2", "obes2", (df_tapis["Kategori"] == "Obesiti Tahap 2").sum()),
+            ("Obesiti Morbid", "morbid", (df_tapis["Kategori"] == "Obesiti Morbid").sum()),
         ]
 
         for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
