@@ -39,33 +39,26 @@ def save_rekod_ranking(df):
 # ====================================================
 # ✅ Kira Leaderboard Semasa
 # ====================================================
-def leaderboard_dengan_status():
-    df = load_data_peserta()
-
+def leaderboard_dengan_status(df):
+    """
+    Terima dataframe peserta dan kira % penurunan berat serta ranking.
+    """
     if df.empty:
         st.warning("🚫 Tiada data peserta.")
         return pd.DataFrame()
 
-    # ✅ Pastikan BeratAwal dan BeratTerkini adalah float
-    df["BeratAwal"] = pd.to_numeric(df["BeratAwal"], errors="coerce")
-    df["BeratTerkini"] = pd.to_numeric(df["BeratTerkini"], errors="coerce")
-
-    # ✅ Buang peserta yang tiada data berat
-    df = df.dropna(subset=["BeratAwal", "BeratTerkini"])
-
-    # ✅ Kira %Perubahan
+    # ✅ Kira % perubahan berat
     df["%Perubahan"] = round(
         (df["BeratAwal"] - df["BeratTerkini"]) / df["BeratAwal"] * 100, 2
     )
 
-    # ✅ Susun ikut ranking
+    # ✅ Susun ikut %Perubahan tertinggi
     df = df.sort_values(by="%Perubahan", ascending=False).reset_index(drop=True)
     df["Ranking"] = df.index + 1
 
-    return df[
-        ["Ranking", "Nama", "BeratAwal", "BeratTerkini", "%Perubahan", "BMI", "Kategori"]
-    ]
-
+    return df[[
+        "Ranking", "Nama", "BeratAwal", "BeratTerkini", "%Perubahan", "BMI", "Kategori"
+    ]]
 
 
 # ====================================================
