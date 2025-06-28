@@ -91,7 +91,8 @@ with tab2:
             leaderboard.set_index(
                 pd.Index(range(1, len(leaderboard) + 1), name="No.")
             ),
-            use_container_width=True
+            use_container_width=True,
+            hide_index=True
         )
     else:
         st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
