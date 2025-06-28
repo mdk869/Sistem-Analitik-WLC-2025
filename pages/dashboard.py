@@ -98,7 +98,7 @@ with tab2:
 # TAB 3: Status Timbang
 # =====================================================================================
 with tab3:
-    with st.expander("📅 Status Timbangan Mengikut Sesi Bulanan"):
+        st.subheader("📅 Status Timbangan Mengikut Sesi Bulanan")
 
         df = data_peserta.copy()
 
