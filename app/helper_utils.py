@@ -158,3 +158,14 @@ def check_header_consistency(df: pd.DataFrame, header_list: list, label: str = "
         print(f"Expected: {header_list}")
         print(f"Found: {df_header}")
         return False
+
+def get_column_index(worksheet, column_name):
+    """
+    Cari index kolum dalam worksheet berdasarkan nama kolum.
+    """
+    header = worksheet.row_values(1)
+    try:
+        return header.index(column_name) + 1
+    except ValueError:
+        st.error(f"❌ Kolum '{column_name}' tidak ditemui dalam worksheet.")
+        return None
