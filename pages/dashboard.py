@@ -10,7 +10,7 @@ from datetime import datetime
 from app.helper_data import load_data_peserta, load_data_cloud_or_local
 from app.helper_ranking import leaderboard_dengan_status
 from app.helper_log import log_dev
-from app.helper_utils import check_header_consistency, kategori_bmi_asia, kira_bmi
+from app.helper_utils import check_header_consistency, proses_data_peserta
 from app.styles import paparkan_tema, papar_header, papar_footer
 
 
@@ -105,20 +105,13 @@ with tab3:
         st.error("❌ Kolum tidak lengkap dalam Google Sheet. Sila pastikan kolum berikut wujud: " + ", ".join(wajib_kolum))
         st.stop()
 
-    # ✅ Bersihkan data kategori whitespace
-    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+    # ✅ Bersihkan data & kira status timbang
+    df = proses_data_peserta(df)
 
     # ✅ Kira jumlah peserta
     total_peserta = len(df)
 
-    # ✅ Penentuan sudah & belum timbang
-    df["StatusTimbang"] = df.apply(
-        lambda row: "Sudah Timbang"
-        if pd.notnull(row["BeratTerkini"]) and pd.notnull(row["TarikhTimbang"])
-        else "Belum Timbang",
-        axis=1
-    )
-
+    # ✅ Kira status timbang
     sudah_timbang = (df["StatusTimbang"] == "Sudah Timbang").sum()
     belum_timbang = (df["StatusTimbang"] == "Belum Timbang").sum()
 
@@ -164,7 +157,6 @@ with tab3:
         st.dataframe(df_belum_timbang, use_container_width=True)
 
     log_dev("Dashboard", "Buka Tab Status Timbangan", "Success")
-
 
 # ========================================
 # ✅ Tab 4: Analitik BMI
