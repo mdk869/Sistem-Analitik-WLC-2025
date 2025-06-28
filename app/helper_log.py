@@ -2,7 +2,7 @@
 
 import streamlit as st
 from datetime import datetime
-from app.helper_connection import SHEET_LOG, get_worksheet
+from app.helper_connection import SPREADSHEET_LOG, get_worksheet
 
 
 # ====================================================
@@ -10,7 +10,7 @@ from app.helper_connection import SHEET_LOG, get_worksheet
 # ====================================================
 def log_dev(page, aktiviti, status="Success"):
     try:
-        ws = get_worksheet(SHEET_LOG, "log")
+        ws = get_worksheet(SPREADSHEET_LOG, "log")
 
         sekarang = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
