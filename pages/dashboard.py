@@ -104,36 +104,52 @@ with tab2:
 # ✅ Tab 3: Analitik BMI
 # ========================================
 with tab3:
-    st.subheader("📊 Analitik BMI Peserta")
+        st.subheader("📊 Analisis BMI Peserta")
 
-    if check_header_consistency(data_peserta, HEADER_PESERTA, "Rekod Ranking"):
-        bmi_summary = data_rekod["Kategori"].value_counts().reset_index()
-        bmi_summary.columns = ["Kategori", "Bilangan"]
+        df_tapis = data_peserta.copy()
 
-        # ✅ Pie Chart
-        fig_pie = px.pie(
-            bmi_summary,
-            names="Kategori",
-            values="Bilangan",
-            title="Peratusan Kategori BMI Peserta",
-            hole=0.4
-        )
-        st.plotly_chart(fig_pie, use_container_width=True)
+        if not df_tapis.empty:
+            # 📊 Paparan metrik kategori BMI
+            cols = st.columns(6)
+            kategori_bmi_data = [
+                ("Kurang Berat Badan", "kurang", (df_tapis["Kategori"] == "Kurang Berat Badan").sum()),
+                ("Normal", "normal", (df_tapis["Kategori"] == "Normal").sum()),
+                ("Lebih Berat Badan", "lebih", (df_tapis["Kategori"] == "Lebih Berat Badan").sum()),
+                ("Obesiti Tahap 1", "obes1", (df_tapis["Kategori"] == "Obesiti Tahap 1").sum()),
+                ("Obesiti Tahap 2", "obes2", (df_tapis["Kategori"] == "Obesiti Tahap 2").sum()),
+                ("Obesiti Morbid", "morbid", (df_tapis["Kategori"] == "Obesiti Morbid").sum()),
+            ]
 
-        st.divider()
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-        # ✅ Bar Chart
-        fig_bar = px.bar(
-            bmi_summary,
-            x="Kategori",
-            y="Bilangan",
-            color="Kategori",
-            title="Bilangan Peserta Mengikut Kategori BMI",
-            text_auto=True
-        )
-        st.plotly_chart(fig_bar, use_container_width=True)
+        # Paparan metrik kategori BMI dengan gaya mengikut warna
+        cols = st.columns(6)
+        kategori_bmi_data = [
+            ("Kurang Berat Badan", "kurang", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum()),
+            ("Normal", "normal", (df_tapis["KategoriBMI"] == "Normal").sum()),
+            ("Lebih Berat Badan", "lebih", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum()),
+            ("Obesiti Tahap 1", "obes1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum()),
+            ("Obesiti Tahap 2", "obes2", (df_tapis["KategoriBMI"] == "Obesiti Tahap 2").sum()),
+            ("Obesiti Morbid", "morbid", (df_tapis["KategoriBMI"] == "Obesiti Morbid").sum()),
+        ]
 
-    log_dev("Dashboard", "Buka Tab Analitik BMI", "Success")
+        for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
+            col.markdown(f"""
+            <div class="bmi-box {css_class}">
+                <div class="bmi-title">{label}</div>
+                <div class="bmi-value">{value}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        Kategori_df = df_tapis.groupby("KategoriBMI").size().reset_index(name="Bilangan")
+        fig = px.pie(Kategori_df, names="KategoriBMI", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")
+        st.plotly_chart(fig, use_container_width=True)
+
+        with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
+            df_bmi_table = df_tapis[["Nama", "BMI", "KategoriBMI"]].sort_values("KategoriBMI", na_position="last").reset_index(drop=True)
+            df_bmi_table.index = df_bmi_table.index + 1
+            st.dataframe(df_bmi_table, use_container_width=True)
+
 
 
 # ========================================
