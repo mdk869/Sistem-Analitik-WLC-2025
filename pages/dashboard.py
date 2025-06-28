@@ -7,21 +7,12 @@ import plotly.express as px
 from datetime import datetime
 
 # Import helper
-from app.helper_auth import check_login
 from app.helper_data import load_data_peserta, load_data_cloud_or_local
 from app.helper_ranking import leaderboard_dengan_status
 from app.helper_log import log_dev
 from app.helper_utils import check_header_consistency, kategori_bmi_asia, kira_bmi
 from app.styles import paparkan_tema, papar_header, papar_footer
 
-# ========================================
-# ✅ Semakan Login
-# ========================================
-is_admin = check_login()
-
-if not is_admin:
-    st.error("❌ Akses ditolak! Halaman ini hanya untuk Admin.")
-    st.stop()
 
 # ========================================
 # ✅ Layout
