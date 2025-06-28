@@ -18,3 +18,25 @@ def log_dev(page, aktiviti, status="Success"):
         ws.append_row(row)
     except Exception as e:
         st.warning(f"⚠️ Gagal log aktiviti: {e}")
+
+def log_error(detail):
+    """
+    Log error ke Google Sheet 'log_dev'.
+    
+    Args:
+        detail (str): Detail atau exception error.
+    """
+    try:
+        from datetime import datetime
+
+        # ✅ Masa semasa
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # ✅ Akses worksheet log_dev
+        ws = get_worksheet(SPREADSHEET_LOG, "log_dev")
+
+        # ✅ Masukkan log error
+        ws.append_row([now, "ERROR", detail, "Error"])
+
+    except Exception as e:
+        print(f"❌ Log Error Gagal: {e}")
