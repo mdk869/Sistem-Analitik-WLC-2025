@@ -150,9 +150,6 @@ with tab3:
             df_bmi_table.index = df_bmi_table.index + 1
             st.dataframe(df_bmi_table, use_container_width=True)
         
-        st.subheader("🕵️‍♂️ Semakan Data Kategori BMI")
-
-        st.dataframe(df_tapis["Kategori"].value_counts(dropna=False).reset_index(name="Bilangan"))
 
 
 
