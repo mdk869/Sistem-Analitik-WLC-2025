@@ -10,7 +10,9 @@ from app.helper_data import (
     load_data_cloud_or_local,
     tambah_peserta_google_sheet,
     kemaskini_berat_peserta,
-    padam_peserta_dari_sheet
+    padam_peserta_dari_sheet,
+    simpan_rekod_berat,
+    update_berat_terkini_peserta
 )
 from app.helper_logic import kira_bmi, kategori_bmi_asia
 from app.helper_log import log_dev
@@ -110,19 +112,20 @@ st.divider()
 # =============================================================
 with st.expander("⚖️ Kemaskini Berat Terkini"):
 
-    if len(data_peserta) > 0:
-        nama_list = data_peserta["Nama"].tolist()
-        nama_dipilih = st.selectbox("Pilih Nama", nama_list)
-        berat_baru = st.number_input("Masukkan Berat Terkini (kg)", min_value=30.0, max_value=300.0)
-        tarikh_baru = st.date_input("Tarikh Timbang", value=date.today())
+    nama_list = data_peserta["Nama"].tolist()
 
-        if st.button("💾 Simpan Berat Terkini"):
-            kemaskini_berat_peserta(nama_dipilih, berat_baru, tarikh_baru)
-            log_dev("Admin", f"Kemaskini berat {nama_dipilih}", "Success")
-            st.success(f"✅ Berat {nama_dipilih} berjaya dikemaskini.")
-            st.rerun()
-    else:
-        st.info("🚫 Tiada peserta untuk dikemaskini.")
+with st.form("kemaskini_berat"):
+    nama = st.selectbox("Nama Peserta", nama_list)
+    tarikh = st.date_input("Tarikh Timbang", value=pd.Timestamp.today())
+    berat = st.number_input("Berat (kg)", min_value=0.0, step=0.1)
+
+    submitted = st.form_submit_button("✅ Simpan Rekod")
+
+    if submitted:
+        success = simpan_rekod_berat(nama, str(tarikh), berat)
+        if success:
+            update_berat_terkini_peserta()
+            st.success("✅ Berat telah dikemaskini dan disimpan ke sistem.")
 
 st.divider()
 
