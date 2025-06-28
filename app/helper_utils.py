@@ -62,12 +62,17 @@ def format_nama_fail_gambar(nama, tarikh, berat):
 # =====================================================
 # ✅ Label Status BMI (Extra untuk UI)
 # =====================================================
-def label_bmi_status(bmi):
+def kategori_bmi_asia(bmi):
     if bmi < 18.5:
-        return "Kurang Berat Badan"
-    elif 18.5 <= bmi < 23:
-        return "Normal"
-    elif 23 <= bmi < 27.5:
-        return "Berlebihan Berat Badan"
+            return "Kurang Berat Badan"
+    elif 18.5 <= bmi <= 24.9:
+            return "Normal"
+    elif 25 <= bmi <= 29.9:
+            return "Lebih Berat Badan"
+    elif 30 <= bmi <= 34.9:
+            return "Obesiti Tahap 1"
+    elif 35 <= bmi <= 39.9:
+            return "Obesiti Tahap 2"
     else:
-        return "Obesiti"
+            return "Obesiti Morbid"
+
