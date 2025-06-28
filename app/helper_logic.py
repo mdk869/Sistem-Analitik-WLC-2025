@@ -1,6 +1,6 @@
 # helper_logic.py
 import pandas as pd
-from app.helper_utils import kira_bmi, kategori_bmi_asia
+from app.helper_utils import kategori_bmi_asia, kira_bmi
 
 
 # === Tambah Kiraan BMI dan % Penurunan Berat ===
