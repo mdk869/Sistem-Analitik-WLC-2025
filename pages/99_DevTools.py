@@ -19,22 +19,25 @@ st.caption("⚙️ Sistem ini dibangunkan khas untuk DevTeam sahaja. Tidak diaks
 st.subheader("🔗 Status Sambungan")
 
 try:
-    SPREADSHEET_PESERTA.worksheets()
-    st.success("✅ Data Peserta: OK")
-except:
-    st.error("❌ Data Peserta: Gagal")
+    ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "data")
+    peserta = ws_peserta.get_all_records()
+    st.success(f"✅ Data Peserta: {len(peserta)} rekod dijumpai")
+except Exception as e:
+    st.error(f"❌ Data Peserta GAGAL: {e}")
 
 try:
-    SPREADSHEET_LOG.worksheets()
-    st.success("✅ Log Dev: OK")
-except:
-    st.error("❌ Log Dev: Gagal")
+    ws_log = get_worksheet(SPREADSHEET_LOG, "log")
+    log = ws_log.get_all_records()
+    st.success(f"✅ Log Dev: {len(log)} rekod")
+except Exception as e:
+    st.error(f"❌ Log Dev GAGAL: {e}")
 
 try:
-    SPREADSHEET_RANKING.worksheets()
-    st.success("✅ Rekod Ranking: OK")
-except:
-    st.error("❌ Rekod Ranking: Gagal")
+    ws_ranking = get_worksheet(SPREADSHEET_RANKING, "rekod")
+    rekod = ws_ranking.get_all_records()
+    st.success(f"✅ Rekod Ranking: {len(rekod)} rekod")
+except Exception as e:
+    st.error(f"❌ Rekod Ranking GAGAL: {e}")
 
 try:
     files = list_files_in_folder()
