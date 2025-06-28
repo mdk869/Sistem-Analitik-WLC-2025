@@ -112,22 +112,32 @@ st.divider()
 # =============================================================
 with st.expander("⚖️ Kemaskini Berat Terkini"):
 
-    nama_list = data_peserta["Nama"].tolist()
+    nama_list = data_peserta["Nama"].dropna().tolist()
 
-with st.form("kemaskini_berat"):
-    nama = st.selectbox("Nama Peserta", nama_list)
-    tarikh = st.date_input("Tarikh Timbang", value=pd.Timestamp.today())
-    berat = st.number_input("Berat (kg)", min_value=0.0, step=0.1)
+    with st.form("kemaskini_berat"):
+        nama = st.selectbox("Nama Peserta", nama_list)
+        tarikh = st.date_input("Tarikh Timbang", value=pd.Timestamp.today())
+        berat = st.number_input("Berat (kg)", min_value=0.0, step=0.1)
 
-    submitted = st.form_submit_button("✅ Simpan Rekod")
+        submitted = st.form_submit_button("✅ Simpan Rekod")
 
-    if submitted:
-        success = simpan_rekod_berat(nama, str(tarikh), berat)
-        if success:
-            update_berat_terkini_peserta()
-            st.success("✅ Berat telah dikemaskini dan disimpan ke sistem.")
+        if submitted:
+            tarikh_str = tarikh.strftime("%Y-%m-%d")
 
-st.divider()
+            # Simpan ke rekod_berat
+            rekod_ok = simpan_rekod_berat(nama, tarikh_str, berat)
+
+            if rekod_ok:
+                # Update ke worksheet peserta
+                update_ok = update_berat_terkini_peserta(nama, tarikh_str, berat)
+
+                if update_ok:
+                    st.success(f"✅ Berat {berat} kg pada {tarikh_str} untuk {nama} telah dikemaskini.")
+                else:
+                    st.warning("⚠️ Gagal update ke peserta, tetapi rekod timbang telah disimpan.")
+            else:
+                st.error("❌ Gagal simpan rekod timbang.")
+
 
 # =============================================================
 # ✅ Padam Peserta
