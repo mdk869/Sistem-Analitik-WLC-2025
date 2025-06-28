@@ -141,12 +141,12 @@ with tab3:
             </div>
             """, unsafe_allow_html=True)
 
-        Kategori_df = df_tapis.groupby("KategoriBMI").size().reset_index(name="Bilangan")
-        fig = px.pie(Kategori_df, names="KategoriBMI", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")
+        Kategori_df = df_tapis.groupby("Kategori").size().reset_index(name="Bilangan")
+        fig = px.pie(Kategori_df, names="Kategori", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")
         st.plotly_chart(fig, use_container_width=True)
 
         with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
-            df_bmi_table = df_tapis[["Nama", "BMI", "KategoriBMI"]].sort_values("KategoriBMI", na_position="last").reset_index(drop=True)
+            df_bmi_table = df_tapis[["Nama", "BMI", "Kategori"]].sort_values("Kategori", na_position="last").reset_index(drop=True)
             df_bmi_table.index = df_bmi_table.index + 1
             st.dataframe(df_bmi_table, use_container_width=True)
 
