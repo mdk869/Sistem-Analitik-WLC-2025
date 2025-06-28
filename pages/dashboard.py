@@ -101,13 +101,13 @@ with tab3:
     st.subheader("📅 Status Timbangan Mengikut Sesi Bulanan")
 
     df_peserta = data_peserta.copy()
-    df_rekod = load_rekod_berat()
+    df_rekod = load_rekod_berat()  # ⬅️ Fungsi yang baru
 
     if df_rekod.empty:
-        st.warning("❌ Tiada data dalam rekod berat.")
+        st.warning("❌ Tiada data timbang peserta.")
         st.stop()
 
-    # ✅ Tentukan sesi (bulan)
+    # ✅ Tentukan sesi (bulan) berdasarkan Tarikh
     df_rekod["SesiBulan"] = df_rekod["Tarikh"].dt.to_period("M").astype(str)
 
     sesi_list = sorted(df_rekod["SesiBulan"].unique(), reverse=True)
@@ -115,11 +115,11 @@ with tab3:
     for sesi in sesi_list:
         st.subheader(f"📆 Sesi Bulan: {pd.to_datetime(sesi).strftime('%B %Y')}")
 
-        # ✅ Data timbang sesi ini
+        # ✅ Data timbang untuk sesi ini
         df_sesi = df_rekod[df_rekod["SesiBulan"] == sesi]
 
         # ✅ Senarai peserta yang sudah timbang
-        peserta_sudah_timbang = df_sesi["Nama"].unique().tolist()
+        peserta_sudah_timbang = df_sesi["NoStaf"].unique().tolist()
 
         # ✅ Status
         total_peserta = len(df_peserta)
@@ -140,7 +140,7 @@ with tab3:
             st.warning(f"⚠️ **Sesi Timbang {pd.to_datetime(sesi).strftime('%B %Y')} belum lengkap.**")
 
         with st.expander("📋 Senarai Belum Timbang"):
-            df_belum = df_peserta[~df_peserta["Nama"].isin(peserta_sudah_timbang)]
+            df_belum = df_peserta[~df_peserta["NoStaf"].isin(peserta_sudah_timbang)]
             if df_belum.empty:
                 st.success("✅ Semua peserta telah timbang dalam sesi ini.")
             else:
