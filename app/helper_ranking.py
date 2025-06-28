@@ -39,7 +39,7 @@ def save_rekod_ranking(df):
 # ====================================================
 # ✅ Kira Leaderboard Semasa
 # ====================================================
-ddef leaderboard_dengan_status():
+def leaderboard_dengan_status():
     df = load_data_peserta()
 
     if df.empty:
