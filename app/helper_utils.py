@@ -76,3 +76,15 @@ def kategori_bmi_asia(bmi):
     else:
             return "Obesiti Morbid"
 
+def kira_bmi(berat, tinggi):
+    """
+    Kira BMI berdasarkan berat (kg) dan tinggi (cm).
+    Formula: BMI = berat / (tinggi dalam meter)^2
+    """
+    try:
+        tinggi_meter = tinggi / 100
+        bmi = berat / (tinggi_meter ** 2)
+        return round(bmi, 1)
+    except:
+        return None
+
