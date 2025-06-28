@@ -179,3 +179,18 @@ def update_berat_terkini_peserta(nama, tarikh, berat):
         log_error(str(e))
         return False
 
+
+# =======================
+# ✅ Load Data Rekod Berat
+# =======================
+def load_rekod_berat():
+    try:
+        ws = get_worksheet(SPREADSHEET_PESERTA, "rekod_berat")
+        data = ws.get_all_records()
+        df = pd.DataFrame(data)
+        if not df.empty:
+            df["Tarikh"] = pd.to_datetime(df["Tarikh"], errors='coerce')
+        return df
+    except Exception as e:
+        st.error(f"❌ Gagal load data rekod berat: {e}")
+        return pd.DataFrame()
