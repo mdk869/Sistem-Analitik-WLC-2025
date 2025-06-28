@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import datetime
 from app.helper_connection import SPREADSHEET_PESERTA, get_worksheet
-from app.helper_utils import save_dataframe_to_excel, kategori_bmi_asia
+from app.helper_utils import save_dataframe_to_excel, kategori_bmi_asia, get_column_index
 from app.helper_log import log_dev, log_error
 
 
@@ -139,7 +139,7 @@ def padam_peserta_dari_sheet(nama):
 # ------------------------------------
 def simpan_rekod_berat(nama, tarikh, berat):
     """
-    Simpan data ke rekod_berat (append).
+    Simpan data ke worksheet 'rekod_berat' (append row).
     """
     try:
         ws = get_worksheet(SPREADSHEET_PESERTA, "rekod_berat")
@@ -147,7 +147,7 @@ def simpan_rekod_berat(nama, tarikh, berat):
         log_dev("Admin", f"Rekod berat {nama} pada {tarikh} disimpan", "Success")
         return True
     except Exception as e:
-        st.error(f"Gagal simpan rekod berat: {e}")
+        st.error(f"❌ Gagal simpan rekod berat: {e}")
         log_error(str(e))
         return False
 
@@ -155,55 +155,27 @@ def simpan_rekod_berat(nama, tarikh, berat):
 # -----------------------------------------------
 # ✅ Update Berat Terkini ke Sheet Peserta
 # -----------------------------------------------
-def update_berat_terkini_peserta():
+def update_berat_terkini_peserta(nama, tarikh, berat):
     """
-    Update kolum BeratTerkini dan TarikhTimbang pada sheet peserta 
-    berdasarkan rekod terbaru dalam rekod_berat.
+    Update BeratTerkini dan TarikhTimbang pada worksheet peserta.
     """
     try:
-        # Load data peserta dan rekod_berat
-        ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "peserta")
-        ws_rekod = get_worksheet(SPREADSHEET_PESERTA, "rekod_berat")
+        ws = get_worksheet(SPREADSHEET_PESERTA, "peserta")
+        data = ws.get_all_records()
 
-        data_peserta = ws_peserta.get_all_records()
-        data_rekod = ws_rekod.get_all_records()
+        # Cari index row peserta
+        for idx, row in enumerate(data):
+            if row["Nama"].strip() == nama.strip():
+                ws.update_cell(idx + 2, get_column_index(ws, "BeratTerkini"), berat)
+                ws.update_cell(idx + 2, get_column_index(ws, "TarikhTimbang"), tarikh)
+                log_dev("Admin", f"Update berat terkini {nama} pada {tarikh}", "Success")
+                return True
 
-        df_peserta = pd.DataFrame(data_peserta)
-        df_rekod = pd.DataFrame(data_rekod)
-
-        if df_rekod.empty:
-            st.warning("❌ Tiada data dalam rekod_berat untuk diupdate.")
-            return False
-
-        # Cari rekod paling terkini untuk setiap peserta
-        df_rekod["Tarikh"] = pd.to_datetime(df_rekod["Tarikh"])
-        df_rekod = df_rekod.sort_values(by="Tarikh", ascending=False)
-
-        rekod_terkini = df_rekod.groupby("Nama").first().reset_index()
-
-        # Merge ke data peserta
-        df_peserta = df_peserta.merge(
-            rekod_terkini[["Nama", "Tarikh", "Berat"]],
-            on="Nama",
-            how="left",
-            suffixes=("", "_Baru")
-        )
-
-        # Update BeratTerkini dan TarikhTimbang
-        df_peserta["BeratTerkini"] = df_peserta["Berat"].fillna(df_peserta["BeratTerkini"])
-        df_peserta["TarikhTimbang"] = df_peserta["Tarikh"].fillna(df_peserta["TarikhTimbang"])
-
-        df_peserta = df_peserta.drop(columns=["Berat", "Tarikh"])
-
-        # Push balik ke Google Sheet
-        ws_peserta.update(
-            [df_peserta.columns.values.tolist()] + df_peserta.values.tolist()
-        )
-
-        log_dev("Admin", "Update BeratTerkini dan TarikhTimbang selesai", "Success")
-        return True
+        st.warning(f"⚠️ Nama {nama} tidak ditemui dalam senarai peserta.")
+        return False
 
     except Exception as e:
         st.error(f"❌ Gagal update berat terkini: {e}")
         log_error(str(e))
         return False
+
