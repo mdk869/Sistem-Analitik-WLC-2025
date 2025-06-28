@@ -12,7 +12,7 @@ from app.helper_utils import save_dataframe_to_excel
 # ------------------------------------
 def load_data_peserta():
     try:
-        ws = get_worksheet(SPREADSHEET_PESERTA, "data")
+        ws = get_worksheet(SPREADSHEET_PESERTA, "peserta")
         data = ws.get_all_records()
         df = pd.DataFrame(data)
 
@@ -26,7 +26,7 @@ def load_data_peserta():
 
 def load_data_cloud_or_local():
     try:
-        ws = get_worksheet(SPREADSHEET_PESERTA, "data")
+        ws = get_worksheet(SPREADSHEET_PESERTA, "peserta")
         data = ws.get_all_records()
         df = pd.DataFrame(data)
 
@@ -43,7 +43,7 @@ def load_data_cloud_or_local():
 # ------------------------------------
 def save_data_peserta(df):
     try:
-        ws = get_worksheet(SPREADSHEET_PESERTA, "data")
+        ws = get_worksheet(SPREADSHEET_PESERTA, "peserta")
         ws.clear()
 
         ws.update([df.columns.values.tolist()] + df.values.tolist())
@@ -131,17 +131,3 @@ def padam_peserta_dari_sheet(nama):
     else:
         st.warning("⚠️ Nama tidak dijumpai dalam senarai.")
         return False
-
-
-# ------------------------------------
-# ✅ Kategori BMI Asia
-# ------------------------------------
-def kategori_bmi_asia(bmi):
-    if bmi < 18.5:
-        return "Kurang Berat"
-    elif 18.5 <= bmi < 23:
-        return "Normal"
-    elif 23 <= bmi < 27.5:
-        return "Berlebihan Berat"
-    else:
-        return "Obesiti"
