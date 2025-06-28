@@ -38,8 +38,8 @@ HEADER_PESERTA = [
 # ========================================
 # ✅ Tabs Layout
 # ========================================
-tab1, tab2, tab3 = st.tabs(
-    ["📈 Info Program", "🏆 Leaderboard", "📊 Analitik BMI"]
+tab1, tab2, tab3, tab4 = st.tabs(
+    ["📈 Info Program", "🏆 Leaderboard", "📉 Status Timbang", "📊 Analitik BMI"]
 )
 
 # ========================================
@@ -90,11 +90,86 @@ with tab2:
 
     log_dev("Dashboard", "Buka Tab Leaderboard", "Success")
 
+# =====================================================================================
+# TAB 3: Status Timbang
+# =====================================================================================
+with tab3:
+    st.subheader("📉 Status Timbangan Peserta")
+
+    # ✅ Load data peserta dari Google Sheet
+    df = data_peserta.copy()
+
+    # ✅ Pastikan kolum utama wujud
+    wajib_kolum = ["Nama", "NoStaf", "Jabatan", "BeratTerkini", "TarikhTimbang"]
+    if not set(wajib_kolum).issubset(df.columns):
+        st.error("❌ Kolum tidak lengkap dalam Google Sheet. Sila pastikan kolum berikut wujud: " + ", ".join(wajib_kolum))
+        st.stop()
+
+    # ✅ Bersihkan data kategori whitespace
+    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+
+    # ✅ Kira jumlah peserta
+    total_peserta = len(df)
+
+    # ✅ Penentuan sudah & belum timbang
+    df["StatusTimbang"] = df.apply(
+        lambda row: "Sudah Timbang"
+        if pd.notnull(row["BeratTerkini"]) and pd.notnull(row["TarikhTimbang"])
+        else "Belum Timbang",
+        axis=1
+    )
+
+    sudah_timbang = (df["StatusTimbang"] == "Sudah Timbang").sum()
+    belum_timbang = (df["StatusTimbang"] == "Belum Timbang").sum()
+
+    # ✅ Kira peratus
+    peratus_sudah = round(sudah_timbang / total_peserta * 100, 1) if total_peserta else 0
+    peratus_belum = round(belum_timbang / total_peserta * 100, 1) if total_peserta else 0
+
+    # ✅ Paparan metrik
+    col1, col2, col3 = st.columns(3)
+    col1.metric("👥 Jumlah Peserta", total_peserta)
+    col2.metric("✅ Sudah Timbang", f"{sudah_timbang} ({peratus_sudah}%)")
+    col3.metric("❌ Belum Timbang", f"{belum_timbang} ({peratus_belum}%)")
+
+    st.divider()
+
+    # ✅ Pie Chart
+    df_status = pd.DataFrame({
+        "Status": ["Sudah Timbang", "Belum Timbang"],
+        "Bilangan": [sudah_timbang, belum_timbang]
+    })
+
+    fig = px.pie(
+        df_status,
+        names="Status",
+        values="Bilangan",
+        title="Status Timbangan Peserta",
+        color_discrete_sequence=["#00cc96", "#EF553B"],
+        hole=0.4
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+    # ✅ Senarai Belum Timbang
+    st.subheader("📋 Senarai Peserta Belum Timbang")
+    if belum_timbang == 0:
+        st.success("✅ Semua peserta telah timbang.")
+    else:
+        df_belum = df[df["StatusTimbang"] == "Belum Timbang"]
+        df_belum_timbang = df_belum[["Nama", "NoStaf", "Jabatan"]].reset_index(drop=True)
+        df_belum_timbang.index = df_belum_timbang.index + 1
+
+        st.dataframe(df_belum_timbang, use_container_width=True)
+
+    log_dev("Dashboard", "Buka Tab Status Timbangan", "Success")
+
 
 # ========================================
-# ✅ Tab 3: Analitik BMI
+# ✅ Tab 4: Analitik BMI
 # ========================================
-with tab3:
+with tab4:
         st.subheader("📊 Analisis BMI Peserta")
 
         df_tapis = data_peserta.copy()
