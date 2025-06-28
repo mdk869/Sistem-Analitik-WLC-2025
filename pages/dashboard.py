@@ -84,7 +84,7 @@ with tab1:
 with tab2:
     st.subheader("🏆 Leaderboard Berat Badan")
 
-    leaderboard = leaderboard_dengan_status(data_rekod)
+    leaderboard = leaderboard_dengan_status()
 
     if leaderboard is not None and not leaderboard.empty:
         st.dataframe(
