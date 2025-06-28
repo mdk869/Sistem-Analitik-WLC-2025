@@ -37,12 +37,6 @@ except:
     st.error("❌ Rekod Ranking: Gagal")
 
 try:
-    DRIVE.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
-    st.success("✅ Google Drive: OK")
-except:
-    st.error("❌ Google Drive: Gagal")
-
-try:
     files = list_files_in_folder()
     st.success(f"✅ Google Drive OK: {len(files)} file dalam folder.")
     for file in files:
