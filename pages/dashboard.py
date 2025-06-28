@@ -98,69 +98,64 @@ with tab2:
 # TAB 3: Status Timbang
 # =====================================================================================
 with tab3:
-    st.subheader("📉 Status Timbangan Peserta")
+    st.subheader("📅 Status Timbangan Mengikut Sesi Bulanan")
 
-    # ✅ Load data peserta dari Google Sheet
-    df = data_peserta.copy()
+    df_peserta = data_peserta.copy()
+    df_rekod = load_rekod_berat()
 
-    # ✅ Pastikan kolum utama wujud
-    wajib_kolum = ["Nama", "NoStaf", "Jabatan", "BeratTerkini", "TarikhTimbang"]
-    if not set(wajib_kolum).issubset(df.columns):
-        st.error("❌ Kolum tidak lengkap dalam Google Sheet. Sila pastikan kolum berikut wujud: " + ", ".join(wajib_kolum))
+    if df_rekod.empty:
+        st.warning("❌ Tiada data dalam rekod berat.")
         st.stop()
 
-    # ✅ Bersihkan data & kira status timbang
-    df = proses_data_peserta(df)
+    # ✅ Tentukan sesi (bulan)
+    df_rekod["SesiBulan"] = df_rekod["Tarikh"].dt.to_period("M").astype(str)
 
-    # ✅ Kira jumlah peserta
-    total_peserta = len(df)
+    sesi_list = sorted(df_rekod["SesiBulan"].unique(), reverse=True)
 
-    # ✅ Kira status timbang
-    sudah_timbang = (df["StatusTimbang"] == "Sudah Timbang").sum()
-    belum_timbang = (df["StatusTimbang"] == "Belum Timbang").sum()
+    for sesi in sesi_list:
+        st.subheader(f"📆 Sesi Bulan: {pd.to_datetime(sesi).strftime('%B %Y')}")
 
-    # ✅ Kira peratus
-    peratus_sudah = round(sudah_timbang / total_peserta * 100, 1) if total_peserta else 0
-    peratus_belum = round(belum_timbang / total_peserta * 100, 1) if total_peserta else 0
+        # ✅ Data timbang sesi ini
+        df_sesi = df_rekod[df_rekod["SesiBulan"] == sesi]
 
-    # ✅ Paparan metrik
-    col1, col2, col3 = st.columns(3)
-    col1.metric("👥 Jumlah Peserta", total_peserta)
-    col2.metric("✅ Sudah Timbang", f"{sudah_timbang} ({peratus_sudah}%)")
-    col3.metric("❌ Belum Timbang", f"{belum_timbang} ({peratus_belum}%)")
+        # ✅ Senarai peserta yang sudah timbang
+        peserta_sudah_timbang = df_sesi["Nama"].unique().tolist()
 
-    st.divider()
+        # ✅ Status
+        total_peserta = len(df_peserta)
+        sudah_timbang = len(peserta_sudah_timbang)
+        belum_timbang = total_peserta - sudah_timbang
 
-    # ✅ Pie Chart
-    df_status = pd.DataFrame({
-        "Status": ["Sudah Timbang", "Belum Timbang"],
-        "Bilangan": [sudah_timbang, belum_timbang]
-    })
+        peratus_sudah = round(sudah_timbang / total_peserta * 100, 1) if total_peserta else 0
+        peratus_belum = 100 - peratus_sudah
 
-    fig = px.pie(
-        df_status,
-        names="Status",
-        values="Bilangan",
-        title="Status Timbangan Peserta",
-        color_discrete_sequence=["#00cc96", "#EF553B"],
-        hole=0.4
-    )
-    st.plotly_chart(fig, use_container_width=True)
+        col1, col2, col3 = st.columns(3)
+        col1.metric("👥 Jumlah Peserta", total_peserta)
+        col2.metric("✅ Sudah Timbang", f"{sudah_timbang} ({peratus_sudah}%)")
+        col3.metric("❌ Belum Timbang", f"{belum_timbang} ({peratus_belum}%)")
 
-    st.divider()
+        if peratus_sudah == 100:
+            st.success(f"✅ **Sesi Timbang {pd.to_datetime(sesi).strftime('%B %Y')} telah lengkap.**")
+        else:
+            st.warning(f"⚠️ **Sesi Timbang {pd.to_datetime(sesi).strftime('%B %Y')} belum lengkap.**")
 
-    # ✅ Senarai Belum Timbang
-    st.subheader("📋 Senarai Peserta Belum Timbang")
-    if belum_timbang == 0:
-        st.success("✅ Semua peserta telah timbang.")
-    else:
-        df_belum = df[df["StatusTimbang"] == "Belum Timbang"]
-        df_belum_timbang = df_belum[["Nama", "NoStaf", "Jabatan"]].reset_index(drop=True)
-        df_belum_timbang.index = df_belum_timbang.index + 1
+        with st.expander("📋 Senarai Belum Timbang"):
+            df_belum = df_peserta[~df_peserta["Nama"].isin(peserta_sudah_timbang)]
+            if df_belum.empty:
+                st.success("✅ Semua peserta telah timbang dalam sesi ini.")
+            else:
+                df_belum_timbang = df_belum[["Nama", "NoStaf", "Jabatan"]].reset_index(drop=True)
+                df_belum_timbang.index = df_belum_timbang.index + 1
+                st.dataframe(df_belum_timbang, use_container_width=True)
 
-        st.dataframe(df_belum_timbang, use_container_width=True)
+        st.divider()
 
-    log_dev("Dashboard", "Buka Tab Status Timbangan", "Success")
+    # ✅ Reminder Sesi Akan Datang
+    st.subheader("⏰ Reminder Sesi Timbang Seterusnya")
+    latest_sesi = max(sesi_list)
+    next_sesi = (pd.to_datetime(latest_sesi) + pd.DateOffset(months=1)).strftime("%B %Y")
+    st.info(f"👉 **Reminder:** Sediakan sesi timbang untuk bulan **{next_sesi}**.")
+
 
 # ========================================
 # ✅ Tab 4: Analitik BMI
