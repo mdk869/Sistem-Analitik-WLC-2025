@@ -3,13 +3,18 @@ import plotly.express as px
 
 
 def leaderboard_peserta(df, top_n=10):
-    df = df.copy()
+    try:
+        df = df.copy()
 
-    df["% Penurunan"] = ((df["BeratAwal"] - df["BeratTerkini"]) / df["BeratAwal"] * 100).round(2)
-    df = df.sort_values(by="% Penurunan", ascending=False).reset_index(drop=True)
-    df["Ranking"] = df.index + 1
+        df["% Penurunan"] = ((df["BeratAwal"] - df["BeratTerkini"]) / df["BeratAwal"] * 100).round(2)
 
-    return df[["Ranking", "Nama", "NoStaf", "Jabatan", "% Penurunan"]].head(top_n)
+        df = df.sort_values(by="% Penurunan", ascending=False).reset_index(drop=True)
+        df["Ranking"] = df.index + 1
+
+        return df[["Ranking", "Nama", "NoStaf", "% Penurunan"]].head(top_n)
+    except KeyError as e:
+        st.error(f"❌ Column hilang: {e}")
+        return pd.DataFrame()
 
 
 def trend_penurunan_bulanan(df_rekod):
