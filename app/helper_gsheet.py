@@ -1,4 +1,4 @@
-from app.helper_connection import conn
+from app.helper_connection import conn, gc
 import pandas as pd
 import streamlit as st
 
@@ -28,4 +28,24 @@ def save_df_to_worksheet(spreadsheet_id, worksheet_name, df):
 
     sheet.clear()
     sheet.update([df.columns.values.tolist()] + df.values.tolist())
+    return True
+
+
+
+def tambah_data_peserta(spreadsheet_id, worksheet_name, data_dict):
+    """
+    Tambah satu row data peserta ke Google Sheet.
+    """
+    sh = gc.open_by_key(spreadsheet_id)
+    ws = sh.worksheet(worksheet_name)
+
+    df_existing = pd.DataFrame(ws.get_all_records())
+
+    new_row = pd.DataFrame([data_dict])
+
+    df_updated = pd.concat([df_existing, new_row], ignore_index=True)
+
+    ws.clear()
+    ws.update([df_updated.columns.values.tolist()] + df_updated.values.tolist())
+
     return True
