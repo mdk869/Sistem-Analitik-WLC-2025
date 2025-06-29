@@ -25,3 +25,9 @@ def log_error(detail):
         ws.append_row([now, "ERROR", detail, "Error"])
     except Exception as e:
         print(f"❌ Log Error Gagal: {e}")
+
+
+# ✅ Log Info
+def log_info(message):
+    print(f"[INFO] {message}")
+    # Tambah juga simpan ke Google Sheet log_dev jika mahu
