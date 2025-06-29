@@ -128,14 +128,14 @@ def padam_peserta_dari_sheet(nama):
 def simpan_rekod_berat(nama, tarikh, berat):
     """
     Simpan data ke rekod_berat_BulanTahun (auto create jika belum ada).
-    Update juga kolum BeratTerkini dan TarikhTimbang dalam sheet peserta.
+    Update juga kolum BeratTerkini dan TarikhTimbang dalam sheet data_peserta.
     """
     try:
         # Format bulan tahun
         bulan_tahun = pd.to_datetime(tarikh).strftime('%B%Y')
         sheet_nama = f"rekod_berat_{bulan_tahun}"
 
-        # ✅ Semak sheet - create jika belum ada
+        # ✅ Semak sheet rekod_berat - create jika belum ada
         sh = get_spreadsheet_by_name(SPREADSHEET_PESERTA)
         sheet_list = [ws.title for ws in sh.worksheets()]
 
@@ -145,29 +145,62 @@ def simpan_rekod_berat(nama, tarikh, berat):
             log_dev("Admin", f"Sheet {sheet_nama} berjaya dicipta", "Success")
 
         # ✅ Simpan ke rekod_berat bulan itu
-        ws = get_worksheet(SPREADSHEET_PESERTA, sheet_nama)
-        ws.append_row([nama, str(tarikh), berat])
+        ws_rekod = get_worksheet(SPREADSHEET_PESERTA, sheet_nama)
+        ws_rekod.append_row([nama, str(tarikh), berat])
         log_dev("Admin", f"Rekod berat {nama} pada {tarikh} disimpan ke {sheet_nama}", "Success")
 
-        # ✅ Update ke sheet peserta (kolum BeratTerkini dan TarikhTimbang)
+        # ✅ Update ke sheet data_peserta
         ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "data_peserta")
         data_peserta = ws_peserta.get_all_records()
         df = pd.DataFrame(data_peserta)
 
-        if nama in df["Nama"].values:
-            row_index = df[df["Nama"] == nama].index[0] + 2  # +2 kerana header +1-based index
+        if df.empty:
+            st.error("❌ Sheet data_peserta kosong.")
+            log_error("❌ Sheet data_peserta kosong.")
+            return False
 
-            ws_peserta.update(f"I{row_index}", berat)  # BeratTerkini di kolum I
-            ws_peserta.update(f"J{row_index}", str(tarikh))  # TarikhTimbang di kolum J
+        if nama not in df["Nama"].values:
+            st.warning(f"⚠️ Nama '{nama}' tidak ditemui dalam sheet data_peserta.")
+            log_warning(f"Nama '{nama}' tidak ditemui dalam sheet data_peserta.")
+            return False
 
-            log_dev("Admin", f"BeratTerkini dan TarikhTimbang untuk {nama} dikemaskini", "Success")
+        # ✅ Cari row peserta
+        row_index = df[df["Nama"] == nama].index[0] + 2  # +2 untuk header dan index 1-based
+
+        # ✅ Dapatkan posisi kolum
+        header = ws_peserta.row_values(1)
+
+        try:
+            col_berat = header.index("BeratTerkini") + 1  # 1-based index
+            col_tarikh = header.index("TarikhTimbang") + 1
+        except ValueError as e:
+            st.error("❌ Kolum 'BeratTerkini' atau 'TarikhTimbang' tidak ditemui.")
+            log_error(f"❌ Error cari kolum: {e}")
+            return False
+
+        # ✅ Translate ke notasi A1
+        def colnum_string(n):
+            string = ""
+            while n > 0:
+                n, remainder = divmod(n - 1, 26)
+                string = chr(65 + remainder) + string
+            return string
+
+        cell_berat = f"{colnum_string(col_berat)}{row_index}"
+        cell_tarikh = f"{colnum_string(col_tarikh)}{row_index}"
+
+        ws_peserta.update(cell_berat, berat)
+        ws_peserta.update(cell_tarikh, str(tarikh))
+
+        log_dev("Admin", f"BeratTerkini dan TarikhTimbang untuk {nama} dikemaskini.", "Success")
 
         return True
 
     except Exception as e:
-        log_error(str(e))
+        log_error(f"❌ Error simpan_rekod_berat: {e}")
         st.error(f"❌ Gagal simpan rekod berat: {e}")
         return False
+
 
 
 
