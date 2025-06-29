@@ -1,41 +1,46 @@
+from app.helper_connection import conn
 import pandas as pd
-from app.helper_connection import client
+import streamlit as st
+
+# Spreadsheet ID
+SPREADSHEET_PESERTA = "1K9JiK8FE1-Cd9fYnDU8Pzqj42TWOGi10wHzHt0avbJ0"
+SPREADSHEET_REKOD = "1ADI9k8cd8v9QuPUog5dMLzQTqDo7JXVy0fiw0bZ-Wpw"
+SPREADSHEET_LOG = "1d6sQbRRByi4RgglGzmsOIpMA0d2nOjoBc_eACPUa1VE"
 
 
-def get_worksheet(spreadsheet, worksheet_name):
-    """Dapatkan objek worksheet."""
+def load_data_peserta():
     try:
-        return spreadsheet.worksheet(worksheet_name)
+        sheet = conn.open_by_key(SPREADSHEET_PESERTA).worksheet("peserta")
+        data = sheet.get_all_records()
+        df = pd.DataFrame(data)
+        return df
     except Exception as e:
-        print(f"❌ Error get_worksheet: {e}")
-        return None
-
-
-def load_worksheet_to_df(spreadsheet, worksheet_name):
-    """Muat naik worksheet ke DataFrame."""
-    try:
-        ws = get_worksheet(spreadsheet, worksheet_name)
-        if ws:
-            data = ws.get_all_records()
-            df = pd.DataFrame(data)
-            return df
-        else:
-            return pd.DataFrame()
-    except Exception as e:
-        print(f"❌ Error load_worksheet_to_df: {e}")
+        st.error(f"❌ Gagal load data peserta: {e}")
         return pd.DataFrame()
 
 
-def save_df_to_worksheet(spreadsheet, worksheet_name, df):
-    """Simpan DataFrame ke worksheet (overwrite)."""
+def load_rekod_berat_semua():
     try:
-        ws = get_worksheet(spreadsheet, worksheet_name)
-        if ws:
-            ws.clear()
-            ws.update([df.columns.values.tolist()] + df.values.tolist())
-            return True
-        else:
-            return False
+        sheet = conn.open_by_key(SPREADSHEET_REKOD).worksheet("rekod_berat")
+        data = sheet.get_all_records()
+        df = pd.DataFrame(data)
+
+        expected_header = ['Nama', 'NoStaf', 'Tarikh', 'Berat', 'SesiBulan']
+        if not set(expected_header).issubset(df.columns):
+            st.warning(f"⚠️ Header pada sheet 'rekod_berat' tidak lengkap. Ditemui: {df.columns.tolist()}")
+            return pd.DataFrame()
+
+        return df
+
     except Exception as e:
-        print(f"❌ Error save_df_to_worksheet: {e}")
-        return False
+        st.error(f"❌ Gagal load data rekod berat: {e}")
+        return pd.DataFrame()
+
+
+def save_log_dev(activity, desc, status):
+    try:
+        sheet = conn.open_by_key(SPREADSHEET_LOG).worksheet("log_dev")
+        now = pd.Timestamp.now(tz='Asia/Kuala_Lumpur').strftime('%Y-%m-%d %H:%M:%S')
+        sheet.append_row([now, activity, desc, status])
+    except Exception as e:
+        st.error(f"❌ Gagal simpan log: {e}")
