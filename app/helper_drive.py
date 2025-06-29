@@ -1,23 +1,33 @@
-import io
+from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
-from app.helper_connection import drive_service, DRIVE_FOLDER_ID
+import io
+import streamlit as st
 
 
+# ======= Setup Connection =======
+SCOPES = ["https://www.googleapis.com/auth/drive"]
+SERVICE_ACCOUNT_INFO = st.secrets["gcp_service_account"]
+
+credentials = Credentials.from_service_account_info(
+    SERVICE_ACCOUNT_INFO, scopes=SCOPES
+)
+
+drive_service = build("drive", "v3", credentials=credentials)
+
+# ======= Folder ID =======
+DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
+
+# ======= Upload Function =======
 def upload_to_drive(file_path, file_name):
-    """Upload fail ke Google Drive."""
-    try:
-        file_metadata = {
-            "name": file_name,
-            "parents": [DRIVE_FOLDER_ID]
-        }
-        media = MediaFileUpload(file_path, resumable=True)
-        file = drive_service.files().create(
-            body=file_metadata, media_body=media, fields="id"
-        ).execute()
-        return file.get("id")
-    except Exception as e:
-        print(f"❌ Upload Error: {e}")
-        return None
+    file_metadata = {"name": file_name, "parents": [DRIVE_FOLDER_ID]}
+    media = MediaFileUpload(file_path, resumable=True)
+
+    file = drive_service.files().create(
+        body=file_metadata, media_body=media, fields="id"
+    ).execute()
+
+    return file.get("id")
 
 
 def list_files_in_folder():
