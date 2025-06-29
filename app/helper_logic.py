@@ -82,21 +82,6 @@ def kira_progress_program(tarikh_mula="2025-06-18", tarikh_akhir="2025-08-20"):
         "tarikh_tamat": tamat
     }
 
-def leaderboard_dengan_status(df):
-    df = df.copy()
-
-    df = df.sort_values(by="% Penurunan", ascending=False).reset_index(drop=True)
-    df["Ranking"] = df.index + 1
-
-    leaderboard = df[
-        [
-            "Ranking", "Nama", "Jabatan", "BeratAwal", "BeratTerkini",
-            "PenurunanKg", "% Penurunan", "BMI", "KategoriBMI", "TarikhTimbang"
-        ]
-    ]
-
-    return leaderboard
-
 
 # ==========================================
 # ✅ Export Fungsi
