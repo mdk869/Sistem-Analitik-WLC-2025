@@ -1,9 +1,17 @@
 # app/helper_gsheet_utils.py
 
 import streamlit as st
-from app.helper_gsheet import get_worksheet
 from app.helper_log import log_dev, log_error, log_warning
 
+# ====================================================
+# ✅ Dapatkan Worksheet (Auto Create Jika Tiada)
+# ====================================================
+def get_worksheet(spreadsheet, worksheet_name):
+    try:
+        ws = spreadsheet.worksheet(worksheet_name)
+    except Exception:
+        ws = spreadsheet.add_worksheet(title=worksheet_name, rows="1000", cols="20")
+    return ws
 
 # ====================================================
 # ✅ Semak & Cipta Worksheet
