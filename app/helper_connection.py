@@ -52,14 +52,6 @@ def get_spreadsheet_by_id(sheet_id):
         return None
 
 
-def get_spreadsheet_by_name(sheet_name):
-    try:
-        return gc.open(sheet_name)
-    except Exception as e:
-        st.error(f"❌ Gagal sambung ke Spreadsheet Name: {sheet_name} - {e}")
-        return None
-
-
 # ✅ Setup Spreadsheet dan Drive Folder ID
 SPREADSHEET_PESERTA = get_spreadsheet_by_id(get_secret_id("gsheet", "data_peserta_id"))
 SPREADSHEET_LOG = get_spreadsheet_by_id(get_secret_id("gsheet", "log_wlc_dev_id"))
