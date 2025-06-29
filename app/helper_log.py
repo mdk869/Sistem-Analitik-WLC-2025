@@ -28,6 +28,21 @@ def log_error(detail):
 
 
 # ✅ Log Info
-def log_info(message):
-    print(f"[INFO] {message}")
-    # Tambah juga simpan ke Google Sheet log_dev jika mahu
+def log_info(detail):
+    try:
+        ws = get_worksheet(SPREADSHEET_LOG, "log_dev")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ws.append_row([now, "ERROR", detail, "Error"])
+    except Exception as e:
+        print(f"❌ Log Info: {e}")
+
+
+# ✅ Log Warning
+def log_warning(detail):
+    try:
+        ws = get_worksheet(SPREADSHEET_LOG, "log_dev")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ws.append_row([now, "ERROR", detail, "Error"])
+    except Exception as e:
+        print(f"⚠️ Log Warning: {e}")
+
