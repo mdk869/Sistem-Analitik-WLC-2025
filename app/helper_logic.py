@@ -59,7 +59,7 @@ def kira_progress_program(tarikh_mula="2025-06-18", tarikh_akhir="2025-08-20"):
     tamat = datetime.strptime(tarikh_akhir, "%Y-%m-%d").date()
 
     total_hari = (tamat - mula).days
-    hari_berlalu = (today - mula).days + 0  # +1 supaya Hari ke-1 bermula pada hari mula
+    hari_berlalu = (today - mula).days + 2  # +1 supaya Hari ke-1 bermula pada hari mula
 
     if hari_berlalu < 1:
         progress = 0
