@@ -65,15 +65,13 @@ with tab1:
         col3.metric("📉 Penurunan Berat Purata (%)", f"{avg_penurunan:.2f}%")
 
         st.divider()
-        
+
         # 🎯 Progress Program
         progress = kira_progress_program()
 
         st.subheader("⏳ Progress Program WLC 2025")
         st.info(f"{progress['status']} — {progress['hari_berlalu']} hari dari {progress['total_hari']} hari.")
         st.progress(progress['progress'] / 100)
-
-        st.divider()
 
         st.subheader("📅 Senarai Pendaftaran")
         st.dataframe(
