@@ -117,13 +117,20 @@ with st.expander("⚖️ Kemaskini Berat Terkini"):
         submitted = st.form_submit_button("✅ Simpan Rekod")
 
         if submitted:
+            if not nama:
+                st.warning("⚠️ Sila pilih nama peserta.")
+                st.stop()
 
-            if berat <= 0:
-                st.warning("⚠️ Berat mestilah lebih besar daripada 0.")
+            if tarikh is None or pd.isna(tarikh):
+                st.warning("⚠️ Sila pilih tarikh timbang yang sah.")
                 st.stop()
 
             if tarikh > pd.Timestamp.today():
                 st.warning("⚠️ Tarikh timbang tidak boleh melebihi hari ini.")
+                st.stop()
+
+            if berat <= 0:
+                st.warning("⚠️ Berat mestilah lebih besar daripada 0.")
                 st.stop()
 
             tarikh_str = tarikh.strftime("%Y-%m-%d")
@@ -133,7 +140,7 @@ with st.expander("⚖️ Kemaskini Berat Terkini"):
             if result['rekod_berat'] and result['update_peserta']:
                 st.success(f"✅ Berat {berat} kg pada {tarikh_str} untuk {nama} telah dikemaskini sepenuhnya.")
             elif result['rekod_berat']:
-                st.warning(f"⚠️ Rekod berat disimpan ke {tarikh_str}, tetapi gagal update di sheet peserta.")
+                st.warning(f"⚠️ Rekod berat disimpan ke {tarikh_str}, tetapi gagal update di sheet data_peserta.")
             else:
                 st.error("❌ Gagal simpan rekod timbang.")
 
