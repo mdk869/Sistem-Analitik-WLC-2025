@@ -5,7 +5,7 @@ from app.helper_gsheet import get_worksheet
 
 
 # ✅ Setup spreadsheet log
-SPREADSHEET_LOG = gc.open_by_key(get_secret_id("log_wlc_dev_id"))
+SPREADSHEET_LOG = gc.open_by_key(get_secret_id("gsheet", "log_wlc_dev_id"))
 
 # ✅ Log Aktiviti Developer
 def log_dev(page, aktiviti, status="Success"):
