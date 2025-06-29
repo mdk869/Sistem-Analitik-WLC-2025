@@ -251,13 +251,14 @@ with tab3:
 # ========================================
 # ✅ Tab 4: Analitik BMI
 # ========================================
+from app.styles import WARNA_KATEGORI_BMI
+
 with tab4:
     st.subheader("📊 Analisis BMI Peserta")
 
     df_tapis = data_peserta.copy()
 
     if not df_tapis.empty:
-        # 📊 Paparan metrik kategori BMI
         kategori_bmi_data = [
             ("Kurang Berat Badan", "Kurang Berat Badan", (df_tapis["Kategori"] == "Kurang Berat Badan").sum()),
             ("Normal", "Normal", (df_tapis["Kategori"] == "Normal").sum()),
@@ -267,21 +268,10 @@ with tab4:
             ("Obesiti Morbid", "Obesiti Morbid", (df_tapis["Kategori"] == "Obesiti Morbid").sum()),
         ]
 
-        # 🎨 Tetapkan warna konsisten
-        warna_mapping = {
-            "Kurang Berat Badan": "#00BFC4",  # Biru Cerah
-            "Normal": "#7CAE00",               # Hijau
-            "Lebih Berat Badan": "#F8766D",    # Oren
-            "Obesiti Tahap 1": "#C77CFF",      # Ungu
-            "Obesiti Tahap 2": "#FFB400",      # Kuning
-            "Obesiti Morbid": "#FF3D3D",       # Merah
-        }
-
-        # ✅ Metric Box
         cols = st.columns(6)
 
         for col, (label, kategori, value) in zip(cols, kategori_bmi_data):
-            warna = warna_mapping.get(kategori, "#DDDDDD")
+            warna = WARNA_KATEGORI_BMI.get(kategori, "#DDDDDD")
             col.markdown(
                 f"""
                 <div style="background-color: {warna}; padding: 10px; border-radius: 10px; text-align: center;">
@@ -292,7 +282,6 @@ with tab4:
                 unsafe_allow_html=True
             )
 
-        # ✅ Carta Pie
         Kategori_df = df_tapis.groupby("Kategori").size().reset_index(name="Bilangan")
 
         fig = px.pie(
@@ -301,18 +290,18 @@ with tab4:
             values="Bilangan",
             title="Peratus Peserta Mengikut Tahap BMI",
             color="Kategori",
-            color_discrete_map=warna_mapping
+            color_discrete_map=WARNA_KATEGORI_BMI
         )
 
         fig.update_traces(textinfo='percent+label')
 
         st.plotly_chart(fig, use_container_width=True)
 
-        # ✅ Senarai Detail
         with st.expander("📋 Lihat Senarai Peserta Mengikut Kategori BMI"):
             df_bmi_table = df_tapis[["NoStaf", "Nama", "BMI", "Kategori"]].sort_values("Kategori", na_position="last").reset_index(drop=True)
             df_bmi_table.index = df_bmi_table.index + 1
             st.dataframe(df_bmi_table, use_container_width=True)
+
 
         
 
