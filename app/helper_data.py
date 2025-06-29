@@ -3,8 +3,8 @@ import pandas as pd
 import streamlit as st
 
 
-SPREADSHEET_PESERTA = st.secrets["gsheet"]["data_peserta"]
-SPREADSHEET_REKOD = st.secrets["gsheet"]["rekod_berat"]
+SPREADSHEET_PESERTA = st.secrets["gsheet"]["data_peserta_id"]
+SPREADSHEET_REKOD = st.secrets["gsheet"]["rekod_ranking"]
 
 
 def load_data_peserta():

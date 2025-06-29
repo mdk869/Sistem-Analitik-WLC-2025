@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 
 
-SPREADSHEET_LOG = st.secrets["gsheet"]["log_dev"]
+SPREADSHEET_LOG = st.secrets["gsheet"]["log_wlc_dev_id"]
 
 
 def save_log_dev(activity, desc, status):
