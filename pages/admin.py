@@ -13,7 +13,8 @@ from app.helper_data import (
     load_rekod_berat_semua,
     tambah_peserta_google_sheet,
     simpan_rekod_berat,
-    padam_peserta_dari_sheet
+    padam_peserta_dari_sheet,
+    update_data_peserta
 )
 from app.styles import paparkan_tema, papar_header, papar_footer
 
@@ -172,7 +173,7 @@ with tab4:
             submit = st.form_submit_button("✅ Kemaskini")
 
             if submit:
-                tambah_peserta_google_sheet(
+                update_data_peserta(
                     nama_edit, nostaf, umur, jantina, jabatan,
                     tinggi, berat_terkini, tarikh_timbang, bmi, kategori
                 )
