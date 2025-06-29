@@ -5,14 +5,13 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import plotly.express as px
-import plotly.graph_objects as go
 
 # ===== Import Helper =====
 from app.helper_data import load_data_peserta, load_rekod_berat_semua
 from app.helper_utils import check_header_consistency
 from app.helper_logic import tambah_kiraan_peserta, kira_progress_program
 from app.helper_ranking import leaderboard_peserta, trend_penurunan_bulanan
-from app.styles import paparkan_tema, papar_header, papar_footer
+from app.styles import paparkan_tema, papar_header, papar_footer, warna_mapping
 
 # ===== Layout & Tema =====
 paparkan_tema()
@@ -77,8 +76,6 @@ with tab1:
         )
         st.progress(progress['progress'] / 100)
 
-        log_dev("Dashboard", "Buka Tab Info Program", "Success")
-
 # ========================================
 # ✅ Tab 2: Leaderboard
 # ========================================
@@ -110,13 +107,9 @@ with tab2:
         else:
             st.info("⚠️ Tiada data trend untuk dipaparkan.")
 
-    log_dev("Dashboard", "Buka Tab Leaderboard + Trend", "Success")
-
 # ========================================
 # ✅ Tab 3: Status Timbang
 # ========================================
-from app.helper_data import load_rekod_berat_semua
-
 with tab3:
     st.subheader("Status Timbangan Mengikut Sesi Bulanan")
 
@@ -165,8 +158,6 @@ with tab3:
 # ========================================
 # ✅ Tab 4: Analitik BMI
 # ========================================
-from app.styles import warna_mapping
-
 with tab4:
     st.subheader("📊 Analisis BMI Peserta")
 
@@ -190,7 +181,7 @@ with tab4:
 # ========================================
 papar_footer(
     owner="MKR Dev Team",
-    version="v3.3.0",
+    version="v3.3.1",
     last_update="2025-06-29",
     tagline="Empowering Data-Driven Decisions."
 )
