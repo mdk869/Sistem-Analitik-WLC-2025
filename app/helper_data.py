@@ -157,8 +157,8 @@ def simpan_rekod_berat(nama, tarikh, berat):
         if nama in df["Nama"].values:
             row_index = df[df["Nama"] == nama].index[0] + 2  # +2 kerana header +1-based index
 
-            ws_peserta.update(f"H{row_index}", berat)  # BeratTerkini di kolum H
-            ws_peserta.update(f"J{row_index}", str(tarikh))  # TarikhTimbang di kolum I
+            ws_peserta.update(f"I{row_index}", berat)  # BeratTerkini di kolum I
+            ws_peserta.update(f"J{row_index}", str(tarikh))  # TarikhTimbang di kolum J
 
             log_dev("Admin", f"BeratTerkini dan TarikhTimbang untuk {nama} dikemaskini", "Success")
 
