@@ -20,7 +20,7 @@ st.divider()
 st.subheader("📄 Google Sheets")
 
 try:
-    ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "data_peserta")
+    ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "peserta")
     peserta = ws_peserta.get_all_records()
     st.success(f"✅ Data Peserta: {len(peserta)} rekod dijumpai")
 except Exception as e:
