@@ -6,7 +6,7 @@ from datetime import date
 from app.helper_auth import check_login
 from app.helper_logic import kira_bmi, kategori_bmi_asia
 from app.helper_log import log_dev
-from app.helper_utils import carian_nama, check_header_consistency
+from app.helper_utils import carian_nama_suggestion, check_header_consistency
 from app.helper_drive import upload_to_drive
 from app.helper_data import (
     load_data_peserta,
@@ -113,7 +113,7 @@ with tab2:
 with tab3:
     st.subheader("⚖️ Rekod Timbangan Berat")
 
-    nama_timbang = carian_nama(data_peserta, label="Nama untuk Timbang", key="timbang")
+    nama_timbang = carian_nama_suggestion(data_peserta, label="Nama untuk Timbang", key="timbang")
 
     if nama_timbang:
         with st.form("form_timbang", clear_on_submit=True):
@@ -137,10 +137,10 @@ with tab3:
 with tab4:
     st.subheader("🛠️ Kemaskini Data Peserta")
 
-    nama_edit = carian_nama(data_peserta, label="Nama Peserta", key="edit")
+    nama_edit = carian_nama_suggestion(data_peserta, label="Nama Peserta", key="edit")
 
     if nama_edit:
-        df_row = data_peserta[data_peserta["Nama"] == nama_edit]
+        df_row = data_peserta[data_peserta["Nama"].str.lower() == nama_edit.lower()]
 
         if not df_row.empty:
             row = df_row.iloc[0]
@@ -189,7 +189,10 @@ with tab4:
                         else:
                             st.info("👉 Sila sahkan sebelum padam.")
         else:
-            st.info("🔍 Sila cari nama peserta untuk kemaskini.")
+            st.warning("❌ Nama tidak ditemui dalam senarai peserta.")
+    else:
+        st.info("📝 Sila taip nama untuk mencari peserta.")
+
 
 # =========================================
 # ✅ Tab 5: Backup & Restore
