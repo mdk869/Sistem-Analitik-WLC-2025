@@ -1,4 +1,8 @@
-from app.helper_gsheet import load_worksheet_to_df, tambah_data_peserta
+from app.helper_gsheet import(
+    load_worksheet_to_df,
+    tambah_data_peserta,
+    append_data_to_worksheet
+)
 import pandas as pd
 import streamlit as st
 
@@ -28,3 +32,16 @@ def tambah_peserta_google_sheet(data_dict):
     SHEET_NAME = "data_peserta"
 
     return tambah_data_peserta(SPREADSHEET_ID, SHEET_NAME, data_dict)
+
+
+def simpan_rekod_berat(data):
+    """
+    Simpan rekod berat baru ke sheet 'rekod_berat'.
+    Data dalam bentuk dictionary.
+    """
+    spreadsheet_id = st.secrets["gsheet"]["rekod_ranking"]
+    worksheet_name = "rekod_berat"
+
+    status = append_data_to_worksheet(spreadsheet_id, worksheet_name, data)
+
+    return status
