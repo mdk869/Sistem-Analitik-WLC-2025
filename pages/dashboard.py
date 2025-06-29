@@ -150,7 +150,7 @@ with tab3:
         st.divider()
 
     bulan_seterusnya = (pd.to_datetime('today') + pd.DateOffset(months=1)).strftime('%B %Y')
-    st.info(f"🔔 Ingatan: Sesi timbang seterusnya adalah pada bulan **{bulan_seterusnya}**, disyorkan minggu pertama.")
+    st.info(f"🔔 Ingatan: Sesi timbang seterusnya adalah pada bulan **{bulan_seterusnya}**.")
 
 
 
