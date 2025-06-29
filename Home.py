@@ -1,132 +1,91 @@
-# Home.py
 import streamlit as st
-from datetime import datetime
-import pytz
-from streamlit_autorefresh import st_autorefresh
-from app.styles import paparkan_tema, papar_footer, papar_tajuk_utama
-from app.helper_info import get_motivasi_harian, get_tips_nutrisi, get_tips_kesihatan
+from app.styles import paparkan_tema, papar_header, papar_footer
+from app.settings import info_program
 
-# === Setup Paparan ===
-st.set_page_config(
-    page_title="Sistem Analitik WLC 2025",
-    page_icon="📊",
-    layout="wide"
-)
 
-# === Paparkan Tema & Tajuk ===
+# ========================================
+# ✅ Layout & Header
+# ========================================
 paparkan_tema()
-papar_tajuk_utama()
+papar_header("Home | WLC 2025")
+
+st.title("🏠 Selamat Datang ke Sistem Analitik WLC 2025")
+st.markdown("Sistem ini direka untuk membantu penganjur memantau perkembangan peserta sepanjang program.")
+
+st.divider()
 
 
-# === Tarikh Countdown Program ===
-tz = pytz.timezone("Asia/Kuala_Lumpur")
-tarikh_mula = tz.localize(datetime(2025, 5, 18))
-tarikh_akhir = tz.localize(datetime(2025, 8, 20))
-hari_ini = datetime.now(tz)
+# ========================================
+# ✅ Info Program
+# ========================================
+st.subheader("📜 Info Program WLC 2025")
 
-total_hari = (tarikh_akhir - tarikh_mula).days
-baki_hari = max((tarikh_akhir - hari_ini).days, 0)
-progress_hari = ((total_hari - baki_hari) / total_hari) * 100
+st.info(f"""
+**{info_program['nama_program']}**
 
-# === Layout Info Utama ===
-st.markdown("""
-Sistem ini direka khas untuk membantu **penganjur** dan **peserta** memantau prestasi penurunan berat badan sepanjang program.
+🗓️ **Tarikh Program:** {info_program['tarikh_mula'].strftime('%d %B %Y')} hingga {info_program['tarikh_tamat'].strftime('%d %B %Y')}
 
-📅 **Tempoh Program:** 18 Mei 2025 - 20 Ogos 2025  
-🏆 **Objektif:** Membantu peserta mencapai berat badan ideal melalui pemantauan berkala.
-
----
+🎯 **Objektif Program:**
+- Membantu peserta mencapai berat badan ideal
+- Meningkatkan kesedaran tentang kesihatan dan gaya hidup sihat
+- Mewujudkan budaya hidup aktif di tempat kerja dan komuniti
 """)
 
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric("📅 Baki Hari Program", f"{baki_hari} Hari")
-    st.progress(progress_hari/100)
-
-with col2:
-    st.metric("🚀 Status Program", f"{round(progress_hari, 1)}% Selesai")
-
-with col3:
-    motivasi = get_motivasi_harian()
-    st.subheader("💡Motivasi Hari Ini:")
-    st.success(motivasi)
-
-# === Bahagian Info Kad ===
-st.markdown("## 🔍 **Informasi Program & Tips Kesihatan**")
-
-colA, colB = st.columns(2)
-
-with colA:
-
-    st.image(
-        "https://i.ibb.co/rK49V8yW/poster-Tips-Kesihatan-Harian.jpg",
-        use_container_width=True
-    )
-    
-    health_list = get_tips_kesihatan(jumlah=2)
-
-    st.subheader("🏃‍♂️**Tips Kesihatan Harian**")
-    st.info("\n".join([f"- {tip}" for tip in health_list]))
+st.divider()
 
 
-    with st.expander("### 🎯 Matlamat WLC 2025"):
-        st.success("""
-        - Memupuk gaya hidup sihat.
-        - Menurunkan berat badan secara berhemah.
-        - Memantau BMI dan komposisi badan.
-        - Menyediakan data analitik untuk peserta dan penganjur.
-        """)
+# ========================================
+# ✅ Jadual Program
+# ========================================
+st.subheader("📅 Jadual & Perjalanan Program")
 
-    
-    
-with colB:
-    st.image(
-        "https://i.ibb.co/5xSK5dyf/Instagram-Post-Tips-Nutrisi.png",
-        use_container_width=True
-    )
+st.markdown("""
+- 🔥 **18 Jun 2025** — Pendaftaran & Timbang Awal
+- 📊 **Julai 2025** — Sesi Timbang Bulanan 1
+- 📊 **Ogos 2025** — Sesi Timbang Bulanan 2
+- 🏆 **20 Ogos 2025** — Timbang Akhir & Majlis Penutup
+""")
 
-    nutrisi_list = get_tips_nutrisi(jumlah=2)
+st.info("✅ Peserta wajib hadir sekurang-kurangnya 3 sesi timbang untuk melayakkan diri dalam penilaian akhir.")
 
-    st.subheader("🍎 **Tips Nutrisi Hari Ini**")
-    st.info("\n".join([f"- {tip}" for tip in nutrisi_list]))
+st.divider()
 
 
-    with st.expander("### 📌 Kenapa Gunakan Sistem Ini?"):    
-        st.warning("""
-        - Memudahkan pemantauan progres.
-        - Data direkod secara cloud (Google Sheets).
-        - Paparan leaderboard automatik.
-        - Privasi data terjamin.
-        """)
+# ========================================
+# ✅ Panduan Peserta
+# ========================================
+st.subheader("📖 Panduan Peserta")
+
+st.markdown("""
+- ✅ Pastikan hadir sesi timbang mengikut jadual.
+- ✅ Data berat akan direkod untuk analisis dan penilaian.
+- 🔒 Data adalah sulit dan hanya pihak penganjur yang boleh akses.
+- 💡 Gunakan dashboard untuk melihat perkembangan BMI, penurunan berat dan leaderboard.
+""")
+
+st.divider()
 
 
-# === Popup Memo / Changelog ===
-if "show_memo" not in st.session_state:
-    st.session_state.show_memo = False
+# ========================================
+# ✅ Hubungi Penganjur
+# ========================================
+st.subheader("📞 Hubungi Penganjur")
 
-if st.session_state.show_memo:
-    st.info("""
-    ## 📢 **Makluman Sistem WLC V3**
-    🔔 Update Terbaharu:
-    - ✅ Dashboard Interaktif
-    - ✅ Leaderboard dengan Medal & Trend 📈📉
-    - ✅ Modul Admin (Tambah, Edit, Padam)
-    - ✅ Sistem Login Admin
-    - ✅ Countdown Program + Motivasi Harian
-    - 🔜 Akan Datang: Push Notification, Tips Nutrisi Automatik
+st.markdown("""
+- 📧 Email: wlc2025@domain.com
+- ☎️ Telefon: 012-3456789
+- 🏢 Unit Sumber Manusia, Wilayah Kuala Selangor
+""")
 
-    ---
-    ✨ Terima kasih kerana menggunakan Sistem WLC V3.
-    """)
-    if st.button("❌ Tutup Memo"):
-        st.session_state.show_memo = False
+st.divider()
 
-# === Footer ===
-footer_date = hari_ini.strftime("%d/%m/%Y")
+
+# ========================================
+# ✅ Footer
+# ========================================
 papar_footer(
     owner="MKR Dev Team",
-    version="v3.2.5",
-    last_update="2025-06-26",
+    version=info_program["versi"],
+    last_update="2025-06-29",
     tagline="Empowering Data-Driven Decisions."
 )
