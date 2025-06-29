@@ -68,3 +68,31 @@ def append_data_to_worksheet(spreadsheet_id, worksheet_name, data_dict):
     worksheet.append_row(values)
 
     return True
+
+
+def padam_baris_dari_worksheet(spreadsheet_id, worksheet_name, column_key, value):
+    """
+    Padam baris daripada worksheet berdasarkan nilai dalam column tertentu.
+    """
+    sh = client.open_by_key(spreadsheet_id)
+    worksheet = sh.worksheet(worksheet_name)
+
+    data = worksheet.get_all_records()
+
+    if not data:
+        return False
+
+    df = pd.DataFrame(data)
+
+    # Semak jika data wujud
+    if value not in df[column_key].values:
+        return False
+
+    # Buang baris yang sepadan
+    df = df[df[column_key] != value]
+
+    # Clear worksheet dan update semula
+    worksheet.clear()
+    worksheet.update([df.columns.values.tolist()] + df.values.tolist())
+
+    return True
