@@ -6,7 +6,7 @@ import datetime
 import traceback
 from app.styles import papar_footer
 from app.helper_connection import SPREADSHEET_RANKING, SPREADSHEET_LOG, SPREADSHEET_PESERTA
-from app.helper_drive import DRIVE, DRIVE_FOLDER_ID, list_files_in_folder
+from app.helper_drive import list_files_in_folder
 from app.helper_gsheet import get_worksheet
 from app.helper_data import load_data_peserta
 from googleapiclient.errors import HttpError
