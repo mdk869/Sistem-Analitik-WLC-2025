@@ -1,135 +1,153 @@
+# devtools.py
+
 import streamlit as st
 import pandas as pd
 import datetime
-
+import traceback
 from app.styles import papar_footer
-from app.helper_connection import (
-    SPREADSHEET_RANKING, SPREADSHEET_LOG, SPREADSHEET_PESERTA
-)
+from app.helper_connection import SPREADSHEET_RANKING, SPREADSHEET_LOG, SPREADSHEET_PESERTA
 from app.helper_drive import list_files_in_folder
 from app.helper_gsheet import get_worksheet
-
-from app.helper_log_utils import (
-    log_event, log_error, clear_log, load_log, check_system_health
-)
-
+from googleapiclient.errors import HttpError
+from app.helper_data import load_data_peserta
 
 # ===============================
-# ✅ Page Setup
+# ✅ Setup Page
 # ===============================
 st.set_page_config(page_title="🛠️ WLC DevTools", layout="wide")
 st.title("🛠️ Developer Tools - WLC 2025")
-st.caption("⚙️ Sistem ini dibangunkan khas untuk DevTeam sahaja. Tidak diakses oleh umum atau penganjur.")
+st.caption("⚙️ Sistem ini dibangunkan khas untuk DevTeam sahaja. Tidak diakses oleh penganjur atau umum.")
 
+st.subheader("🔗 Status Sambungan")
+
+try:
+    ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "peserta")
+    peserta = ws_peserta.get_all_records()
+    st.success(f"✅ Data Peserta: {len(peserta)} rekod dijumpai")
+except Exception as e:
+    st.error(f"❌ Data Peserta GAGAL: {e}")
+
+try:
+    ws_log = get_worksheet(SPREADSHEET_LOG, "log")
+    log = ws_log.get_all_records()
+    st.success(f"✅ Log Dev: {len(log)} rekod")
+except Exception as e:
+    st.error(f"❌ Log Dev GAGAL: {e}")
+
+try:
+    ws_ranking = get_worksheet(SPREADSHEET_RANKING, "rekod")
+    rekod = ws_ranking.get_all_records()
+    st.success(f"✅ Rekod Ranking: {len(rekod)} rekod")
+except Exception as e:
+    st.error(f"❌ Rekod Ranking GAGAL: {e}")
+
+try:
+    files = list_files_in_folder()
+    st.success(f"✅ Google Drive OK: {len(files)} file dalam folder.")
+    for file in files:
+        st.write(f"📄 {file['name']} (ID: {file['id']})")
+except Exception as e:
+    st.error(f"❌ Google Drive GAGAL: {e}")
 
 # ===============================
-# ✅ Tabs Layout
+# ✅ Logger Function
 # ===============================
-tab1, tab2 = st.tabs(["🔗 Status Sambungan", "🪛 Debug Console"])
-
-
-# ===============================
-# ✅ Tab 1: Status Sambungan
-# ===============================
-with tab1:
-    st.subheader("🔗 Status Sambungan Google Sheets & Drive")
-
+def log_event(event, detail):
     try:
-        ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "peserta")
-        peserta = ws_peserta.get_all_records()
-        st.success(f"✅ Data Peserta: {len(peserta)} rekod dijumpai.")
+        log_sheet = SPREADSHEET_LOG.worksheet("log_event")
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_sheet.append_row([now, event, detail])
     except Exception as e:
-        st.error(f"❌ Data Peserta GAGAL: {e}")
+        st.error("❌ Gagal log event.")
 
-    try:
-        ws_log_event = get_worksheet(SPREADSHEET_LOG, "log_event")
-        log_event_data = ws_log_event.get_all_records()
-        st.success(f"✅ Log Event: {len(log_event_data)} rekod.")
-    except Exception as e:
-        st.error(f"❌ Log Event GAGAL: {e}")
 
+def log_error(error_detail):
     try:
-        ws_log_error = get_worksheet(SPREADSHEET_LOG, "log_error")
-        log_error_data = ws_log_error.get_all_records()
-        st.success(f"✅ Log Error: {len(log_error_data)} rekod.")
+        error_sheet = SPREADSHEET_LOG.worksheet("log_error")
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        error_sheet.append_row([now, error_detail])
     except Exception as e:
-        st.error(f"❌ Log Error GAGAL: {e}")
-
-    try:
-        ws_ranking = get_worksheet(SPREADSHEET_RANKING, "rekod")
-        ranking = ws_ranking.get_all_records()
-        st.success(f"✅ Rekod Ranking: {len(ranking)} rekod.")
-    except Exception as e:
-        st.error(f"❌ Rekod Ranking GAGAL: {e}")
-
-    try:
-        files = list_files_in_folder()
-        st.success(f"✅ Google Drive OK: {len(files)} fail dalam folder.")
-        with st.expander("📂 Senarai Fail dalam Google Drive"):
-            for file in files:
-                st.write(f"📄 {file['name']} (ID: {file['id']})")
-    except Exception as e:
-        st.error(f"❌ Google Drive GAGAL: {e}")
+        st.error("❌ Gagal log error.")
 
 
 # ===============================
-# ✅ Tab 2: Debug Console
+# ✅ Health Check Function
 # ===============================
-with tab2:
-    st.subheader("🪛 Debug Console")
+def check_system_health():
+    try:
+        df = load_data_peserta()
+
+        missing_bmi = df['BMI'].isnull().sum()
+        missing_berat = df['BeratTerkini'].isnull().sum()
+        missing_tarikh = df['TarikhTimbang'].isnull().sum()
+
+        status = "✅ Google Sheet Connected"
+        result = {
+            "Status": status,
+            "Total Peserta": len(df),
+            "Missing BMI": missing_bmi,
+            "Missing Berat Terkini": missing_berat,
+            "Missing Tarikh Timbang": missing_tarikh,
+        }
+
+        log_event("HealthCheck", f"Check OK: {result}")
+        return result
+
+    except Exception as e:
+        error_detail = traceback.format_exc()
+        log_error(error_detail)
+        return {"Status": "❌ Error", "Detail": str(e)}
+
+
+# ===============================
+# ✅ Load Log Function
+# ===============================
+def load_log(log_type="event"):
+    try:
+        if log_type == "event":
+            sheet = SPREADSHEET_LOG.worksheet("log_event")
+        else:
+            sheet = SPREADSHEET_LOG.worksheet("log_error")
+
+        data = sheet.get_all_records()
+        df = pd.DataFrame(data)
+        return df
+
+    except Exception as e:
+        st.error("❌ Gagal load log.")
+        return pd.DataFrame()
+
+
+# ===============================
+# ✅ Debug Console
+# ===============================
+def debug_console():
+    st.subheader("🔧 Debug Console")
 
     action = st.selectbox("Pilih Debug Action", [
-        "✅ Check System Health",
-        "📜 Show Event Log",
-        "🪲 Show Error Log",
-        "♻️ Clear Event Log",
-        "♻️ Clear Error Log"
+        "Check Health",
+        "Show Event Log",
+        "Show Error Log"
     ])
 
-    st.divider()
+    if action == "Check Health":
+        st.json(check_system_health())
 
-    if action == "✅ Check System Health":
-        st.subheader("✅ System Health Report")
-        df = check_system_health()
+    elif action == "Show Event Log":
+        df = load_log(log_type="event")
         st.dataframe(df, use_container_width=True)
 
-    elif action == "📜 Show Event Log":
-        st.subheader("📜 Event Log")
-        df = load_log(log_type="event")
-        if df.empty:
-            st.info("⚠️ Tiada rekod event.")
-        else:
-            st.dataframe(df, use_container_width=True)
-
-    elif action == "🪲 Show Error Log":
-        st.subheader("🪲 Error Log")
+    elif action == "Show Error Log":
         df = load_log(log_type="error")
-        if df.empty:
-            st.info("⚠️ Tiada rekod error.")
-        else:
-            st.dataframe(df, use_container_width=True)
-
-    elif action == "♻️ Clear Event Log":
-        st.subheader("♻️ Clear Event Log")
-        if st.button("🚨 Kosongkan Event Log"):
-            result = clear_log("event")
-            if result:
-                st.success("✅ Event Log berjaya dikosongkan.")
-
-    elif action == "♻️ Clear Error Log":
-        st.subheader("♻️ Clear Error Log")
-        if st.button("🚨 Kosongkan Error Log"):
-            result = clear_log("error")
-            if result:
-                st.success("✅ Error Log berjaya dikosongkan.")
+        st.dataframe(df, use_container_width=True)
 
 
 # ===============================
-# ✅ Footer
-# ===============================
+# ✅ La
+
 papar_footer(
     owner="MKR Dev Team",
-    version="v4.1.0",
-    last_update="2025-06-29",
+    version="v3.2.5",
+    last_update="2025-06-27",
     tagline="Empowering Data-Driven Decisions."
 )
