@@ -1,6 +1,5 @@
 import pandas as pd
 import streamlit as st
-from app.helper_log import log_error
 from app.helper_utils import get_worksheet
 
 
@@ -20,8 +19,7 @@ def load_worksheet_to_df(spreadsheet, worksheet_name):
             st.warning(f"⚠️ Worksheet '{worksheet_name}' kosong.")
         return df
     except Exception as e:
-        st.error(f"❌ Gagal load data '{worksheet_name}': {e}")
-        log_error(f"load_worksheet_to_df error on '{worksheet_name}' - {e}")
+        st.error(f"❌ Error: {e}")
         return pd.DataFrame()
 
 
@@ -38,6 +36,7 @@ def save_df_to_worksheet(spreadsheet, worksheet_name, dataframe):
         st.success(f"✅ Data berjaya disimpan ke '{worksheet_name}'.")
         return True
     except Exception as e:
-        st.error(f"❌ Gagal simpan data ke '{worksheet_name}': {e}")
-        log_error(f"save_df_to_worksheet error on '{worksheet_name}' - {e}")
-        return False
+        st.error(f"❌ Error: {e}")
+        return pd.DataFrame()
+
+    
