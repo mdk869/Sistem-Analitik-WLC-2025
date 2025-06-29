@@ -9,9 +9,8 @@ from datetime import datetime
 
 # Import helper
 from app.helper_data import load_data_peserta, load_rekod_berat_semua
-from app.helper_ranking import leaderboard_dengan_status
 from app.helper_log import log_dev
-from app.helper_utils import check_header_consistency, proses_data_peserta
+from app.helper_utils import check_header_consistency
 from app.styles import paparkan_tema, papar_header, papar_footer
 from app.helper_logic import tambah_kiraan_peserta, kira_progress_program
 
@@ -147,15 +146,15 @@ with tab1:
 # ========================================
 # ✅ Tab 2: Leaderboard
 # ========================================
+from app.helper_ranking import leaderboard_peserta, trend_penurunan_bulanan
+from app.helper_data import load_rekod_berat_semua
+
 with tab2:
     st.subheader("🏆 Leaderboard Top 10 Penurunan Berat")
 
-    df_kiraan = tambah_kiraan_peserta(data_peserta)  # Dari helper_logic
-    leaderboard = leaderboard_dengan_status(df_kiraan)
+    leaderboard = leaderboard_peserta(data_peserta, top_n=10)
 
     if not leaderboard.empty:
-        leaderboard = leaderboard[["Nama", "% Penurunan"]].head(10)
-
         st.dataframe(
             leaderboard.style.format({"% Penurunan": "{:.2f}%"}),
             use_container_width=True,
@@ -164,7 +163,20 @@ with tab2:
     else:
         st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
 
-    log_dev("Dashboard", "Buka Tab Leaderboard", "Success")
+    st.divider()
+
+    st.subheader("📈 Trend Berat Purata Bulanan")
+
+    df_rekod = load_rekod_berat_semua()
+
+    fig = trend_penurunan_bulanan(df_rekod)
+
+    if fig:
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("⚠️ Tiada data trend untuk dipaparkan.")
+
+    log_dev("Dashboard", "Buka Tab Leaderboard + Trend", "Success")
 
 
 
