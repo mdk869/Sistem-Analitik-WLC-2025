@@ -150,24 +150,24 @@ with tab1:
 with tab2:
     st.subheader("🏆 Leaderboard Berat Badan")
 
-    # ✅ Load data & proses
-    df = proses_data_peserta(data_peserta)
-
-    # ✅ Load leaderboard
-    leaderboard = leaderboard_dengan_status(df)
+    # ✅ Load ranking dari helper_ranking
+    leaderboard = leaderboard_dengan_status
 
     if leaderboard is not None and not leaderboard.empty:
-        # ✅ Paparan Leaderboard dengan hide index
+        leaderboard = leaderboard[["Nama", "% Penurunan"]].copy()
+        leaderboard = leaderboard.sort_values(by="% Penurunan", ascending=False).reset_index(drop=True)
+
+        # ✅ Paparan dataframe tanpa index
         st.dataframe(
-            leaderboard.set_index(
-                pd.Index(range(1, len(leaderboard) + 1), name="No.")
-            ),
-            use_container_width=True
+            leaderboard.style.format({"% Penurunan": "{:.2f}%"}),
+            use_container_width=True,
+            hide_index=True
         )
     else:
         st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
 
     log_dev("Dashboard", "Buka Tab Leaderboard", "Success")
+
 
 
 
