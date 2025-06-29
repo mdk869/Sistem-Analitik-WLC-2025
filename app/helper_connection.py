@@ -43,7 +43,7 @@ def get_spreadsheet(spreadsheet_name):
         gspread.models.Spreadsheet: Objek Spreadsheet.
     """
     try:
-        sh = get_worksheet.open(spreadsheet_name)
+        sh = gc.open(spreadsheet_name)
         return sh
     except Exception as e:
         st.error(f"❌ Gagal buka spreadsheet '{spreadsheet_name}': {e}")
