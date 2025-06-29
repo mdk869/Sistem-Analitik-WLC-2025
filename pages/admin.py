@@ -119,20 +119,14 @@ with st.expander("⚖️ Kemaskini Berat Terkini"):
         if submitted:
             tarikh_str = tarikh.strftime("%Y-%m-%d")
 
-            # Simpan ke rekod_berat
-            rekod_ok = simpan_rekod_berat(nama, tarikh_str, berat)
+            result = simpan_rekod_berat(nama, tarikh_str, berat)
 
-            if rekod_ok:
-                # Update ke worksheet peserta
-                update_ok = update_berat_terkini_peserta(nama, tarikh_str, berat)
-
-                if update_ok:
-                    st.success(f"✅ Berat {berat} kg pada {tarikh_str} untuk {nama} telah dikemaskini.")
-                else:
-                    st.warning("⚠️ Gagal update ke peserta, tetapi rekod timbang telah disimpan.")
+            if result['rekod_berat'] and result['update_peserta']:
+                st.success(f"✅ Berat {berat} kg pada {tarikh_str} untuk {nama} telah dikemaskini sepenuhnya.")
+            elif result['rekod_berat']:
+                st.warning(f"⚠️ Rekod berat disimpan ke {tarikh_str}, tetapi gagal update di sheet data_peserta.")
             else:
                 st.error("❌ Gagal simpan rekod timbang.")
-
 
 # =============================================================
 # ✅ Padam Peserta
