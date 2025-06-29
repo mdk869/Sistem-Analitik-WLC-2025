@@ -2,8 +2,9 @@ from app.helper_gsheet import(
     load_worksheet_to_df,
     tambah_data_peserta,
     append_data_to_worksheet,
-    padam_baris_dari_worksheet
-    
+    padam_baris_dari_worksheet,
+    update_baris_dalam_worksheet
+
 )
 import pandas as pd
 import streamlit as st
@@ -57,3 +58,20 @@ def padam_peserta_dari_sheet(nama):
     worksheet_name = "data_peserta"
 
     return padam_baris_dari_worksheet(spreadsheet_id, worksheet_name, "Nama", nama)
+
+
+def update_data_peserta(no_staf, data_update):
+    """
+    Update maklumat peserta berdasarkan NoStaf.
+
+    Args:
+        no_staf (str): No Staf peserta.
+        data_update (dict): Data yang ingin dikemaskini.
+
+    Returns:
+        bool: Status update (True/False).
+    """
+    spreadsheet_id = st.secrets["gsheet"]["data_peserta_id"]
+    worksheet_name = "data_peserta"
+
+    return update_baris_dalam_worksheet(spreadsheet_id, worksheet_name, "NoStaf", no_staf, data_update)
