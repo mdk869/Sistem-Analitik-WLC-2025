@@ -1,4 +1,5 @@
 import pandas as pd
+import streamlit as st
 from app.helper_logic import kira_bmi, kategori_bmi_asia
 from app.helper_gsheet import (
     load_worksheet_to_df,
