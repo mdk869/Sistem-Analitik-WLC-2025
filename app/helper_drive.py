@@ -19,15 +19,24 @@ drive_service = build("drive", "v3", credentials=credentials)
 DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
 
 # ======= Upload Function =======
-def upload_to_drive(file_path, file_name):
-    file_metadata = {"name": file_name, "parents": [DRIVE_FOLDER_ID]}
-    media = MediaFileUpload(file_path, resumable=True)
+from app.helper_connection import connect_drive_service
 
-    file = drive_service.files().create(
-        body=file_metadata, media_body=media, fields="id"
+def upload_to_drive(local_file, drive_filename):
+    service = connect_drive_service()
+    folder_id = st.secrets["drive_folder_id"]
+
+    file_metadata = {
+        'name': drive_filename,
+        'parents': [folder_id]
+    }
+    media = MediaFileUpload(local_file, resumable=True)
+
+    file = service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
     ).execute()
-
-    return file.get("id")
+    return file.get('id')
 
 
 def list_files_in_folder():
