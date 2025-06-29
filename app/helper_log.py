@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-import datetime
-from app.helper_connection import SPREADSHEET_LOG
-=======
-=======
->>>>>>> parent of 71cba5f (restructure modular)
 import streamlit as st
 from datetime import datetime
 from app.helper_connection import gc, get_secret_id
 from app.helper_gsheet import get_worksheet
->>>>>>> parent of baf1351 (Update helper_log.py)
 
 
-<<<<<<< HEAD
-def log_dev(page, event, status):
-    sheet = SPREADSHEET_LOG.worksheet("log")
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    sheet.append_row([now, page, event, status])
-
-
-def log_error(error_detail):
-    sheet = SPREADSHEET_LOG.worksheet("error")
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    sheet.append_row([now, error_detail])
-=======
 # ✅ Setup spreadsheet log
 try:
     SPREADSHEET_LOG = gc.open_by_key(get_secret_id("gsheet", "log_wlc_dev_id"))
@@ -73,4 +53,3 @@ def log_info(detail):
 # ✅ Fungsi Log Warning
 def log_warning(detail):
     write_log("WARNING", detail, "Warning")
->>>>>>> parent of 71cba5f (restructure modular)
