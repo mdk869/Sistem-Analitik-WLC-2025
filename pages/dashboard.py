@@ -12,7 +12,7 @@ from app.helper_ranking import leaderboard_dengan_status
 from app.helper_log import log_dev
 from app.helper_utils import check_header_consistency, proses_data_peserta
 from app.styles import paparkan_tema, papar_header, papar_footer
-
+from app.helper_logic import tambah_kiraan_peserta
 
 # ========================================
 # ✅ Layout
@@ -49,23 +49,17 @@ with tab1:
     st.subheader("📜 Maklumat Program WLC 2025")
 
     if check_header_consistency(data_peserta, HEADER_PESERTA, "Data Peserta"):
-        total_peserta = len(data_peserta)
-        avg_berat = data_peserta["BeratAwal"].mean()
+        # Tambah kiraan ke dataframe
+        df_kiraan = tambah_kiraan_peserta(data_peserta)
 
-        # ✅ Kiraan Penurunan Berat
-        data_peserta["PeratusPenurunan"] = (
-            (data_peserta["BeratAwal"] - data_peserta["BeratTerkini"])
-            / data_peserta["BeratAwal"]
-        ) * 100
-
-        data_peserta["PeratusPenurunan"] = data_peserta["PeratusPenurunan"].fillna(0)
-
-        avg_penurunan = data_peserta["PeratusPenurunan"].mean()
+        total_peserta = len(df_kiraan)
+        avg_berat_awal = df_kiraan["BeratAwal"].mean().round(2)
+        avg_penurunan = df_kiraan["% Penurunan"].mean().round(2)
 
         col1, col2, col3 = st.columns(3)
         col1.metric("👥 Jumlah Peserta", total_peserta)
-        col2.metric("⚖️ Berat Awal Purata (kg)", f"{avg_berat:.2f}")
-        col3.metric("📉 Purata Penurunan (%)", f"{avg_penurunan:.2f}%")
+        col2.metric("⚖️ Berat Awal Purata (kg)", f"{avg_berat_awal:.2f}")
+        col3.metric("📉 Penurunan Berat Purata (%)", f"{avg_penurunan:.2f}%")
 
         st.divider()
 
@@ -77,7 +71,7 @@ with tab1:
             use_container_width=True
         )
 
-    log_dev("Dashboard", "Buka Tab Info Program", "Success")
+        log_dev("Dashboard", "Buka Tab Info Program", "Success")
 
 
 
