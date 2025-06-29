@@ -14,7 +14,8 @@ from app.helper_data import (
     tambah_peserta_google_sheet,
     simpan_rekod_berat,
     padam_peserta_dari_sheet,
-    update_data_peserta
+    update_data_peserta,
+    daftar_peserta
 )
 from app.styles import paparkan_tema, papar_header, papar_footer
 
@@ -99,7 +100,7 @@ with tab2:
         submit = st.form_submit_button("✅ Tambah")
 
         if submit:
-            tambah_peserta_google_sheet(
+            daftar_peserta(
                 nama, nostaf, umur, jantina, jabatan,
                 tinggi, berat_awal, tarikh
             )
