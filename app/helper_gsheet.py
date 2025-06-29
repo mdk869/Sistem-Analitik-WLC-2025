@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from app.helper_log import 
+
 
 
 def get_worksheet(spreadsheet, worksheet_name):
