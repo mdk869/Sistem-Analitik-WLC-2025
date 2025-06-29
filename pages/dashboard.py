@@ -71,10 +71,17 @@ with tab1:
         col2.metric("⚖️ BMI Purata", f"{avg_bmi:.2f}")
         col3.metric("📉 Penurunan Berat Purata (%)", f"{avg_penurunan:.2f}%")
 
-        # ✅ Paparan jantina
-        col4, col5 = st.columns(2)
-        col4.metric("👨‍🦱 Lelaki", total_lelaki)
-        col5.metric("👩 Perempuan", total_perempuan)
+        # ✅ Lelaki & Perempuan dalam satu column
+        with col1:
+            st.markdown(
+                f"""
+                <div style='text-align: center'>
+                    👨‍🦱 <b>Lelaki:</b> {total_lelaki} <br>
+                    👩 <b>Perempuan:</b> {total_perempuan}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         st.divider()
 
