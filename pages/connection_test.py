@@ -11,7 +11,7 @@ from app.helper_connection import (
 st.title("🔗 Test Connection Google Sheets & Drive")
 
 try:
-    ws = get_worksheet(SPREADSHEET_PESERTA, "data")
+    ws = get_worksheet(SPREADSHEET_PESERTA, "peserta")
     data = ws.get_all_records()
     st.success("✅ Berjaya connect ke Google Sheet: Data Peserta")
     st.write(data)
