@@ -104,7 +104,6 @@ with tab2:
                 tinggi, berat_awal, tarikh
             )
             st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
-            log_dev("Admin", f"Tambah peserta {nama}", "Success")
             st.rerun()
 
 # =========================================
@@ -153,7 +152,6 @@ with tab3:
 
                 if status:
                     st.success(f"✅ Rekod berat untuk {nama_timbang} berjaya disimpan.")
-                    log_dev("Admin", f"Rekod timbang {nama_timbang}", "Success")
                 else:
                     st.warning("⚠️ Terdapat isu semasa simpan rekod.")
                 st.rerun()
@@ -216,9 +214,7 @@ with tab4:
                         }
                     )
                     st.success(f"✅ Data peserta '{nama_edit}' berjaya dikemaskini.")
-                    log_dev("Admin", f"Kemaskini peserta {nama_edit}", "Success")
                     st.rerun()
-
 
 # =========================================
 # ✅ Tab 5: Backup & Restore
