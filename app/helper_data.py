@@ -1,4 +1,4 @@
-from app.helper_gsheet import load_worksheet_to_df
+from app.helper_gsheet import load_worksheet_to_df, tambah_data_peserta
 import pandas as pd
 import streamlit as st
 
@@ -21,3 +21,10 @@ def load_rekod_berat_semua():
         return pd.DataFrame()
 
     return df
+
+
+def tambah_peserta_google_sheet(data_dict):
+    SPREADSHEET_ID = st.secrets["gsheet"]["data_peserta_id"]
+    SHEET_NAME = "data_peserta"
+
+    return tambah_data_peserta(SPREADSHEET_ID, SHEET_NAME, data_dict)
