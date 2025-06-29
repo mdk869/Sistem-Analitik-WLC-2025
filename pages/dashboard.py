@@ -72,7 +72,7 @@ with tab1:
 
         st.subheader("⏳ Progress Program WLC 2025")
         st.info(
-            f"{progress['status']} — {progress['hari_berlalu']} hari dari {progress['total_hari']} hari.\n\n"
+            f"{progress['status']} — Hari ke-{progress['hari_berlalu']} dari {progress['total_hari']} hari.\n\n"
             f"📅 {progress['tarikh_mula'].strftime('%d %b %Y')} hingga {progress['tarikh_tamat'].strftime('%d %b %Y')}"
         )
 
