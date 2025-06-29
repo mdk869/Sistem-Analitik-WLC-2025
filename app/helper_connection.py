@@ -1,28 +1,17 @@
+import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
-import streamlit as st
 
-# ===== ✅ Sambungan ke Google API =====
-scope = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive",
-]
-
-creds = Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"],
-    scopes=scope
-)
-
+# ===== ✅ Authentication Google API =====
+creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"])
 client = gspread.authorize(creds)
-
-# ===== ✅ Google Drive Service =====
 drive_service = build("drive", "v3", credentials=creds)
 
-# ===== ✅ ID Google Drive Folder =====
-DRIVE_FOLDER_ID = st.secrets["drive_folder_id"]
+# ===== ✅ Google Drive Folder ID =====
+DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
 
-# ===== ✅ Spreadsheet Utama =====
-SPREADSHEET_PESERTA = client.open("data_peserta")
-SPREADSHEET_RANKING = client.open("data_ranking")
-SPREADSHEET_LOG = client.open("log_dev")
+# ===== ✅ Spreadsheet IDs =====
+SPREADSHEET_PESERTA = client.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
+SPREADSHEET_LOG = client.open_by_key(st.secrets["gsheet"]["log_wlc_dev_id"])
+SPREADSHEET_RANKING = client.open_by_key(st.secrets["gsheet"]["rekod_ranking"])
