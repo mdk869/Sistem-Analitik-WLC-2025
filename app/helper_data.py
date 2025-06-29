@@ -199,8 +199,8 @@ def simpan_rekod_berat(nama, tarikh, berat):
         cell_tarikh = f"{colnum_string(col_tarikh)}{row_index}"
 
         # ✅ Update dengan nilai BUKAN list
-        ws_peserta.update(cell_berat, float(berat))
-        ws_peserta.update(cell_tarikh, str(tarikh))
+        ws_peserta.update_acell(cell_berat, float(berat))
+        ws_peserta.update_acell(cell_tarikh, str(tarikh))
 
         log_dev("Admin", f"Update BeratTerkini & TarikhTimbang untuk {nama} di peserta.", "Success")
         result['update_peserta'] = True
