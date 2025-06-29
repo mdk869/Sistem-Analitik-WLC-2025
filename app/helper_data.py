@@ -301,16 +301,28 @@ def load_rekod_berat_semua():
         return pd.DataFrame()
 
 
-def save_dataframe_to_sheet(df, sheet_name="data_peserta"):
-    """
-    Simpan dataframe ke Google Sheet, gantikan isi sedia ada.
-    """
+# ✅ Fungsi Backup Data Peserta ke Google Drive
+def backup_data_peserta_to_drive():
     try:
-        sheet = connect_sheet(sheet_name)
-        sheet.clear()
-        sheet.update([df.columns.values.tolist()] + df.values.tolist())
+        df = load_data_peserta()
+        file_name = "data_peserta_backup.xlsx"
+        df.to_excel(file_name, index=False)
+        file_id = upload_to_drive(file_name, file_name)
+        return file_id
+    except Exception as e:
+        log_warning(f"Gagal backup: {e}")
+        return None
+
+# ✅ Fungsi Restore Data dari Google Drive
+def restore_data_peserta_from_drive():
+    try:
+        files = list_files_in_folder()
+        target = next((f for f in files if f['name'] == 'data_peserta_backup.xlsx'), None)
+        if not target:
+            st.warning("⚠️ Backup file tidak ditemui.")
+            return False
+        download_from_drive(target['id'], "data_peserta.xlsx")
         return True
     except Exception as e:
-        st.error(f"Gagal simpan ke Google Sheet: {e}")
+        log_warning(f"Gagal restore: {e}")
         return False
-
