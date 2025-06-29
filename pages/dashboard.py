@@ -3,6 +3,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 from datetime import datetime
 
@@ -70,8 +71,47 @@ with tab1:
         progress = kira_progress_program()
 
         st.subheader("⏳ Progress Program WLC 2025")
-        st.info(f"{progress['status']} — {progress['hari_berlalu']} hari dari {progress['total_hari']} hari.")
+        st.info(
+            f"{progress['status']} — {progress['hari_berlalu']} hari dari {progress['total_hari']} hari.\n\n"
+            f"📅 {progress['tarikh_mula'].strftime('%d %b %Y')} hingga {progress['tarikh_tamat'].strftime('%d %b %Y')}"
+        )
+
         st.progress(progress['progress'] / 100)
+
+        # 🎨 Timeline Visual dengan Plotly
+        fig = go.Figure()
+
+        # Bar utama
+        fig.add_trace(go.Bar(
+            x=[progress['progress']],
+            y=["Progress Program"],
+            orientation='h',
+            marker=dict(color='green' if progress['progress'] >= 100 else 'orange'),
+            width=0.4,
+            name="Progress"
+        ))
+
+        # Bar latar belakang (100%)
+        fig.add_trace(go.Bar(
+            x=[100 - progress['progress']],
+            y=["Progress Program"],
+            orientation='h',
+            marker=dict(color='lightgray'),
+            width=0.4,
+            name="Remaining"
+        ))
+
+        fig.update_layout(
+            barmode='stack',
+            xaxis=dict(range=[0, 100], title="Peratus (%)"),
+            yaxis=dict(showticklabels=False),
+            height=150,
+            showlegend=False,
+            margin=dict(l=20, r=20, t=20, b=20)
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
 
         st.subheader("📅 Senarai Pendaftaran")
         st.dataframe(
