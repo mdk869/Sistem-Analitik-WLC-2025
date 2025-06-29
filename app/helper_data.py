@@ -26,20 +26,6 @@ def load_data_peserta():
     except Exception as e:
         st.error(f"❌ Gagal load data peserta: {e}")
         return pd.DataFrame()
-
-def load_data_cloud_or_local():
-    try:
-        ws = get_worksheet(SPREADSHEET_PESERTA, "peserta")
-        data = ws.get_all_records()
-        df = pd.DataFrame(data)
-
-        if df.empty:
-            st.warning("🚫 Data peserta kosong.")
-        return df
-
-    except Exception as e:
-        st.error(f"❌ Gagal load data peserta: {e}")
-        return pd.DataFrame()
     
 # ------------------------------------
 # ✅ Simpan Dataframe ke Sheet Peserta
