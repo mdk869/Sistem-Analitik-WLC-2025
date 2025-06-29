@@ -31,7 +31,7 @@ def load_data_peserta():
 # ✅ Load Rekod Berat
 # =============================
 def load_rekod_berat_semua():
-    df = load_worksheet_to_df(SPREADSHEET_REKOD, "rekod_berat_")
+    df = load_worksheet_to_df(SPREADSHEET_REKOD, SHEET_PESERTA)
 
     if df.empty:
         st.warning("⚠️ Sheet 'rekod_berat' kosong atau tidak dapat dimuat.")
