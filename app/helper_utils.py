@@ -9,27 +9,40 @@ from app.helper_gsheet import get_worksheet
 # =====================================================
 # ✅ Semak Header DataFrame Konsisten
 # =====================================================
+<<<<<<< HEAD
 def check_header_consistency(df, expected_header, nama_sheet):
+=======
+def check_header_consistency(df: pd.DataFrame, expected_header: list, label: str = "Data") -> bool:
+>>>>>>> parent of c68d2f3 (update log)
     df_header = list(df.columns)
 
     missing = [h for h in expected_header if h not in df_header]
     extra = [h for h in df_header if h not in expected_header]
 
     if missing or extra:
+<<<<<<< HEAD
         st.error(f"❌ {nama_sheet}: Struktur kolum tidak padan dengan template.")
+=======
+        st.error(f"❌ {label}: Struktur kolum tidak padan dengan template.")
+>>>>>>> parent of c68d2f3 (update log)
         if missing:
             st.warning(f"🛑 Kolum **TIADA**: {missing}")
         if extra:
             st.warning(f"⚠️ Kolum **TERLEBIH**: {extra}")
         return False
+
     return True
 
 
 # =====================================================
 # ✅ Simpan DataFrame ke Excel (Local Backup)
 # =====================================================
-def save_dataframe_to_excel(df, filename):
-    df.to_excel(filename, index=False)
+def save_dataframe_to_excel(df: pd.DataFrame, filename: str):
+    try:
+        df.to_excel(filename, index=False)
+        st.success(f"✅ Berjaya simpan fail ke {filename}")
+    except Exception as e:
+        st.error(f"❌ Gagal simpan fail ke {filename}: {e}")
 
 
 # =====================================================
@@ -79,16 +92,28 @@ def kategori_bmi_asia(bmi):
     else:
         return "Obesiti Morbid"
 
+<<<<<<< HEAD
 def kira_bmi(berat, tinggi):
+=======
+
+def kira_bmi(berat: float, tinggi: float) -> float:
+>>>>>>> parent of c68d2f3 (update log)
     if berat is None or tinggi is None or tinggi == 0:
         return None
     tinggi_meter = tinggi / 100
     bmi = berat / (tinggi_meter ** 2)
     return round(bmi, 1)
 
+<<<<<<< HEAD
 # ===========================================================
 # ✅ Bersihkan Data — Semua Whitespace
 # ===========================================================
+=======
+
+# =====================================================
+# ✅ Bersihkan Data — Whitespace
+# =====================================================
+>>>>>>> parent of c68d2f3 (update log)
 def bersihkan_whitespace(df: pd.DataFrame) -> pd.DataFrame:
     """
     Buang whitespace di semua nilai string dalam dataframe.
@@ -218,6 +243,7 @@ def check_and_create_worksheet(spreadsheet, sheet_name, header):
 
 # ============================================
 # ✅ Fungsi Carian Nama dengan Auto Suggestion
+<<<<<<< HEAD
 # ============================================
 
 def carian_nama_suggestion(df, label="Cari Nama", key=""):
@@ -232,6 +258,10 @@ def carian_nama_suggestion(df, label="Cari Nama", key=""):
     Returns:
         str: Nama yang dipilih atau None.
     """
+=======
+# =====================================================
+def carian_nama_suggestion(df: pd.DataFrame, label: str = "Cari Nama", key: str = "") -> str:
+>>>>>>> parent of c68d2f3 (update log)
     nama_list = df["Nama"].dropna().tolist()
 
     nama_input = st.text_input(f"🔍 {label}", key=f"input_{key}").strip()
@@ -248,9 +278,12 @@ def carian_nama_suggestion(df, label="Cari Nama", key=""):
         return None
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> parent of 95b04d2 (update utils dan get_worksheet)
 =======
 
 >>>>>>> parent of 71cba5f (restructure modular)
+=======
+>>>>>>> parent of c68d2f3 (update log)

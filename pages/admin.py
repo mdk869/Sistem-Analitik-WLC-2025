@@ -5,7 +5,7 @@ from datetime import date
 # ✅ Import Helper
 from app.helper_auth import check_login
 from app.helper_logic import kira_bmi, kategori_bmi_asia
-from app.helper_log_utils import log_event, log_error
+from app.helper_log import log_dev
 from app.helper_utils import carian_nama_suggestion, check_header_consistency
 from app.helper_drive import upload_to_drive
 from app.helper_data import (
@@ -71,7 +71,6 @@ with tab1:
             ),
             use_container_width=True
         )
-        log_event("Admin", "Buka Senarai Peserta")
 
 # =========================================
 # ✅ Tab 2: Tambah Peserta
@@ -100,17 +99,13 @@ with tab2:
         submit = st.form_submit_button("✅ Tambah")
 
         if submit:
-            try:
-                tambah_peserta_google_sheet(
-                    nama, nostaf, umur, jantina, jabatan,
-                    tinggi, berat_awal, tarikh
-                )
-                st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
-                log_event("Admin", f"Tambah peserta {nama}")
-                st.rerun()
-            except Exception as e:
-                st.error("❌ Gagal tambah peserta.")
-                log_error(f"Tambah peserta {nama} gagal: {e}")
+            tambah_peserta_google_sheet(
+                nama, nostaf, umur, jantina, jabatan,
+                tinggi, berat_awal, tarikh
+            )
+            st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
+            log_dev("Admin", f"Tambah peserta {nama}", "Success")
+            st.rerun()
 
 # =========================================
 # ✅ Tab 3: Rekod Timbang
@@ -131,10 +126,9 @@ with tab3:
                 result = simpan_rekod_berat(nama_timbang, tarikh.strftime("%Y-%m-%d"), berat)
                 if result['rekod_berat'] and result['update_peserta']:
                     st.success(f"✅ Rekod berat untuk {nama_timbang} berjaya disimpan.")
-                    log_event("Admin", f"Rekod timbang {nama_timbang}")
+                    log_dev("Admin", f"Rekod timbang {nama_timbang}", "Success")
                 else:
                     st.warning("⚠️ Terdapat isu semasa simpan rekod.")
-                    log_error(f"Rekod timbang gagal untuk {nama_timbang}")
                 st.rerun()
 
 # =========================================
@@ -175,7 +169,7 @@ with tab4:
                         tinggi, berat_terkini, tarikh_timbang, bmi, kategori
                     )
                     st.success(f"✅ Data peserta '{nama_edit}' berjaya dikemaskini.")
-                    log_event("Admin", f"Kemaskini peserta {nama_edit}")
+                    log_dev("Admin", f"Kemaskini peserta {nama_edit}", "Success")
                     st.rerun()
 
             with st.expander("🗑️ Padam Peserta"):
@@ -187,7 +181,7 @@ with tab4:
                         if confirm:
                             berjaya = padam_peserta_dari_sheet(nama_edit)
                             if berjaya:
-                                log_event("Admin", f"Padam peserta {nama_edit}")
+                                log_dev("Admin", f"Padam peserta {nama_edit}", "Success")
                                 st.success(f"✅ {nama_edit} telah dipadam.")
                                 st.rerun()
                             else:
@@ -213,7 +207,6 @@ with tab5:
             data_peserta.to_excel(file_name, index=False)
             upload_to_drive(file_name, file_name)
             st.success(f"✅ Data berjaya dibackup ke Google Drive sebagai '{file_name}'.")
-            log_event("Admin", "Backup data peserta")
 
     with st.expander("📤 Export Data Manual"):
         pilihan = st.selectbox("Pilih Data untuk Export", ["Data Peserta", "Rekod Timbang"])
@@ -232,9 +225,7 @@ with tab5:
         if file_upload:
             df_restore = pd.read_excel(file_upload)
             st.dataframe(df_restore)
-            st.success("✅ Data berjaya dimuat naik. Implement restore ke Google Sheets secara manual.")
-            log_event("Admin", "Upload file untuk restore data")
-
+            st.success("✅ Data berjaya dimuat naik. Sila implement restore ke Google Sheets secara manual.")
 
 # =========================================
 # ✅ Footer
