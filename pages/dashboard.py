@@ -64,6 +64,8 @@ with tab1:
         col2.metric("⚖️ BMI Purata", f"{avg_bmi:.2f}")
         col3.metric("📉 Penurunan Berat Purata (%)", f"{avg_penurunan:.2f}%")
 
+        st.divider()
+        
         # 🎯 Progress Program
         progress = kira_progress_program()
 
