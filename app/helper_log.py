@@ -1,27 +1,27 @@
-# app/helper_log.py
-
 import streamlit as st
 from datetime import datetime
-from app.helper_connection import SPREADSHEET_LOG
+from app.helper_connection import gc, get_secret_id
+from app.helper_gsheet import get_worksheet
 
 
-# ====================================================
+# ✅ Setup spreadsheet log
+SPREADSHEET_LOG = gc.open_by_key(get_secret_id("log_wlc_dev_id"))
+
 # ✅ Log Aktiviti Developer
-# ====================================================
 def log_dev(page, aktiviti, status="Success"):
     try:
-        ws = SPREADSHEET_LOG.worksheet("log")
-        sekarang = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        row = [sekarang, page, aktiviti, status]
-        ws.append_row(row)
+        ws = get_worksheet(SPREADSHEET_LOG, "log_dev")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ws.append_row([now, page, aktiviti, status])
     except Exception as e:
         st.warning(f"⚠️ Gagal log aktiviti: {e}")
 
-# ✅ Fungsi Logging Error
+
+# ✅ Log Error
 def log_error(detail):
     try:
-        ws = SPREADSHEET_LOG.worksheet("log_dev")
-        sekarang = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        ws.append_row([sekarang, "ERROR", detail, "Error"])
+        ws = get_worksheet(SPREADSHEET_LOG, "log_dev")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ws.append_row([now, "ERROR", detail, "Error"])
     except Exception as e:
         print(f"❌ Log Error Gagal: {e}")
