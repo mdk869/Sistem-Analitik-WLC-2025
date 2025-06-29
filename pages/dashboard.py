@@ -150,24 +150,20 @@ with tab1:
 with tab2:
     st.subheader("🏆 Leaderboard Berat Badan")
 
-    # ✅ Load data & proses
-    df = proses_data_peserta(data_peserta)
+    df_proses = tambah_kiraan_peserta(data_peserta)
+    leaderboard = leaderboard_dengan_status(df_proses)
 
-    # ✅ Load leaderboard
-    leaderboard = leaderboard_dengan_status(df)
-
-    if leaderboard is not None and not leaderboard.empty:
-        # ✅ Paparan Leaderboard dengan hide index
+    if not leaderboard.empty:
         st.dataframe(
-            leaderboard.set_index(
-                pd.Index(range(1, len(leaderboard) + 1), name="No.")
-            ),
+            leaderboard.set_index("Ranking"),
             use_container_width=True
         )
     else:
         st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
 
     log_dev("Dashboard", "Buka Tab Leaderboard", "Success")
+
+
 
 # =====================================================================================
 # TAB 3: Status Timbang
