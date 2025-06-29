@@ -98,7 +98,7 @@ with tab2:
 # TAB 3: Status Timbang
 # =====================================================================================
 with tab3:
-    st.subheader("📅 Status Timbangan Mengikut Sesi Bulanan")
+    st.subheader("Status Timbangan Mengikut Sesi Bulanan")
 
     df_rekod = load_rekod_berat_semua()
     df_peserta = load_data_peserta()
