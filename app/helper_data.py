@@ -30,7 +30,7 @@ def load_data_peserta():
 # =============================
 # ✅ Load Rekod Berat
 # =============================
-def load_data_peserta():
+def load_rekod_berat_semua():
     df = load_worksheet_to_df(SPREADSHEET_PESERTA, SHEET_PESERTA)
     return df
 
