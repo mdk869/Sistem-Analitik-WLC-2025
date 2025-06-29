@@ -4,19 +4,11 @@ import streamlit as st
 
 
 def leaderboard_peserta(df, top_n=10):
-    try:
-        df = df.copy()
-
-        df["% Penurunan"] = ((df["BeratAwal"] - df["BeratTerkini"]) / df["BeratAwal"] * 100).round(2)
-
-        df = df.sort_values(by="% Penurunan", ascending=False).reset_index(drop=True)
-        df["Ranking"] = df.index + 1
-
-        return df[["Ranking", "Nama", "NoStaf", "% Penurunan"]].head(top_n)
-    except KeyError as e:
-        st.error(f"❌ Column hilang: {e}")
-        return pd.DataFrame()
-
+    df = df.copy()
+    df["% Penurunan"] = ((df["BeratAwal"] - df["BeratTerkini"]) / df["BeratAwal"] * 100).round(2)
+    df = df.sort_values(by="% Penurunan", ascending=False).reset_index(drop=True)
+    df["Ranking"] = df.index + 1
+    return df[["Ranking", "Nama", "NoStaf", "% Penurunan"]].head(top_n)
 
 def trend_penurunan_bulanan(df_rekod):
     if df_rekod.empty:

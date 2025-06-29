@@ -1,250 +1,112 @@
-import streamlit as st
 import pandas as pd
-from datetime import date
-
-# ✅ Import Helper
-from app.helper_auth import check_login
 from app.helper_logic import kira_bmi, kategori_bmi_asia
-from app.helper_utils import carian_nama_suggestion, check_header_consistency
-from app.helper_drive import upload_to_drive
-from app.helper_data import (
-    load_data_peserta,
-    load_rekod_berat_semua,
-    daftar_peserta,
-    simpan_rekod_berat,
-    update_data_peserta,
-    padam_peserta_dari_sheet,
-    save_data_peserta,
-    save_rekod_berat
+from app.helper_gsheet import (
+    load_worksheet_to_df,
+    save_df_to_worksheet,
+    append_row_to_worksheet,
+    update_baris_dalam_worksheet,
+    padam_baris_dari_worksheet
 )
-from app.styles import paparkan_tema, papar_header, papar_footer
 
+# ===============================
+# ✅ Setup Spreadsheet
+# ===============================
+SPREADSHEET_PESERTA = st.secrets["gsheet"]["data_peserta_id"]
+SPREADSHEET_REKOD = st.secrets["gsheet"]["rekod_ranking"]
 
-# =========================================
-# ✅ Semakan Login
-# =========================================
-if not check_login():
-    st.error("❌ Akses ditolak! Halaman ini hanya untuk Admin.")
-    st.stop()
+SHEET_PESERTA = "peserta"
+SHEET_REKOD = "rekod_berat"
 
-
-# =========================================
-# ✅ Layout
-# =========================================
-paparkan_tema()
-papar_header("Admin Panel | WLC 2025")
-
-st.title("👑 Halaman Admin")
-st.markdown("Panel kawalan penuh untuk pengurusan data peserta dan rekod timbang WLC 2025.")
-
-# =========================================
+# ===============================
 # ✅ Load Data
-# =========================================
-data_peserta = load_data_peserta()
-data_rekod = load_rekod_berat_semua()
+# ===============================
+def load_data_peserta():
+    return load_worksheet_to_df(SPREADSHEET_PESERTA, SHEET_PESERTA)
 
-HEADER_PESERTA = [
-    'Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan',
-    'Tinggi', 'BeratAwal', 'TarikhDaftar',
-    'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori'
-]
+def load_rekod_berat_semua():
+    return load_worksheet_to_df(SPREADSHEET_REKOD, SHEET_REKOD)
 
-# =========================================
-# ✅ Tabs Layout
-# =========================================
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📋 Senarai Peserta",
-    "➕ Tambah Peserta",
-    "⚖️ Rekod Timbang",
-    "🛠️ Kemaskini Data",
-    "🗄️ Backup & Restore"
-])
+# ===============================
+# ✅ Simpan Data
+# ===============================
+def save_data_peserta(df):
+    return save_df_to_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, df)
 
-# =========================================
-# ✅ Tab 1: Senarai Peserta
-# =========================================
-with tab1:
-    st.subheader("📋 Senarai Peserta")
+def save_rekod_berat(df):
+    return save_df_to_worksheet(SPREADSHEET_REKOD, SHEET_REKOD, df)
 
-    if check_header_consistency(data_peserta, HEADER_PESERTA, "Data Peserta"):
-        st.dataframe(
-            data_peserta.set_index(
-                pd.Index(range(1, len(data_peserta) + 1), name="No.")
-            ),
-            use_container_width=True
-        )
+# ===============================
+# ✅ Tambah Peserta
+# ===============================
+def daftar_peserta(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tarikh):
+    bmi = kira_bmi(berat_awal, tinggi)
+    kategori = kategori_bmi_asia(bmi)
 
-# =========================================
-# ✅ Tab 2: Tambah Peserta
-# =========================================
-with tab2:
-    st.subheader("➕ Tambah Peserta Baru")
+    data = {
+        "Nama": nama,
+        "NoStaf": nostaf,
+        "Umur": umur,
+        "Jantina": jantina,
+        "Jabatan": jabatan,
+        "Tinggi": tinggi,
+        "BeratAwal": berat_awal,
+        "TarikhDaftar": str(tarikh),
+        "BeratTerkini": berat_awal,
+        "TarikhTimbang": str(tarikh),
+        "BMI": bmi,
+        "Kategori": kategori
+    }
+    return append_row_to_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, data)
 
-    with st.form("form_tambah", clear_on_submit=True):
-        col1, col2 = st.columns(2)
-        with col1:
-            nama = st.text_input("Nama")
-            nostaf = st.text_input("No Staf")
-            umur = st.number_input("Umur", 10, 100)
-            jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"])
-        with col2:
-            jabatan = st.text_input("Jabatan")
-            tinggi = st.number_input("Tinggi (cm)", 100, 250)
-            berat_awal = st.number_input("Berat Awal (kg)", 30.0, 300.0)
-            tarikh = st.date_input("Tarikh Daftar", value=date.today())
+# ===============================
+# ✅ Rekod Berat
+# ===============================
+def simpan_rekod_berat(nama, tarikh, berat):
+    data = {
+        "Nama": nama,
+        "Tarikh": str(tarikh),
+        "Berat": berat
+    }
+    append_row_to_worksheet(SPREADSHEET_REKOD, SHEET_REKOD, data)
 
-        bmi = kira_bmi(berat_awal, tinggi)
+    df = load_data_peserta()
+    idx = df[df["Nama"].str.lower() == nama.lower()].index
+
+    if not idx.empty:
+        tinggi = df.loc[idx[0], "Tinggi"]
+        bmi = kira_bmi(berat, tinggi)
         kategori = kategori_bmi_asia(bmi)
 
-        st.info(f"BMI: {bmi} ({kategori})")
+        update = {
+            "BeratTerkini": berat,
+            "TarikhTimbang": str(tarikh),
+            "BMI": bmi,
+            "Kategori": kategori
+        }
+        update_baris_dalam_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, "Nama", nama, update)
+        return True
+    return False
 
-        submit = st.form_submit_button("✅ Tambah")
+# ===============================
+# ✅ Update Data Peserta
+# ===============================
+def update_data_peserta(nama, nostaf, umur, jantina, jabatan, tinggi, berat_terkini, tarikh_timbang, bmi, kategori):
+    update = {
+        "Nama": nama,
+        "NoStaf": nostaf,
+        "Umur": umur,
+        "Jantina": jantina,
+        "Jabatan": jabatan,
+        "Tinggi": tinggi,
+        "BeratTerkini": berat_terkini,
+        "TarikhTimbang": str(tarikh_timbang),
+        "BMI": bmi,
+        "Kategori": kategori
+    }
+    return update_baris_dalam_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, "Nama", nama, update)
 
-        if submit:
-            daftar_peserta(
-                nama, nostaf, umur, jantina, jabatan,
-                tinggi, berat_awal, tarikh
-            )
-            st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
-            log_dev("Admin", f"Tambah peserta {nama}", "Success")
-            st.rerun()
-
-# =========================================
-# ✅ Tab 3: Rekod Timbang
-# =========================================
-with tab3:
-    st.subheader("⚖️ Rekod Timbangan Berat")
-
-    nama_timbang = carian_nama_suggestion(data_peserta, label="Nama untuk Timbang", key="timbang")
-
-    if nama_timbang:
-        with st.form("form_timbang", clear_on_submit=True):
-            tarikh_timbang = st.date_input("Tarikh Timbang", value=date.today())
-            berat_timbang = st.number_input("Berat (kg)", min_value=30.0, max_value=300.0)
-
-            submit = st.form_submit_button("✅ Simpan Rekod")
-
-            if submit:
-                status = simpan_rekod_berat(
-                    nama_timbang,
-                    tarikh_timbang,
-                    berat_timbang
-                )
-                if status['rekod_berat'] and status['update_peserta']:
-                    st.success(f"✅ Rekod berat untuk {nama_timbang} berjaya disimpan.")
-                    log_dev("Admin", f"Rekod timbang {nama_timbang}", "Success")
-                else:
-                    st.error("❌ Gagal simpan rekod.")
-                st.rerun()
-
-# =========================================
-# ✅ Tab 4: Kemaskini Data Peserta
-# =========================================
-with tab4:
-    st.subheader("🛠️ Kemaskini Data Peserta")
-
-    nama_edit = carian_nama_suggestion(data_peserta, label="Nama Peserta", key="edit")
-
-    if nama_edit:
-        df_row = data_peserta[data_peserta["Nama"].str.lower() == nama_edit.lower()]
-
-        if not df_row.empty:
-            row = df_row.iloc[0]
-            with st.form("form_edit", clear_on_submit=True):
-                col1, col2 = st.columns(2)
-                with col1:
-                    nostaf = st.text_input("No Staf", row["NoStaf"])
-                    umur = st.number_input("Umur", 10, 100, int(row["Umur"]))
-                    jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"], index=0 if row["Jantina"]=="Lelaki" else 1)
-                    jabatan = st.text_input("Jabatan", row["Jabatan"])
-                with col2:
-                    tinggi = st.number_input("Tinggi (cm)", 100, 250, int(row["Tinggi"]))
-                    berat_terkini = st.number_input("Berat Terkini (kg)", 30.0, 300.0, float(row["BeratTerkini"]))
-                    tarikh_timbang = st.date_input("Tarikh Timbang", pd.to_datetime(row["TarikhTimbang"]))
-
-                bmi = kira_bmi(berat_terkini, tinggi)
-                kategori = kategori_bmi_asia(bmi)
-
-                st.info(f"BMI: {bmi} ({kategori})")
-
-                submit = st.form_submit_button("✅ Kemaskini")
-
-                if submit:
-                    update_data_peserta(
-                        nostaf,
-                        {
-                            "Nama": nama_edit,
-                            "Umur": umur,
-                            "Jantina": jantina,
-                            "Jabatan": jabatan,
-                            "Tinggi": tinggi,
-                            "BeratTerkini": berat_terkini,
-                            "TarikhTimbang": str(tarikh_timbang),
-                            "BMI": bmi,
-                            "Kategori": kategori
-                        }
-                    )
-                    st.success(f"✅ Data peserta '{nama_edit}' berjaya dikemaskini.")
-                    log_dev("Admin", f"Kemaskini peserta {nama_edit}", "Success")
-                    st.rerun()
-
-            with st.expander("🗑️ Padam Peserta"):
-                colx, coly = st.columns([3, 1])
-                with colx:
-                    confirm = st.checkbox("⚠️ Sahkan untuk padam peserta ini.")
-                with coly:
-                    if st.button("🗑️ Padam"):
-                        if confirm:
-                            berjaya = padam_peserta_dari_sheet(nama_edit)
-                            if berjaya:
-                                log_dev("Admin", f"Padam peserta {nama_edit}", "Success")
-                                st.success(f"✅ {nama_edit} telah dipadam.")
-                                st.rerun()
-                            else:
-                                st.error("❌ Gagal padam peserta.")
-                        else:
-                            st.info("👉 Sila sahkan sebelum padam.")
-        else:
-            st.warning("❌ Nama tidak ditemui dalam senarai peserta.")
-    else:
-        st.info("📝 Sila taip nama untuk mencari peserta.")
-
-# =========================================
-# ✅ Tab 5: Backup & Restore
-# =========================================
-with tab5:
-    st.subheader("🗄️ Backup & Restore Data")
-
-    with st.expander("📥 Backup Data"):
-        st.info("Backup semua data ke Google Drive.")
-        if st.button("🔽 Backup Data"):
-            file_name = f"backup_data_peserta_{date.today()}.xlsx"
-            data_peserta.to_excel(file_name, index=False)
-            upload_to_drive(file_name, file_name)
-            st.success(f"✅ Data berjaya dibackup ke Google Drive sebagai '{file_name}'.")
-
-    with st.expander("📤 Export Data Manual"):
-        pilihan = st.selectbox("Pilih Data untuk Export", ["Data Peserta", "Rekod Timbang"])
-        if st.button("🔽 Export"):
-            df = data_peserta if pilihan == "Data Peserta" else data_rekod
-            file_name = f"{pilihan.lower().replace(' ','_')}_{date.today()}.xlsx"
-            df.to_excel(file_name, index=False)
-            st.download_button("💾 Download", data=open(file_name, "rb"), file_name=file_name)
-
-    with st.expander("♻️ Restore Data"):
-        st.warning("⚠️ Fungsi Restore manual. Upload akan overwrite data sedia ada.")
-        file_upload = st.file_uploader("Upload Fail XLSX untuk Restore", type=["xlsx"])
-        if file_upload:
-            df_restore = pd.read_excel(file_upload)
-            st.dataframe(df_restore)
-            st.success("✅ Data berjaya dimuat naik. Sila implement restore ke Google Sheets secara manual.")
-
-# =========================================
-# ✅ Footer
-# =========================================
-papar_footer(
-    owner="MKR Dev Team",
-    version="v4.2.0",
-    last_update="2025-06-29",
-    tagline="Empowering Data-Driven Decisions."
-)
+# ===============================
+# ✅ Padam Peserta
+# ===============================
+def padam_peserta_dari_sheet(nama):
+    return padam_baris_dari_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, "Nama", nama)

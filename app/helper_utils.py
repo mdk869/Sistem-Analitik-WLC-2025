@@ -8,20 +8,14 @@ import os
 # =====================================================
 # ✅ Semak Header DataFrame Konsisten
 # =====================================================
-def check_header_consistency(df: pd.DataFrame, expected_header: list, label: str = "Data") -> bool:
-    df_header = list(df.columns)
-
-    missing = [h for h in expected_header if h not in df_header]
-    extra = [h for h in df_header if h not in expected_header]
-
-    if missing or extra:
-        st.error(f"❌ {label}: Struktur kolum tidak padan dengan template.")
-        if missing:
-            st.warning(f"🛑 Kolum **TIADA**: {missing}")
-        if extra:
-            st.warning(f"⚠️ Kolum **TERLEBIH**: {extra}")
+def check_header_consistency(df, expected_header, nama_sheet):
+    if df.empty:
+        st.warning(f"⚠️ Tiada data pada sheet '{nama_sheet}'.")
         return False
-
+    missing = set(expected_header) - set(df.columns)
+    if missing:
+        st.warning(f"⚠️ Header pada sheet '{nama_sheet}' tidak lengkap. Jumpa: {list(df.columns)}")
+        return False
     return True
 
 
@@ -138,18 +132,6 @@ def proses_data_peserta(df: pd.DataFrame) -> pd.DataFrame:
 # =====================================================
 # ✅ Fungsi Carian Nama dengan Auto Suggestion
 # =====================================================
-def carian_nama_suggestion(df: pd.DataFrame, label: str = "Cari Nama", key: str = "") -> str:
-    nama_list = df["Nama"].dropna().tolist()
-
-    nama_input = st.text_input(f"🔍 {label}", key=f"input_{key}").strip()
-
-    suggestion = [nama for nama in nama_list if nama_input.lower() in nama.lower()] if nama_input else []
-
-    if nama_input and suggestion:
-        nama_pilih = st.selectbox("✔️ Pilih dari cadangan", suggestion, key=f"select_{key}")
-        return nama_pilih
-    elif nama_input and not suggestion:
-        st.warning("❌ Tiada padanan nama ditemui.")
-        return None
-    else:
-        return None
+def carian_nama_suggestion(df, label="Nama", key=None):
+    nama_list = sorted(df["Nama"].unique()) if "Nama" in df.columns else []
+    return st.selectbox(label, nama_list, key=key)

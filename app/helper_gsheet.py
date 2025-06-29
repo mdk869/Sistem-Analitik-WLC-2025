@@ -1,53 +1,83 @@
 import pandas as pd
 from app.helper_connection import connect_gspread
 
-
+# ===============================
+# ✅ Fungsi Load Worksheet
+# ===============================
 def load_worksheet_to_df(spreadsheet_id, sheet_name):
-    client = connect_gspread()
-    sheet = client.open_by_key(spreadsheet_id)
-    ws = sheet.worksheet(sheet_name)
-    data = ws.get_all_records()
-    df = pd.DataFrame(data)
-    return df
-
-
-def save_df_to_worksheet(spreadsheet_id, sheet_name, df):
-    client = connect_gspread()
-    sheet = client.open_by_key(spreadsheet_id)
+    gc = connect_gspread()
+    sh = gc.open_by_key(spreadsheet_id)
     try:
-        ws = sheet.worksheet(sheet_name)
+        ws = sh.worksheet(sheet_name)
+        data = ws.get_all_records()
+        df = pd.DataFrame(data)
+        return df
+    except Exception:
+        return pd.DataFrame()
+
+# ===============================
+# ✅ Fungsi Save DataFrame ke Sheet
+# ===============================
+def save_df_to_worksheet(spreadsheet_id, sheet_name, df):
+    gc = connect_gspread()
+    sh = gc.open_by_key(spreadsheet_id)
+
+    try:
+        try:
+            sh.worksheet(sheet_name).clear()
+        except:
+            sh.add_worksheet(title=sheet_name, rows=1000, cols=20)
+
+        ws = sh.worksheet(sheet_name)
+        ws.update([df.columns.values.tolist()] + df.values.tolist())
+        return True
+    except Exception:
+        return False
+
+# ===============================
+# ✅ Append Row
+# ===============================
+def append_row_to_worksheet(spreadsheet_id, sheet_name, row_dict):
+    gc = connect_gspread()
+    sh = gc.open_by_key(spreadsheet_id)
+
+    ws = None
+    try:
+        ws = sh.worksheet(sheet_name)
     except:
-        ws = sheet.add_worksheet(title=sheet_name, rows="1000", cols="20")
-    ws.clear()
-    ws.update([df.columns.values.tolist()] + df.values.tolist())
-    return True
+        ws = sh.add_worksheet(title=sheet_name, rows=1000, cols=20)
 
-
-def append_row_to_worksheet(spreadsheet_id, sheet_name, data_dict):
-    client = connect_gspread()
-    sheet = client.open_by_key(spreadsheet_id)
-    ws = sheet.worksheet(sheet_name)
-    row = [data_dict.get(col, "") for col in ws.row_values(1)]
+    header = ws.row_values(1)
+    row = [row_dict.get(col, "") for col in header]
     ws.append_row(row)
     return True
 
-
+# ===============================
+# ✅ Update Baris Berdasarkan Key
+# ===============================
 def update_baris_dalam_worksheet(spreadsheet_id, sheet_name, key_col, key_value, update_dict):
     df = load_worksheet_to_df(spreadsheet_id, sheet_name)
-    if key_col not in df.columns:
+    if df.empty:
         return False
-    idx = df[df[key_col] == key_value].index
-    if idx.empty:
-        return False
-    for k, v in update_dict.items():
-        if k in df.columns:
-            df.loc[idx, k] = v
-    save_df_to_worksheet(spreadsheet_id, sheet_name, df)
-    return True
 
+    index = df[df[key_col] == key_value].index
+    if not index.empty:
+        idx = index[0]
+        for col, value in update_dict.items():
+            if col in df.columns:
+                df.at[idx, col] = value
+        save_df_to_worksheet(spreadsheet_id, sheet_name, df)
+        return True
+    return False
 
+# ===============================
+# ✅ Padam Baris Berdasarkan Key
+# ===============================
 def padam_baris_dari_worksheet(spreadsheet_id, sheet_name, key_col, key_value):
     df = load_worksheet_to_df(spreadsheet_id, sheet_name)
+    if df.empty:
+        return False
+
     df = df[df[key_col] != key_value]
     save_df_to_worksheet(spreadsheet_id, sheet_name, df)
     return True
