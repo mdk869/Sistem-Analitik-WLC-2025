@@ -150,7 +150,7 @@ def simpan_rekod_berat(nama, tarikh, berat):
         log_dev("Admin", f"Rekod berat {nama} pada {tarikh} disimpan ke {sheet_nama}", "Success")
 
         # ✅ Update ke sheet peserta (kolum BeratTerkini dan TarikhTimbang)
-        ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "peserta")
+        ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "data_peserta")
         data_peserta = ws_peserta.get_all_records()
         df = pd.DataFrame(data_peserta)
 
