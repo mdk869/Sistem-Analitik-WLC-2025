@@ -52,9 +52,10 @@ with tab1:
         total_peserta = len(data_peserta)
         avg_berat = data_peserta["BeratAwal"].mean()
 
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         col1.metric("👥 Jumlah Peserta", total_peserta)
         col2.metric("⚖️ Berat Awal Purata (kg)", f"{avg_berat:.2f}")
+        col3.metric("📉 Penurunan Berat (%)", f"{avg_berat:.2f}")
 
         st.divider()
 
