@@ -150,33 +150,45 @@ from app.helper_ranking import leaderboard_peserta, trend_penurunan_bulanan
 from app.helper_data import load_rekod_berat_semua
 
 with tab2:
-    st.subheader("🏆 Leaderboard Top 10 Penurunan Berat")
+    st.subheader("🏆 Leaderboard & Trend Berat Badan")
 
-    leaderboard = leaderboard_peserta(data_peserta, top_n=10)
-    leaderboard.style.background_gradient(cmap='YlGn')
+    col1, col2 = st.columns(2)
 
-    if not leaderboard.empty:
-        st.dataframe(
-            leaderboard.set_index("Ranking").style.format({"% Penurunan": "{:.2f}%"}),
-            use_container_width=True
-        )
-    else:
-        st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
+    # ==========================
+    # 🎖️ Leaderboard Top 10
+    # ==========================
+    with col1:
+        st.markdown("### 🏅 Top 10 Penurunan Berat (%)")
+
+        leaderboard = leaderboard_peserta(data_peserta, top_n=10)
+
+        if not leaderboard.empty:
+            st.dataframe(
+                leaderboard.set_index("Ranking").style.format({"% Penurunan": "{:.2f}%"}),
+                use_container_width=True
+            )
+        else:
+            st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
+
+    # ==========================
+    # 📊 Trend Berat Bulanan
+    # ==========================
+    with col2:
+        st.markdown("### 📈 Trend Berat Purata Bulanan")
+
+        df_rekod = load_rekod_berat_semua()
+
+        fig = trend_penurunan_bulanan(df_rekod)
+
+        if fig:
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info("⚠️ Tiada data trend untuk dipaparkan.")
 
     st.divider()
 
-    st.subheader("📈 Trend Berat Purata Bulanan")
-
-    df_rekod = load_rekod_berat_semua()
-
-    fig = trend_penurunan_bulanan(df_rekod)
-
-    if fig:
-        st.plotly_chart(fig, use_container_width=True)
-    else:
-        st.info("⚠️ Tiada data trend untuk dipaparkan.")
-
     log_dev("Dashboard", "Buka Tab Leaderboard + Trend", "Success")
+
 
 
 
