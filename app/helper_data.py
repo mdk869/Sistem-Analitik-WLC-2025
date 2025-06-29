@@ -139,17 +139,48 @@ def padam_peserta_dari_sheet(nama):
 # ------------------------------------
 def simpan_rekod_berat(nama, tarikh, berat):
     """
-    Simpan data ke worksheet 'rekod_berat' (append row).
+    Simpan data ke rekod_berat_BulanTahun (auto create jika belum ada).
+    Update juga kolum BeratTerkini dan TarikhTimbang dalam sheet peserta.
     """
     try:
-        ws = get_worksheet(SPREADSHEET_PESERTA, "rekod_berat")
-        ws.append_row([nama, tarikh, berat])
-        log_dev("Admin", f"Rekod berat {nama} pada {tarikh} disimpan", "Success")
+        # Format bulan tahun
+        bulan_tahun = pd.to_datetime(tarikh).strftime('%B%Y')
+        sheet_nama = f"rekod_berat_{bulan_tahun}"
+
+        # ✅ Semak sheet - create jika belum ada
+        sh = get_worksheet(SPREADSHEET_PESERTA)
+        sheet_list = [ws.title for ws in sh.worksheets()]
+
+        if sheet_nama not in sheet_list:
+            ws_new = sh.add_worksheet(title=sheet_nama, rows=1000, cols=5)
+            ws_new.append_row(["Nama", "Tarikh", "Berat"])
+            log_dev("Admin", f"Sheet {sheet_nama} berjaya dicipta", "Success")
+
+        # ✅ Simpan ke rekod_berat bulan itu
+        ws = get_worksheet(SPREADSHEET_PESERTA, sheet_nama)
+        ws.append_row([nama, str(tarikh), berat])
+        log_dev("Admin", f"Rekod berat {nama} pada {tarikh} disimpan ke {sheet_nama}", "Success")
+
+        # ✅ Update ke sheet peserta (kolum BeratTerkini dan TarikhTimbang)
+        ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "peserta")
+        data_peserta = ws_peserta.get_all_records()
+        df = pd.DataFrame(data_peserta)
+
+        if nama in df["Nama"].values:
+            row_index = df[df["Nama"] == nama].index[0] + 2  # +2 kerana header +1-based index
+
+            ws_peserta.update(f"H{row_index}", berat)  # BeratTerkini di kolum H
+            ws_peserta.update(f"I{row_index}", str(tarikh))  # TarikhTimbang di kolum I
+
+            log_dev("Admin", f"BeratTerkini dan TarikhTimbang untuk {nama} dikemaskini", "Success")
+
         return True
+
     except Exception as e:
-        st.error(f"❌ Gagal simpan rekod berat: {e}")
         log_error(str(e))
+        st.error(f"❌ Gagal simpan rekod berat: {e}")
         return False
+
 
 
 # -----------------------------------------------
@@ -196,5 +227,38 @@ def load_rekod_berat():
         return df
     
     except Exception as e:
+        st.error(f"❌ Gagal load data rekod berat: {e}")
+        return pd.DataFrame()
+
+def load_rekod_berat_semua():
+    """
+    Load semua rekod berat dari semua sheet rekod_berat_*
+    """
+    try:
+        sh = get_worksheet(SPREADSHEET_PESERTA)
+        sheet_list = [ws.title for ws in sh.worksheets()]
+
+        rekod_list = [s for s in sheet_list if s.startswith("rekod_berat_")]
+
+        df_list = []
+
+        for sheet in rekod_list:
+            ws = get_worksheet(SPREADSHEET_PESERTA, sheet)
+            data = ws.get_all_records()
+            df = pd.DataFrame(data)
+            if not df.empty:
+                df["Tarikh"] = pd.to_datetime(df["Tarikh"], errors='coerce')
+                df["SesiBulan"] = df["Tarikh"].dt.strftime('%B %Y')
+                df_list.append(df)
+
+        if df_list:
+            final_df = pd.concat(df_list, ignore_index=True)
+        else:
+            final_df = pd.DataFrame()
+
+        return final_df
+
+    except Exception as e:
+        log_error(str(e))
         st.error(f"❌ Gagal load data rekod berat: {e}")
         return pd.DataFrame()
