@@ -3,9 +3,9 @@
 import streamlit as st
 import pandas as pd
 import datetime
-from app.helper_connection import SPREADSHEET_PESERTA, get_spreadsheet_by_name
-from app.helper_utils import save_dataframe_to_excel, kategori_bmi_asia, get_column_index, get_or_create_worksheet
-from app.helper_log import log_dev, log_error, log_info, log_warning
+from app.helper_connection import SPREADSHEET_PESERTA
+from app.helper_utils import save_dataframe_to_excel, kategori_bmi_asia, get_column_index, check_and_create_worksheet
+from app.helper_log import log_dev, log_error, log_info
 from app.helper_gsheet import get_worksheet
 
 
@@ -129,25 +129,23 @@ def simpan_rekod_berat(nama, tarikh, berat):
     result = {'rekod_berat': False, 'update_peserta': False}
 
     try:
-        # 🎯 Sheet rekod timbang
+        # ✅ Nama Sheet rekod timbang
         bulan_tahun = pd.to_datetime(tarikh).strftime('%B%Y')
         sheet_nama = f"rekod_berat_{bulan_tahun}"
 
-        sh = get_spreadsheet_by_name(SPREADSHEET_PESERTA)
-        ws_rekod = get_or_create_worksheet(
-            spreadsheet=sh,
+        # ✅ Semak & cipta jika belum ada
+        ws_rekod = check_and_create_worksheet(
+            spreadsheet=SPREADSHEET_PESERTA,
             sheet_name=sheet_nama,
-            header=["Nama", "Tarikh", "Berat"],
-            rows=1000,
-            cols=5
+            header=["Nama", "Tarikh", "Berat"]
         )
 
         if ws_rekod:
-            ws_rekod.append_row([nama, str(tarikh), berat])
-            log_dev("Admin", f"Rekod berat {nama} pada {tarikh} disimpan ke {sheet_nama}", "Success")
+            ws_rekod.append_row([str(nama), str(tarikh), float(berat)])
+            log_dev("Admin", f"Simpan rekod {nama} {berat} kg pada {tarikh} ke {sheet_nama}", "Success")
             result['rekod_berat'] = True
         else:
-            raise Exception(f"Worksheet {sheet_nama} gagal dicipta.")
+            raise Exception(f"Gagal akses sheet {sheet_nama}.")
 
     except Exception as e:
         log_error(f"❌ Error simpan ke {sheet_nama}: {e}")
@@ -160,45 +158,24 @@ def simpan_rekod_berat(nama, tarikh, berat):
         ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "peserta")
 
         header = ws_peserta.row_values(1)
-        header = [h.strip().replace(" ", "").lower() for h in header]
+        header_clean = [h.strip().replace(" ", "").lower() for h in header]
 
-        def cari_kolum(nama_kolum):
-            nama_kolum = nama_kolum.strip().replace(" ", "").lower()
-            try:
-                return header.index(nama_kolum) + 1
-            except ValueError:
-                return None
-
-        col_berat = cari_kolum("BeratTerkini")
-        col_tarikh = cari_kolum("TarikhTimbang")
+        col_berat = get_column_index(ws_peserta, "BeratTerkini")
+        col_tarikh = get_column_index(ws_peserta, "TarikhTimbang")
 
         if None in [col_berat, col_tarikh]:
-            st.error("❌ Kolum BeratTerkini atau TarikhTimbang tidak ditemui.")
-            log_error("❌ Kolum BeratTerkini atau TarikhTimbang tidak ditemui.")
-            return result
+            raise Exception("Kolum BeratTerkini atau TarikhTimbang tidak ditemui.")
 
         data_peserta = ws_peserta.get_all_records()
         df = pd.DataFrame(data_peserta)
 
         if nama not in df["Nama"].values:
-            st.warning(f"⚠️ Nama '{nama}' tidak ditemui dalam sheet peserta.")
-            log_warning(f"Nama '{nama}' tidak ditemui dalam sheet peserta.")
-            return result
+            raise Exception(f"Nama '{nama}' tidak dijumpai dalam sheet peserta.")
 
-        row_index = df[df["Nama"] == nama].index[0] + 2
+        row_index = df[df["Nama"] == nama].index[0] + 2  # +2 sebab header + 1-index
 
-        def colnum_string(n):
-            string = ""
-            while n > 0:
-                n, remainder = divmod(n - 1, 26)
-                string = chr(65 + remainder) + string
-            return string
-
-        cell_berat = f"{colnum_string(col_berat)}{row_index}"
-        cell_tarikh = f"{colnum_string(col_tarikh)}{row_index}"
-
-        ws_peserta.update_acell(cell_berat, float(berat))
-        ws_peserta.update_acell(cell_tarikh, str(tarikh))
+        ws_peserta.update_cell(row_index, col_berat, float(berat))
+        ws_peserta.update_cell(row_index, col_tarikh, str(tarikh))
 
         log_dev("Admin", f"Update BeratTerkini & TarikhTimbang untuk {nama} di peserta.", "Success")
         result['update_peserta'] = True
@@ -209,6 +186,7 @@ def simpan_rekod_berat(nama, tarikh, berat):
         result['update_peserta'] = False
 
     return result
+
 
 
 
