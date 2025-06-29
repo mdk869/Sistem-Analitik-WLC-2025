@@ -16,7 +16,7 @@ SPREADSHEET_PESERTA = st.secrets["gsheet"]["data_peserta_id"]
 SPREADSHEET_REKOD = st.secrets["gsheet"]["rekod_ranking"]
 
 SHEET_PESERTA = "peserta"       # Betulkan dari 'data_peserta'
-SHEET_REKOD = "rekod_berat"
+SHEET_REKOD = "rekod_berat_"
 
 
 # =============================
@@ -31,7 +31,7 @@ def load_data_peserta():
 # ✅ Load Rekod Berat
 # =============================
 def load_rekod_berat_semua():
-    df = load_worksheet_to_df(SPREADSHEET_REKOD, "rekod_berat")
+    df = load_worksheet_to_df(SPREADSHEET_REKOD, "rekod_berat_")
 
     if df.empty:
         st.warning("⚠️ Sheet 'rekod_berat' kosong atau tidak dapat dimuat.")
