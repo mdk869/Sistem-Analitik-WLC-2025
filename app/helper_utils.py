@@ -215,3 +215,26 @@ def check_and_create_worksheet(spreadsheet, sheet_name, header):
         log_error(f"❌ Gagal check/create sheet {sheet_name}: {e}")
         st.error(f"❌ Error check/create sheet {sheet_name}: {e}")
         return None
+
+
+def carian_nama(dataframe, label="Nama", key="carian_nama"):
+    nama_list = dataframe["Nama"].dropna().tolist()
+
+    # Input teks untuk carian
+    input_nama = st.text_input(f"🔍 Cari {label}", key=f"{key}_input")
+
+    # Penapisan nama berdasarkan input
+    if input_nama:
+        pilihan = [n for n in nama_list if input_nama.lower() in n.lower()]
+        if len(pilihan) == 0:
+            pilihan = nama_list
+    else:
+        pilihan = nama_list
+
+    # Selectbox untuk pilih nama
+    nama_pilih = st.selectbox(f"Atau Pilih {label}", pilihan, key=f"{key}_select")
+
+    # Tentukan nama akhir
+    nama_final = input_nama if input_nama else nama_pilih
+
+    return nama_final
