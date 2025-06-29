@@ -3,6 +3,7 @@
 import streamlit as st
 import pandas as pd
 import os
+from app.helper_log import log_dev, log_error
 
 
 # =====================================================
@@ -168,4 +169,27 @@ def get_column_index(worksheet, column_name):
         return header.index(column_name) + 1
     except ValueError:
         st.error(f"❌ Kolum '{column_name}' tidak ditemui dalam worksheet.")
+        return None
+    
+def get_or_create_worksheet(spreadsheet, sheet_name, header=None, rows=1000, cols=10):
+    """
+    ✅ Dapatkan worksheet jika ada.
+    ✅ Jika tiada, auto create dengan header (jika diberi).
+    """
+    try:
+        ws_list = [ws.title for ws in spreadsheet.worksheets()]
+        if sheet_name in ws_list:
+            log_dev("System", f"✅ Worksheet '{sheet_name}' ditemui.", "Info")
+            return spreadsheet.worksheet(sheet_name)
+        else:
+            ws_new = spreadsheet.add_worksheet(title=sheet_name, rows=rows, cols=cols)
+            if header:
+                ws_new.append_row(header)
+                log_dev("System", f"✅ Worksheet '{sheet_name}' dicipta dengan header {header}.", "Success")
+            else:
+                log_dev("System", f"✅ Worksheet '{sheet_name}' dicipta tanpa header.", "Success")
+            return ws_new
+    except Exception as e:
+        log_error(f"❌ Gagal create/get worksheet {sheet_name}: {e}")
+        st.error(f"❌ Error akses worksheet {sheet_name}: {e}")
         return None
