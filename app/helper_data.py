@@ -62,31 +62,38 @@ def daftar_peserta(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tar
 # ===============================
 # ✅ Rekod Berat
 # ===============================
-def simpan_rekod_berat(nama, tarikh, berat):
-    data = {
-        "Nama": nama,
-        "Tarikh": str(tarikh),
-        "Berat": berat
+def simpan_rekod_berat(data):
+    """
+    Simpan rekod timbang dan update data peserta.
+    Parameter data:
+    {
+        "Nama": str,
+        "NoStaf": str,
+        "Tarikh": str (yyyy-mm-dd),
+        "Berat": float,
+        "SesiBulan": str (yyyy-mm)
     }
+    """
     append_row_to_worksheet(SPREADSHEET_REKOD, SHEET_REKOD, data)
 
     df = load_data_peserta()
-    idx = df[df["Nama"].str.lower() == nama.lower()].index
+    idx = df[df["Nama"].str.lower() == data["Nama"].lower()].index
 
     if not idx.empty:
         tinggi = df.loc[idx[0], "Tinggi"]
-        bmi = kira_bmi(berat, tinggi)
+        bmi = kira_bmi(data["Berat"], tinggi)
         kategori = kategori_bmi_asia(bmi)
 
         update = {
-            "BeratTerkini": berat,
-            "TarikhTimbang": str(tarikh),
+            "BeratTerkini": data["Berat"],
+            "TarikhTimbang": data["Tarikh"],
             "BMI": bmi,
             "Kategori": kategori
         }
-        update_baris_dalam_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, "Nama", nama, update)
+        update_baris_dalam_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, "Nama", data["Nama"], update)
         return True
     return False
+
 
 # ===============================
 # ✅ Update Data Peserta
