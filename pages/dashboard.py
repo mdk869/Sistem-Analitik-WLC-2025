@@ -12,7 +12,7 @@ from app.helper_ranking import leaderboard_dengan_status
 from app.helper_log import log_dev
 from app.helper_utils import check_header_consistency, proses_data_peserta
 from app.styles import paparkan_tema, papar_header, papar_footer
-from app.helper_logic import tambah_kiraan_peserta
+from app.helper_logic import tambah_kiraan_peserta, kira_progress_program
 
 # ========================================
 # ✅ Layout
@@ -45,22 +45,31 @@ tab1, tab2, tab3, tab4 = st.tabs(
 # ========================================
 # ✅ Tab 1: Info Program
 # ========================================
+from app.helper_logic import kira_progress_program
+
+
 with tab1:
     st.subheader("📜 Maklumat Program WLC 2025")
 
     if check_header_consistency(data_peserta, HEADER_PESERTA, "Data Peserta"):
-        # Tambah kiraan ke dataframe
+        # Tambah kiraan peserta
         df_kiraan = tambah_kiraan_peserta(data_peserta)
 
         total_peserta = len(df_kiraan)
         avg_bmi = df_kiraan["BMI"].mean().round(2)
-        avg_berat_awal = df_kiraan["BeratAwal"].mean().round(2)
         avg_penurunan = df_kiraan["% Penurunan"].mean().round(2)
 
         col1, col2, col3 = st.columns(3)
         col1.metric("👥 Jumlah Peserta", total_peserta)
         col2.metric("⚖️ BMI Purata", f"{avg_bmi:.2f}")
         col3.metric("📉 Penurunan Berat Purata (%)", f"{avg_penurunan:.2f}%")
+
+        # 🎯 Progress Program
+        progress = kira_progress_program()
+
+        st.subheader("⏳ Progress Program WLC 2025")
+        st.info(f"{progress['status']} — {progress['hari_berlalu']} hari dari {progress['total_hari']} hari.")
+        st.progress(progress['progress'] / 100)
 
         st.divider()
 
@@ -73,6 +82,7 @@ with tab1:
         )
 
         log_dev("Dashboard", "Buka Tab Info Program", "Success")
+
 
 
 
