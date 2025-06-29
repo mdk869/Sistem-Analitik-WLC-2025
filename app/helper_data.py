@@ -15,25 +15,28 @@ from app.helper_gsheet import (
 SPREADSHEET_PESERTA = st.secrets["gsheet"]["data_peserta_id"]
 SPREADSHEET_REKOD = st.secrets["gsheet"]["rekod_ranking"]
 
-SHEET_PESERTA = "peserta"       # Betulkan dari 'data_peserta'
-SHEET_REKOD = "rekod_berat_"
-
+SHEET_PESERTA = "peserta"
+SHEET_REKOD = "rekod_berat"
 
 # =============================
 # ✅ Load Data Peserta
 # =============================
 def load_data_peserta():
-    df = load_worksheet_to_df(SPREADSHEET_PESERTA, SHEET_PESERTA)
-    return df
+    return load_worksheet_to_df(SPREADSHEET_PESERTA, SHEET_PESERTA)
 
 
 # =============================
 # ✅ Load Rekod Berat
 # =============================
 def load_rekod_berat_semua():
-    df = load_worksheet_to_df(SPREADSHEET_PESERTA, SHEET_PESERTA)
-    return df
+    df = load_worksheet_to_df(SPREADSHEET_REKOD, SHEET_REKOD)
 
+    expected_header = ['Nama', 'NoStaf', 'Tarikh', 'Berat', 'SesiBulan']
+    if not set(expected_header).issubset(df.columns):
+        st.warning(f"⚠️ Header pada sheet 'rekod_berat' tidak lengkap. Jumpa: {df.columns.tolist()}")
+        return pd.DataFrame()
+
+    return df
 
 
 # =============================
@@ -53,8 +56,9 @@ def save_rekod_berat(df):
 # =============================
 # ✅ Tambah Peserta
 # =============================
-def tambah_peserta_google_sheet(df):
-    return append_row_to_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, df)
+def tambah_peserta_google_sheet(data_dict):
+    return append_row_to_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, data_dict)
+
 
 def daftar_peserta(
     nama, nostaf, umur, jantina, jabatan,
