@@ -3,7 +3,7 @@
 import streamlit as st
 import pandas as pd
 import datetime
-from app.helper_connection import SPREADSHEET_PESERTA, get_worksheet
+from app.helper_connection import SPREADSHEET_PESERTA, get_worksheet, get_spreadsheet
 from app.helper_utils import save_dataframe_to_excel, kategori_bmi_asia, get_column_index
 from app.helper_log import log_dev, log_error
 
@@ -148,7 +148,7 @@ def simpan_rekod_berat(nama, tarikh, berat):
         sheet_nama = f"rekod_berat_{bulan_tahun}"
 
         # ✅ Semak sheet - create jika belum ada
-        sh = get_worksheet(SPREADSHEET_PESERTA)
+        sh = get_spreadsheet(SPREADSHEET_PESERTA)
         sheet_list = [ws.title for ws in sh.worksheets()]
 
         if sheet_nama not in sheet_list:
@@ -235,7 +235,7 @@ def load_rekod_berat_semua():
     Load semua rekod berat dari semua sheet rekod_berat_*
     """
     try:
-        sh = get_worksheet(SPREADSHEET_PESERTA)
+        sh = get_spreadsheet(SPREADSHEET_PESERTA)
         sheet_list = [ws.title for ws in sh.worksheets()]
 
         rekod_list = [s for s in sheet_list if s.startswith("rekod_berat_")]
