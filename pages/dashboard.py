@@ -53,17 +53,28 @@ with tab1:
     st.subheader("📜 Maklumat Program WLC 2025")
 
     if check_header_consistency(data_peserta, HEADER_PESERTA, "Data Peserta"):
-        # Tambah kiraan peserta
+        # ✅ Tambah kiraan peserta
         df_kiraan = tambah_kiraan_peserta(data_peserta)
 
+        # ✅ Kiraan asas
         total_peserta = len(df_kiraan)
         avg_bmi = df_kiraan["BMI"].mean().round(2)
         avg_penurunan = df_kiraan["% Penurunan"].mean().round(2)
 
+        # ✅ Split ikut jantina
+        total_lelaki = len(df_kiraan[df_kiraan["Jantina"].str.lower() == "lelaki"])
+        total_perempuan = len(df_kiraan[df_kiraan["Jantina"].str.lower() == "perempuan"])
+
+        # ✅ Paparan metrik utama
         col1, col2, col3 = st.columns(3)
         col1.metric("👥 Jumlah Peserta", total_peserta)
         col2.metric("⚖️ BMI Purata", f"{avg_bmi:.2f}")
         col3.metric("📉 Penurunan Berat Purata (%)", f"{avg_penurunan:.2f}%")
+
+        # ✅ Paparan jantina
+        col4, col5 = st.columns(2)
+        col4.metric("👨‍🦱 Lelaki", total_lelaki)
+        col5.metric("👩 Perempuan", total_perempuan)
 
         st.divider()
 
