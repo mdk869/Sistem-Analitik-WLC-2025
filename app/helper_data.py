@@ -53,8 +53,8 @@ def save_rekod_berat(df):
 # =============================
 # ✅ Tambah Peserta
 # =============================
-def tambah_peserta_google_sheet(data_dict):
-    return append_row_to_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, data_dict)
+def tambah_peserta_google_sheet(df):
+    return append_row_to_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, df)
 
 
 # =============================
