@@ -107,9 +107,9 @@ with tab3:
 
     nama_list = data_peserta["Nama"].dropna().tolist()
     nama_input = st.text_input("Cari Nama (Auto Lengkap atau Dropdown)")
-    nama_pilih = st.selectbox("Atau Pilih Nama", nama_list)
+    nama_timbang = st.selectbox("🔍 Cari Nama Untuk Timbang", nama_list, key="timbang_nama")
 
-    nama_final = nama_input if nama_input else nama_pilih
+    nama_final = nama_input if nama_input else nama_timbang
 
     with st.form("form_rekod_timbang", clear_on_submit=True):
         tarikh = st.date_input("Tarikh Timbang", date.today())
@@ -140,9 +140,9 @@ with tab4:
 
     nama_list = data_peserta["Nama"].dropna().tolist()
     nama_input = st.text_input("Cari Nama (Input Manual)")
-    nama_pilih = st.selectbox("Atau Pilih Nama", nama_list)
+    nama_edit = st.selectbox("🔍 Cari Nama Untuk Edit", nama_list, key="edit_nama")
 
-    nama_final = nama_input if nama_input else nama_pilih
+    nama_final = nama_input if nama_input else nama_edit
 
     if nama_final:
         data_row = data_peserta[data_peserta["Nama"] == nama_final]
