@@ -119,9 +119,9 @@ with tab3:
 
     nama_list = data_peserta["Nama"].dropna().tolist()
 
-    nama_final = carian_nama(data_peserta, label="Nama untuk Timbang", key="timbang")
+    nama_timbang = carian_nama(data_peserta, label="Nama untuk Timbang", key="timbang")
 
-    if nama_final:
+    if nama_timbang:
         with st.form("form_timbang", clear_on_submit=True):
             tarikh = st.date_input("Tarikh Timbang", value=date.today())
             berat = st.number_input("Berat (kg)", min_value=30.0, max_value=300.0)
@@ -129,10 +129,10 @@ with tab3:
             submit = st.form_submit_button("✅ Simpan Rekod")
 
         if submit:
-            result = simpan_rekod_berat(nama_final, tarikh.strftime("%Y-%m-%d"), berat)
+            result = simpan_rekod_berat(nama_timbang, tarikh.strftime("%Y-%m-%d"), berat)
             if result['rekod_berat'] and result['update_peserta']:
-                st.success(f"✅ Rekod berat untuk {nama_final} berjaya disimpan.")
-                log_dev("Admin", f"Rekod timbang {nama_final}", "Success")
+                st.success(f"✅ Rekod berat untuk {nama_timbang} berjaya disimpan.")
+                log_dev("Admin", f"Rekod timbang {nama_timbang}", "Success")
             else:
                 st.warning("⚠️ Terdapat isu semasa simpan rekod.")
             st.rerun()
@@ -148,14 +148,10 @@ with tab4:
 
     nama_list = data_peserta["Nama"].dropna().tolist()
 
-    nama_final = st.searchbox(
-        "🔍 Cari Nama Peserta untuk Kemaskini",
-        nama_list,
-        key="search_nama_edit"
-    )
+    nama_edit = carian_nama(data_peserta, label="Nama untuk Timbang", key="edit")
     
-    if nama_final:
-        df_row = data_peserta[data_peserta["Nama"] == nama_final]
+    if nama_edit:
+        df_row = data_peserta[data_peserta["Nama"] == nama_edit]
 
     if not df_row.empty:
         row = df_row.iloc[0]
@@ -177,11 +173,11 @@ with tab4:
 
             if submit:
                 tambah_peserta_google_sheet(
-                    nama_final, nostaf, umur, jantina, jabatan,
+                    nama_edit, nostaf, umur, jantina, jabatan,
                     tinggi, berat_terkini, tarikh_timbang, bmi, kategori
                 )
-                st.success(f"✅ Data peserta '{nama_final}' berjaya dikemaskini.")
-                log_dev("Admin", f"Kemaskini peserta {nama_final}", "Success")
+                st.success(f"✅ Data peserta '{nama_edit}' berjaya dikemaskini.")
+                log_dev("Admin", f"Kemaskini peserta {nama_edit}", "Success")
                 st.rerun()
 
         # ✅ Fungsi Padam
@@ -189,10 +185,10 @@ with tab4:
             confirm = st.checkbox("⚠️ Sahkan untuk padam peserta ini.")
             if st.button("🗑️ Padam Peserta"):
                 if confirm:
-                    berjaya = padam_peserta_dari_sheet(nama_final)
+                    berjaya = padam_peserta_dari_sheet(nama_edit)
                     if berjaya:
-                        log_dev("Admin", f"Padam peserta {nama_final}", "Success")
-                        st.success(f"✅ {nama_final} telah dipadam.")
+                        log_dev("Admin", f"Padam peserta {nama_edit}", "Success")
+                        st.success(f"✅ {nama_edit} telah dipadam.")
                         st.rerun()
                     else:
                         st.error("❌ Gagal padam peserta.")
