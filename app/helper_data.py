@@ -126,27 +126,25 @@ def padam_peserta_dari_sheet(nama):
 # ✅ Simpan Rekod Berat
 # ------------------------------------
 def simpan_rekod_berat(nama, tarikh, berat):
-    """
-    Simpan ke rekod_berat_BulanTahun dan update BeratTerkini + TarikhTimbang di sheet peserta.
-    """
     result = {'rekod_berat': False, 'update_peserta': False}
 
     try:
-        # 📅 Tentukan nama sheet ikut bulan tahun
+        # 📅 Tentukan nama sheet
         bulan_tahun = pd.to_datetime(tarikh).strftime('%B%Y')
         sheet_nama = f"rekod_berat_{bulan_tahun}"
 
-        # ✅ Semak & cipta sheet rekod_berat jika belum ada
         sh = get_spreadsheet_by_name(SPREADSHEET_PESERTA)
         sheet_list = [ws.title for ws in sh.worksheets()]
 
+        # ✅ Create sheet jika belum ada
         if sheet_nama not in sheet_list:
             ws_new = sh.add_worksheet(title=sheet_nama, rows=1000, cols=5)
             ws_new.append_row(["Nama", "Tarikh", "Berat"])
             log_dev("Admin", f"Sheet {sheet_nama} dicipta", "Success")
 
+        # ✅ Simpan data
         ws_rekod = get_worksheet(SPREADSHEET_PESERTA, sheet_nama)
-        ws_rekod.append_row([nama, str(tarikh), berat])
+        ws_rekod.append_row([nama, str(tarikh), berat])  # 🚫 Jangan check response!
         log_dev("Admin", f"Rekod berat {nama} pada {tarikh} disimpan ke {sheet_nama}", "Success")
         result['rekod_berat'] = True
 
@@ -157,7 +155,7 @@ def simpan_rekod_berat(nama, tarikh, berat):
 
 
     try:
-        # ✅ Update BeratTerkini & TarikhTimbang
+        # ✅ Update ke sheet peserta
         ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "peserta")
 
         header = ws_peserta.row_values(1)
@@ -186,7 +184,7 @@ def simpan_rekod_berat(nama, tarikh, berat):
             log_warning(f"Nama '{nama}' tidak ditemui dalam sheet peserta.")
             return result
 
-        row_index = df[df["Nama"] == nama].index[0] + 2  # +2 untuk header +1-based
+        row_index = df[df["Nama"] == nama].index[0] + 2  # +2 sebab header +1-based
 
         def colnum_string(n):
             string = ""
@@ -198,7 +196,6 @@ def simpan_rekod_berat(nama, tarikh, berat):
         cell_berat = f"{colnum_string(col_berat)}{row_index}"
         cell_tarikh = f"{colnum_string(col_tarikh)}{row_index}"
 
-        # ✅ Update dengan nilai BUKAN list
         ws_peserta.update_acell(cell_berat, float(berat))
         ws_peserta.update_acell(cell_tarikh, str(tarikh))
 
@@ -211,6 +208,7 @@ def simpan_rekod_berat(nama, tarikh, berat):
         result['update_peserta'] = False
 
     return result
+
 
 
 # -----------------------------------------------
