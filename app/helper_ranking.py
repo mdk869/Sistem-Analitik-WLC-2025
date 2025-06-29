@@ -4,7 +4,8 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-from app.helper_connection import SPREADSHEET_RANKING, get_worksheet
+from app.helper_connection import SPREADSHEET_RANKING
+from app.helper_gsheet import get_worksheet
 from app.helper_data import load_data_peserta
 from app.helper_utils import save_dataframe_to_excel
 
