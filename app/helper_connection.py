@@ -19,6 +19,17 @@ gc = gspread.authorize(credentials)
 # ✅ Google Drive Service
 drive_service = build('drive', 'v3', credentials=credentials)
 
+# ============================================
+# ✅ Fungsi Ringkas Dapatkan ID dari Secrets
+# ============================================
+def get_secret_id(section, key):
+    """Periksa dan dapatkan ID dari secrets.toml."""
+    try:
+        return st.secrets[section][key]
+    except KeyError:
+        st.error(f"❌ Missing key [{section}][{key}] dalam secrets.toml!")
+        st.stop()
+
 # ✅ Google Sheet Connection (auto bind)
 SPREADSHEET_PESERTA = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
 SPREADSHEET_LOG = gc.open_by_key(st.secrets["gsheet"]["log_wlc_dev_id"])
