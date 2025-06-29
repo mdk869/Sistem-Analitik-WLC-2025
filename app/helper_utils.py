@@ -217,24 +217,18 @@ def check_and_create_worksheet(spreadsheet, sheet_name, header):
         return None
 
 
-def carian_nama(dataframe, label="Nama", key="carian_nama"):
-    nama_list = dataframe["Nama"].dropna().tolist()
+# ============================================
+# ✅ Fungsi Carian Nama dengan Auto Suggestion
+# ============================================
 
-    # Input teks untuk carian
-    input_nama = st.text_input(f"🔍 Cari {label}", key=f"{key}_input")
+def carian_nama(df, label="Cari Nama", key=None):
+    nama_list = df["Nama"].dropna().unique().tolist()
+    nama_list.sort()
 
-    # Penapisan nama berdasarkan input
-    if input_nama:
-        pilihan = [n for n in nama_list if input_nama.lower() in n.lower()]
-        if len(pilihan) == 0:
-            pilihan = nama_list
-    else:
-        pilihan = nama_list
+    input_nama = st.text_input(f"🔍 {label}", key=f"{key}_input")
 
-    # Selectbox untuk pilih nama
-    nama_pilih = st.selectbox(f"Atau Pilih {label}", pilihan, key=f"{key}_select")
+    suggestion = [n for n in nama_list if input_nama.lower() in n.lower()]
 
-    # Tentukan nama akhir
-    nama_final = input_nama if input_nama else nama_pilih
+    selected = st.selectbox(f"👉 Pilih Nama", suggestion, key=f"{key}_select") if suggestion else None
 
-    return nama_final
+    return input_nama if input_nama else selected
