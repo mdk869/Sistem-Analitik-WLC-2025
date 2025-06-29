@@ -31,16 +31,19 @@ def load_data_peserta():
 # ✅ Load Rekod Berat
 # =============================
 def load_rekod_berat_semua():
-    df = load_worksheet_to_df(SPREADSHEET_REKOD, SHEET_REKOD)
+    df = load_worksheet_to_df(SPREADSHEET_REKOD, "rekod_berat")
+
+    if df.empty:
+        st.warning("⚠️ Sheet 'rekod_berat' kosong atau tidak dapat dimuat.")
+        return pd.DataFrame()
 
     expected_header = ['Nama', 'NoStaf', 'Tarikh', 'Berat', 'SesiBulan']
     if not set(expected_header).issubset(df.columns):
-        st.warning(
-            f"⚠️ Header pada sheet 'rekod_berat' tidak lengkap. Jumpa: {df.columns.tolist()}"
-        )
+        st.warning(f"⚠️ Header pada sheet 'rekod_berat' tidak lengkap. Jumpa: {df.columns.tolist()}")
         return pd.DataFrame()
 
     return df
+
 
 
 # =============================
