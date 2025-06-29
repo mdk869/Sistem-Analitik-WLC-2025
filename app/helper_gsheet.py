@@ -5,7 +5,7 @@ import streamlit as st
 
 def open_worksheet(spreadsheet_id, worksheet_name):
     try:
-        sheet = conn.open_by_key(spreadsheet_id).worksheet(worksheet_name)
+        sheet = client.open_by_key(spreadsheet_id).worksheet(worksheet_name)
         return sheet
     except Exception as e:
         st.error(f"❌ Gagal buka sheet '{worksheet_name}': {e}")
@@ -47,5 +47,24 @@ def tambah_data_peserta(spreadsheet_id, worksheet_name, data_dict):
 
     ws.clear()
     ws.update([df_updated.columns.values.tolist()] + df_updated.values.tolist())
+
+    return True
+
+
+def append_data_to_worksheet(spreadsheet_id, worksheet_name, data_dict):
+    """
+    Tambah satu row data ke worksheet Google Sheet.
+    """
+    sh = client.open_by_key(spreadsheet_id)
+    worksheet = sh.worksheet(worksheet_name)
+
+    existing_data = worksheet.get_all_values()
+
+    if not existing_data:
+        headers = list(data_dict.keys())
+        worksheet.append_row(headers)
+
+    values = list(data_dict.values())
+    worksheet.append_row(values)
 
     return True
