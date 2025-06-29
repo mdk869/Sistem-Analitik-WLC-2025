@@ -9,6 +9,7 @@ from app.helper_connection import SPREADSHEET_RANKING, SPREADSHEET_LOG, SPREADSH
 from app.helper_drive import list_files_in_folder
 from app.helper_gsheet import get_worksheet
 from googleapiclient.errors import HttpError
+from app.helper_data import load_data_peserta
 
 # ===============================
 # ✅ Setup Page
