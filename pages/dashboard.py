@@ -45,9 +45,6 @@ tab1, tab2, tab3, tab4 = st.tabs(
 # ========================================
 # ✅ Tab 1: Info Program
 # ========================================
-from app.helper_logic import kira_progress_program
-
-
 with tab1:
     st.subheader("📜 Maklumat Program WLC 2025")
 
@@ -70,7 +67,6 @@ with tab1:
         col2.metric("⚖️ BMI Purata", f"{avg_bmi:.2f}")
         col3.metric("📉 Penurunan Berat Purata (%)", f"{avg_penurunan:.2f}%")
 
-        # ✅ Lelaki & Perempuan dalam satu column
         with col1:
             st.markdown(
                 f"""
@@ -84,7 +80,7 @@ with tab1:
 
         st.divider()
 
-        # 🎯 Progress Program
+        # ✅ Progress Program
         progress = kira_progress_program()
 
         st.subheader("⏳ Progress Program WLC 2025")
@@ -95,10 +91,9 @@ with tab1:
 
         st.progress(progress['progress'] / 100)
 
-        # 🎨 Timeline Visual dengan Plotly
+        # 🎨 Timeline Progress Visual
         fig = go.Figure()
 
-        # Bar utama
         fig.add_trace(go.Bar(
             x=[progress['progress']],
             y=["Progress Program"],
@@ -108,7 +103,6 @@ with tab1:
             name="Progress"
         ))
 
-        # Bar latar belakang (100%)
         fig.add_trace(go.Bar(
             x=[100 - progress['progress']],
             y=["Progress Program"],
@@ -129,14 +123,33 @@ with tab1:
 
         st.plotly_chart(fig, use_container_width=True)
 
+        st.divider()
 
-        st.subheader("📅 Senarai Pendaftaran")
-        st.dataframe(
-            data_peserta[["Nama", "NoStaf", "TarikhDaftar"]].set_index(
-                pd.Index(range(1, len(data_peserta) + 1), name="No.")
-            ),
-            use_container_width=True
-        )
+        # ✅ Info Ringkas Program
+        with st.expander("ℹ️ Maklumat Program"):
+            st.markdown(
+                """
+                **📅 Tarikh Program:** 18 Jun 2025 — 20 Ogos 2025  
+                **📍 Lokasi:** Wilayah Kuala Selangor  
+                **🎯 Objektif Program:**  
+                - Meningkatkan kesedaran kesihatan dalam komuniti.  
+                - Membantu peserta capai berat badan ideal secara sihat.  
+                - Memupuk gaya hidup aktif dan sihat.  
+                """
+            )
+
+        # ✅ Milestone Progress
+        st.subheader("🚩 Milestone Program")
+        col1, col2, col3, col4 = st.columns(4)
+
+        col1.success("✅ Pendaftaran")
+        col2.info("🔄 Timbang 1")
+        col3.warning("⏳ Timbang 2")
+        col4.error("⏳ Penilaian Akhir")
+
+        st.caption("Status milestone bergantung kepada tarikh dan sesi program.")
+
+        st.divider()
 
         log_dev("Dashboard", "Buka Tab Info Program", "Success")
 
