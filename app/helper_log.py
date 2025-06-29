@@ -7,42 +7,29 @@ from app.helper_gsheet import get_worksheet
 # ✅ Setup spreadsheet log
 SPREADSHEET_LOG = gc.open_by_key(get_secret_id("gsheet", "log_wlc_dev_id"))
 
-# ✅ Log Aktiviti Developer
-def log_dev(page, aktiviti, status="Success"):
+
+# ✅ Fungsi utama untuk log
+def write_log(page, aktiviti, status):
     try:
         ws = get_worksheet(SPREADSHEET_LOG, "log_dev")
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         ws.append_row([now, page, aktiviti, status])
     except Exception as e:
-        st.warning(f"⚠️ Gagal log aktiviti: {e}")
+        print(f"❌ Gagal tulis log: {e}")
 
 
-# ✅ Log Error
+# ✅ Fungsi-fungsi log mengikut kategori
+def log_dev(page, aktiviti, status="Success"):
+    write_log(page, aktiviti, status)
+
+
 def log_error(detail):
-    try:
-        ws = get_worksheet(SPREADSHEET_LOG, "log_dev")
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        ws.append_row([now, "ERROR", detail, "Error"])
-    except Exception as e:
-        print(f"❌ Log Error Gagal: {e}")
+    write_log("ERROR", detail, "Error")
 
 
-# ✅ Log Info
 def log_info(detail):
-    try:
-        ws = get_worksheet(SPREADSHEET_LOG, "log_dev")
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        ws.append_row([now, "ERROR", detail, "Error"])
-    except Exception as e:
-        print(f"❌ Log Info: {e}")
+    write_log("INFO", detail, "Info")
 
 
-# ✅ Log Warning
 def log_warning(detail):
-    try:
-        ws = get_worksheet(SPREADSHEET_LOG, "log_dev")
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        ws.append_row([now, "ERROR", detail, "Error"])
-    except Exception as e:
-        print(f"⚠️ Log Warning: {e}")
-
+    write_log("WARNING", detail, "Warning")
