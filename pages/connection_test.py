@@ -1,12 +1,11 @@
 # pages/connection_test.py
 
 import streamlit as st
+from app.helper_gsheet import get_worksheet
+from app.helper_drive   import list_files_in_folder
 from app.helper_connection import (
     SPREADSHEET_PESERTA,
-    SPREADSHEET_LOG,
-    SPREADSHEET_RANKING,
-    get_worksheet,
-    list_files_in_folder
+
 )
 
 st.title("🔗 Test Connection Google Sheets & Drive")
