@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-
+from app.helper_logic import kira_bmi, kategori_bmi_asia
 from app.helper_gsheet import (
     load_worksheet_to_df,
     save_df_to_worksheet,
@@ -55,6 +55,30 @@ def save_rekod_berat(df):
 # =============================
 def tambah_peserta_google_sheet(df):
     return append_row_to_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, df)
+
+def daftar_peserta(
+    nama, nostaf, umur, jantina, jabatan,
+    tinggi, berat_awal, tarikh
+):
+    bmi = kira_bmi(berat_awal, tinggi)
+    kategori = kategori_bmi_asia(bmi)
+
+    data = {
+        "Nama": nama,
+        "NoStaf": nostaf,
+        "Umur": umur,
+        "Jantina": jantina,
+        "Jabatan": jabatan,
+        "Tinggi": tinggi,
+        "BeratAwal": berat_awal,
+        "TarikhDaftar": tarikh,
+        "BeratTerkini": berat_awal,
+        "TarikhTimbang": tarikh,
+        "BMI": bmi,
+        "Kategori": kategori
+    }
+
+    return tambah_peserta_google_sheet(data)
 
 
 # =============================
