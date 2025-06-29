@@ -6,7 +6,7 @@ from datetime import date
 from app.helper_auth import check_login
 from app.helper_logic import kira_bmi, kategori_bmi_asia
 from app.helper_log import log_dev
-from app.helper_utils import check_header_consistency
+from app.helper_utils import check_header_consistency, carian_nama
 from app.helper_drive import upload_to_drive, download_from_drive, list_files_in_folder
 from app.helper_data import (
     load_data_peserta,
@@ -119,11 +119,7 @@ with tab3:
 
     nama_list = data_peserta["Nama"].dropna().tolist()
 
-    nama_final = st.searchbox(
-        "🔍 Cari Nama Peserta untuk Timbang", 
-        nama_list, 
-        key="search_nama_timbang"
-    )
+    nama_final = carian_nama(data_peserta, label="Nama untuk Timbang", key="timbang")
 
     if nama_final:
         with st.form("form_timbang", clear_on_submit=True):
