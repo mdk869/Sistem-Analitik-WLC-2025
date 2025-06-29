@@ -1,55 +1,23 @@
-import streamlit as st
 import gspread
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
+from google.oauth2.service_account import Credentials
+import streamlit as st
 
-# ✅ Setup credentials
-scope = [
+# ✅ Authentication
+scopes = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
-credentials = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"],
-    scopes=scope
+
+credentials = Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"], scopes=scopes
 )
 
-# ✅ Authorize Google Sheet
-gc = gspread.authorize(credentials)
+client = gspread.authorize(credentials)
 
-# ✅ Google Drive Service
-drive_service = build('drive', 'v3', credentials=credentials)
+# ✅ Spreadsheet
+SPREADSHEET_PESERTA = client.open("data_peserta")
+SPREADSHEET_RANKING = client.open("ranking_peserta")
+SPREADSHEET_LOG = client.open("log_dev")
 
-# ============================================
-# ✅ Fungsi Ringkas Dapatkan ID dari Secrets
-# ============================================
-def get_secret_id(section, key):
-    """Periksa dan dapatkan ID dari secrets.toml."""
-    try:
-        return st.secrets[section][key]
-    except KeyError:
-        st.error(f"❌ Missing key [{section}][{key}] dalam secrets.toml!")
-        st.stop()
-
-# ✅ Google Sheet Connection (auto bind)
-SPREADSHEET_PESERTA = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
-SPREADSHEET_LOG = gc.open_by_key(st.secrets["gsheet"]["log_wlc_dev_id"])
-SPREADSHEET_RANKING = gc.open_by_key(st.secrets["gsheet"]["rekod_ranking"])
-
-# ✅ Drive Folder ID
-DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
-
-# ✅ Fungsi tambahan jika perlu (optional)
-def get_spreadsheet_by_id(sheet_id):
-    return gc.open_by_key(sheet_id)
-
-<<<<<<< HEAD
-# ✅ Setup Spreadsheet dan Drive Folder ID
-SPREADSHEET_PESERTA = get_spreadsheet_by_id(get_secret_id("gsheet", "data_peserta_id"))
-SPREADSHEET_LOG = get_spreadsheet_by_id(get_secret_id("gsheet", "log_wlc_dev_id"))
-SPREADSHEET_RANKING = get_spreadsheet_by_id(get_secret_id("gsheet", "rekod_ranking"))
-
-DRIVE_FOLDER_ID = get_secret_id("drive", "folder_id")
-=======
-def get_spreadsheet_by_name(sheet_name):
-    return gc.open(sheet_name)
->>>>>>> parent of 0e0cbee (kemaskini log fail)
+# ✅ Drive
+DRIVE_FOLDER_ID = st.secrets["drive_folder_id"]
