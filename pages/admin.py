@@ -117,6 +117,13 @@ with tab3:
     nama_timbang = carian_nama_suggestion(data_peserta, label="Nama untuk Timbang", key="timbang")
 
     if nama_timbang:
+        row = data_peserta[data_peserta["Nama"].str.lower() == nama_timbang.lower()]
+        if row.empty:
+            st.warning("❌ Nama tidak ditemui dalam senarai peserta.")
+            st.stop()
+
+        nostaf = row.iloc[0]["NoStaf"]
+
         with st.form("form_timbang", clear_on_submit=True):
             tarikh = st.date_input("Tarikh Timbang", value=date.today())
             berat = st.number_input("Berat (kg)", min_value=30.0, max_value=300.0)
@@ -124,8 +131,28 @@ with tab3:
             submit = st.form_submit_button("✅ Simpan Rekod")
 
             if submit:
-                result = simpan_rekod_berat(nama_timbang, tarikh.strftime("%Y-%m-%d"), berat)
-                if result['rekod_berat'] and result['update_peserta']:
+                data = {
+                    "Nama": nama_timbang,
+                    "NoStaf": nostaf,
+                    "Tarikh": tarikh.strftime("%Y-%m-%d"),
+                    "Berat": berat,
+                    "SesiBulan": tarikh.strftime("%Y-%m")
+                }
+
+                status = simpan_rekod_berat(data)
+
+                # Kemas kini berat terkini peserta
+                update_data_peserta(
+                    nostaf,
+                    {
+                        "BeratTerkini": berat,
+                        "TarikhTimbang": tarikh.strftime("%Y-%m-%d"),
+                        "BMI": kira_bmi(berat, row.iloc[0]["Tinggi"]),
+                        "Kategori": kategori_bmi_asia(kira_bmi(berat, row.iloc[0]["Tinggi"]))
+                    }
+                )
+
+                if status:
                     st.success(f"✅ Rekod berat untuk {nama_timbang} berjaya disimpan.")
                     log_dev("Admin", f"Rekod timbang {nama_timbang}", "Success")
                 else:
@@ -147,16 +174,26 @@ with tab4:
             row = df_row.iloc[0]
             with st.form("form_edit", clear_on_submit=True):
                 col1, col2 = st.columns(2)
+
                 with col1:
                     nostaf = st.text_input("No Staf", row["NoStaf"])
                     umur = st.number_input("Umur", 10, 100, int(row["Umur"]))
-                    jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"], index=0 if row["Jantina"]=="Lelaki" else 1)
+                    jantina = st.selectbox(
+                        "Jantina", ["Lelaki", "Perempuan"],
+                        index=0 if row["Jantina"].lower() == "lelaki" else 1
+                    )
                     jabatan = st.text_input("Jabatan", row["Jabatan"])
+
                 with col2:
                     tinggi = st.number_input("Tinggi (cm)", 100, 250, int(row["Tinggi"]))
-                    berat_terkini = st.number_input("Berat Terkini (kg)", 30.0, 300.0, float(row["BeratTerkini"]))
-                    tarikh_timbang = st.date_input("Tarikh Timbang", pd.to_datetime(row["TarikhTimbang"]))
+                    berat_terkini = st.number_input(
+                        "Berat Terkini (kg)", 30.0, 300.0, float(row["BeratTerkini"])
+                    )
+                    tarikh_timbang = st.date_input(
+                        "Tarikh Timbang", pd.to_datetime(row["TarikhTimbang"])
+                    )
 
+                # ✅ Auto BMI & Kategori
                 bmi = kira_bmi(berat_terkini, tinggi)
                 kategori = kategori_bmi_asia(bmi)
 
@@ -166,33 +203,22 @@ with tab4:
 
                 if submit:
                     update_data_peserta(
-                        nama_edit, nostaf, umur, jantina, jabatan,
-                        tinggi, berat_terkini, tarikh_timbang, bmi, kategori
+                        nostaf,
+                        {
+                            "Nama": nama_edit,
+                            "Umur": umur,
+                            "Jantina": jantina,
+                            "Jabatan": jabatan,
+                            "Tinggi": tinggi,
+                            "BeratTerkini": berat_terkini,
+                            "TarikhTimbang": str(tarikh_timbang),
+                            "BMI": bmi,
+                            "Kategori": kategori
+                        }
                     )
                     st.success(f"✅ Data peserta '{nama_edit}' berjaya dikemaskini.")
                     log_dev("Admin", f"Kemaskini peserta {nama_edit}", "Success")
                     st.rerun()
-
-            with st.expander("🗑️ Padam Peserta"):
-                colx, coly = st.columns([3, 1])
-                with colx:
-                    confirm = st.checkbox("⚠️ Sahkan untuk padam peserta ini.")
-                with coly:
-                    if st.button("🗑️ Padam"):
-                        if confirm:
-                            berjaya = padam_peserta_dari_sheet(nama_edit)
-                            if berjaya:
-                                log_dev("Admin", f"Padam peserta {nama_edit}", "Success")
-                                st.success(f"✅ {nama_edit} telah dipadam.")
-                                st.rerun()
-                            else:
-                                st.error("❌ Gagal padam peserta.")
-                        else:
-                            st.info("👉 Sila sahkan sebelum padam.")
-        else:
-            st.warning("❌ Nama tidak ditemui dalam senarai peserta.")
-    else:
-        st.info("📝 Sila taip nama untuk mencari peserta.")
 
 
 # =========================================
