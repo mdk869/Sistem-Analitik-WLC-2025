@@ -5,7 +5,6 @@ from datetime import date
 # ✅ Import Helper
 from app.helper_auth import check_login
 from app.helper_logic import kira_bmi, kategori_bmi_asia
-from app.helper_log import log_dev
 from app.helper_utils import carian_nama_suggestion, check_header_consistency
 from app.helper_drive import upload_to_drive
 from app.helper_data import (
