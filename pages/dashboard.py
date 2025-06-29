@@ -153,12 +153,12 @@ with tab2:
     st.subheader("🏆 Leaderboard Top 10 Penurunan Berat")
 
     leaderboard = leaderboard_peserta(data_peserta, top_n=10)
+    leaderboard.style.background_gradient(cmap='YlGn')
 
     if not leaderboard.empty:
         st.dataframe(
-            leaderboard.style.format({"% Penurunan": "{:.2f}%"}),
-            use_container_width=True,
-            hide_index=True
+            leaderboard.set_index("Ranking").style.format({"% Penurunan": "{:.2f}%"}),
+            use_container_width=True
         )
     else:
         st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
@@ -177,9 +177,6 @@ with tab2:
         st.info("⚠️ Tiada data trend untuk dipaparkan.")
 
     log_dev("Dashboard", "Buka Tab Leaderboard + Trend", "Success")
-
-
-
 
 
 
