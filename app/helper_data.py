@@ -218,7 +218,7 @@ def load_rekod_berat():
         st.error(f"❌ Gagal load data rekod berat: {e}")
         return pd.DataFrame()
 
-def load_berat_peserta_terkini():
+def load_rekod_berat_semua():
     """
     Load data berat terkini dan tarikh timbang dari sheet 'data_peserta'
     """
