@@ -13,23 +13,23 @@ credentials = service_account.Credentials.from_service_account_info(
     scopes=scope
 )
 
-# ✅ Authorize gspread
+# ✅ Authorize Google Sheet
 gc = gspread.authorize(credentials)
 
 # ✅ Google Drive Service
-def create_drive_service():
-    return build('drive', 'v3', credentials=credentials)
+drive_service = build('drive', 'v3', credentials=credentials)
 
-drive_service = create_drive_service()
+# ✅ Google Sheet Connection (auto bind)
+SPREADSHEET_PESERTA = gc.open_by_key(st.secrets["gsheet"]["data_peserta_id"])
+SPREADSHEET_LOG = gc.open_by_key(st.secrets["gsheet"]["log_wlc_dev_id"])
+SPREADSHEET_RANKING = gc.open_by_key(st.secrets["gsheet"]["rekod_ranking"])
 
-# ✅ Fungsi akses spreadsheet by ID
+# ✅ Drive Folder ID
+DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
+
+# ✅ Fungsi tambahan jika perlu (optional)
 def get_spreadsheet_by_id(sheet_id):
     return gc.open_by_key(sheet_id)
 
-# ✅ Fungsi akses spreadsheet by name
 def get_spreadsheet_by_name(sheet_name):
     return gc.open(sheet_name)
-
-# ✅ Secrets ID
-def get_secret_id(key):
-    return st.secrets["gsheet"].get(key, None)
