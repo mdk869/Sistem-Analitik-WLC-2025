@@ -1,6 +1,7 @@
 import pandas as pd
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 from app.helper_connection import client
 =======
 import streamlit as st
@@ -31,6 +32,13 @@ def get_worksheet(spreadsheet, worksheet_name, create_if_not_exist=True):
     return ws
 
 
+=======
+import streamlit as st
+from app.helper_gsheet_utils import get_worksheet
+
+
+
+>>>>>>> parent of 71cba5f (restructure modular)
 # ✅ Fungsi load worksheet kepada DataFrame
 def load_worksheet_to_df(spreadsheet, worksheet_name):
     try:
@@ -46,12 +54,17 @@ def load_worksheet_to_df(spreadsheet, worksheet_name):
             st.warning(f"⚠️ Worksheet '{worksheet_name}' kosong.")
         return df
     except Exception as e:
+<<<<<<< HEAD
         st.error(f"❌ Gagal load data '{worksheet_name}': {e}")
         log_error(f"load_worksheet_to_df error on '{worksheet_name}' - {e}")
+=======
+        st.error(f"❌ Error: {e}")
+>>>>>>> parent of 71cba5f (restructure modular)
         return pd.DataFrame()
 >>>>>>> parent of 95b04d2 (update utils dan get_worksheet)
 
 
+<<<<<<< HEAD
 def load_worksheet_to_df(spreadsheet, sheet_name):
     ws = spreadsheet.worksheet(sheet_name)
     data = ws.get_all_records()
@@ -65,12 +78,29 @@ def save_df_to_worksheet(spreadsheet, sheet_name, df):
     ws.clear()
     ws.update([df.columns.values.tolist()] + df.values.tolist())
 =======
+=======
+# ✅ Fungsi simpan DataFrame ke worksheet
+def save_df_to_worksheet(spreadsheet, worksheet_name, dataframe):
+    try:
+        ws = get_worksheet(spreadsheet, worksheet_name)
+
+        if ws is None:
+            return False
+
+>>>>>>> parent of 71cba5f (restructure modular)
         ws.clear()  # Kosongkan worksheet dahulu
         ws.update([dataframe.columns.values.tolist()] + dataframe.values.tolist())
         st.success(f"✅ Data berjaya disimpan ke '{worksheet_name}'.")
         return True
     except Exception as e:
+<<<<<<< HEAD
         st.error(f"❌ Gagal simpan data ke '{worksheet_name}': {e}")
         log_error(f"save_df_to_worksheet error on '{worksheet_name}' - {e}")
         return False
 >>>>>>> parent of 68e60dd (Update helper_gsheet.py)
+=======
+        st.error(f"❌ Error: {e}")
+        return pd.DataFrame()
+
+    
+>>>>>>> parent of 71cba5f (restructure modular)
