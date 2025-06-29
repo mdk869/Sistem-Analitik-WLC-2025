@@ -72,7 +72,7 @@ def kira_progress_program(tarikh_mula="2025-06-18", tarikh_akhir="2025-08-20"):
         status = "🚀 Sedang Berjalan"
 
     return {
-        "progress": min(max(progress, 0), 100),  # Clamp between 0-100
+        "progress": min(max(progress, 0), 100),
         "status": status,
         "hari_berlalu": max(hari_berlalu, 0),
         "total_hari": total_hari,
