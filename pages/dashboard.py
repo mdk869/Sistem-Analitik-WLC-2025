@@ -52,10 +52,20 @@ with tab1:
         total_peserta = len(data_peserta)
         avg_berat = data_peserta["BeratAwal"].mean()
 
+        # ✅ Kiraan Penurunan Berat
+        data_peserta["PeratusPenurunan"] = (
+            (data_peserta["BeratAwal"] - data_peserta["BeratTerkini"])
+            / data_peserta["BeratAwal"]
+        ) * 100
+
+        data_peserta["PeratusPenurunan"] = data_peserta["PeratusPenurunan"].fillna(0)
+
+        avg_penurunan = data_peserta["PeratusPenurunan"].mean()
+
         col1, col2, col3 = st.columns(3)
         col1.metric("👥 Jumlah Peserta", total_peserta)
         col2.metric("⚖️ Berat Awal Purata (kg)", f"{avg_berat:.2f}")
-        col3.metric("📉 Penurunan Berat (%)", f"{avg_berat:.2f}")
+        col3.metric("📉 Purata Penurunan (%)", f"{avg_penurunan:.2f}%")
 
         st.divider()
 
@@ -68,6 +78,7 @@ with tab1:
         )
 
     log_dev("Dashboard", "Buka Tab Info Program", "Success")
+
 
 
 # ========================================
