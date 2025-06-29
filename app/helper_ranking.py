@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.express as px
+import streamlit as st
 
 
 def leaderboard_peserta(df, top_n=10):
