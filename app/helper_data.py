@@ -223,10 +223,9 @@ def load_rekod_berat_semua():
     Load semua rekod berat dari semua sheet yang bermula dengan 'rekod_berat_*'
     """
     try:
-        sh = get_spreadsheet_by_name(SPREADSHEET_PESERTA)
+        sh = SPREADSHEET_PESERTA  # ✔️ BETUL
         sheet_list = [ws.title for ws in sh.worksheets()]
 
-        # Cari semua sheet yang bermula dengan 'rekod_berat_'
         rekod_list = [s for s in sheet_list if s.lower().startswith("rekod_berat_")]
 
         df_list = []
@@ -241,18 +240,13 @@ def load_rekod_berat_semua():
                     st.warning(f"⚠️ Sheet '{sheet}' kosong. Diabaikan.")
                     continue
 
-                # Semak sama ada kolum 'Tarikh' wujud
                 if "Tarikh" not in df.columns:
                     st.warning(f"⚠️ Sheet '{sheet}' tiada kolum 'Tarikh'. Diabaikan.")
                     continue
 
-                # Formatkan tarikh
                 df["Tarikh"] = pd.to_datetime(df["Tarikh"], errors='coerce')
-
-                # Tambah info sesi bulan untuk grouping
                 df["SesiBulan"] = df["Tarikh"].dt.strftime('%B %Y')
 
-                # Tambah ke senarai dataframe
                 df_list.append(df)
 
             except Exception as e_sheet:
@@ -270,3 +264,4 @@ def load_rekod_berat_semua():
         log_error(str(e))
         st.error(f"❌ Gagal load semua data rekod berat: {e}")
         return pd.DataFrame()
+
