@@ -70,19 +70,20 @@ def daftar_peserta(
     data = {
         "Nama": nama,
         "NoStaf": nostaf,
-        "Umur": umur,
+        "Umur": int(umur),
         "Jantina": jantina,
         "Jabatan": jabatan,
-        "Tinggi": tinggi,
-        "BeratAwal": berat_awal,
-        "TarikhDaftar": tarikh,
-        "BeratTerkini": berat_awal,
-        "TarikhTimbang": tarikh,
-        "BMI": bmi,
+        "Tinggi": int(tinggi),
+        "BeratAwal": float(berat_awal),
+        "TarikhDaftar": tarikh.strftime("%Y-%m-%d"),
+        "BeratTerkini": float(berat_awal),
+        "TarikhTimbang": tarikh.strftime("%Y-%m-%d"),
+        "BMI": float(bmi),
         "Kategori": kategori
     }
 
     return tambah_peserta_google_sheet(data)
+
 
 
 # =============================
