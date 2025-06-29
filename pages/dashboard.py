@@ -115,7 +115,7 @@ with tab1:
 
         st.subheader("📅 Senarai Pendaftaran")
         st.dataframe(
-            data_peserta[["Nama", "NoStaf", "Jabatan", "TarikhDaftar"]].set_index(
+            data_peserta[["Nama", "NoStaf", "TarikhDaftar"]].set_index(
                 pd.Index(range(1, len(data_peserta) + 1), name="No.")
             ),
             use_container_width=True
