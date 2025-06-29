@@ -125,6 +125,51 @@ def padam_peserta_dari_sheet(nama):
 
 
 # ------------------------------------
+# ✅ Fungsi Update Data Peserta
+# ------------------------------------
+def update_data_peserta(nama, nostaf, umur, jantina, jabatan, tinggi, berat_terkini, tarikh_timbang, bmi, kategori):
+    try:
+        ws = get_worksheet(SPREADSHEET_PESERTA, "peserta")
+        data = ws.get_all_records()
+
+        df = pd.DataFrame(data)
+
+        if nama in df['Nama'].values:
+            idx = df[df['Nama'] == nama].index[0]
+
+            # Kekalkan BeratAwal & TarikhDaftar
+            berat_awal = df.loc[idx, 'BeratAwal']
+            tarikh_daftar = df.loc[idx, 'TarikhDaftar']
+
+            df.at[idx, 'NoStaf'] = nostaf
+            df.at[idx, 'Umur'] = umur
+            df.at[idx, 'Jantina'] = jantina
+            df.at[idx, 'Jabatan'] = jabatan
+            df.at[idx, 'Tinggi'] = tinggi
+            df.at[idx, 'BeratTerkini'] = berat_terkini
+            df.at[idx, 'TarikhTimbang'] = str(tarikh_timbang)
+            df.at[idx, 'BMI'] = bmi
+            df.at[idx, 'Kategori'] = kategori
+
+            df.at[idx, 'BeratAwal'] = berat_awal
+            df.at[idx, 'TarikhDaftar'] = tarikh_daftar
+
+            save_data_peserta(df)
+            log_dev("Admin", f"Kemaskini peserta {nama}", "Success")
+            return True
+
+        else:
+            st.warning(f"⚠️ Nama '{nama}' tidak ditemui dalam sheet peserta.")
+            log_warning(f"Update peserta gagal: {nama} tidak dijumpai.")
+            return False
+
+    except Exception as e:
+        st.error(f"❌ Gagal kemaskini data peserta: {e}")
+        log_error(f"❌ Error update peserta: {e}")
+        return False
+
+
+# ------------------------------------
 # ✅ Simpan Rekod Berat
 # ------------------------------------
 def simpan_rekod_berat(nama, tarikh, berat):
