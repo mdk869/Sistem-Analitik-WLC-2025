@@ -63,4 +63,3 @@ def kategori_bmi_asia(bmi):
     else:
         return "Obesiti Morbid"
 
-df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
