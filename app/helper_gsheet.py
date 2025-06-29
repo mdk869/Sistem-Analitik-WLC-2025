@@ -1,6 +1,12 @@
 import pandas as pd
 <<<<<<< HEAD
+<<<<<<< HEAD
 from app.helper_connection import client
+=======
+import streamlit as st
+from app.helper_log import log_error
+from app.helper_utils import get_worksheet
+>>>>>>> parent of 68e60dd (Update helper_gsheet.py)
 
 
 def get_worksheet(spreadsheet, sheet_name):
@@ -53,7 +59,18 @@ def load_worksheet_to_df(spreadsheet, sheet_name):
     return df
 
 
+<<<<<<< HEAD
 def save_df_to_worksheet(spreadsheet, sheet_name, df):
     ws = spreadsheet.worksheet(sheet_name)
     ws.clear()
     ws.update([df.columns.values.tolist()] + df.values.tolist())
+=======
+        ws.clear()  # Kosongkan worksheet dahulu
+        ws.update([dataframe.columns.values.tolist()] + dataframe.values.tolist())
+        st.success(f"✅ Data berjaya disimpan ke '{worksheet_name}'.")
+        return True
+    except Exception as e:
+        st.error(f"❌ Gagal simpan data ke '{worksheet_name}': {e}")
+        log_error(f"save_df_to_worksheet error on '{worksheet_name}' - {e}")
+        return False
+>>>>>>> parent of 68e60dd (Update helper_gsheet.py)
