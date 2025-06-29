@@ -78,38 +78,6 @@ with tab1:
         )
         st.progress(progress['progress'] / 100)
 
-        # Timeline Plot
-        fig = go.Figure()
-
-        fig.add_trace(go.Bar(
-            x=[progress['progress']],
-            y=["Progress Program"],
-            orientation='h',
-            marker=dict(color='green' if progress['progress'] >= 100 else 'orange'),
-            width=0.4,
-            name="Progress"
-        ))
-
-        fig.add_trace(go.Bar(
-            x=[100 - progress['progress']],
-            y=["Progress Program"],
-            orientation='h',
-            marker=dict(color='lightgray'),
-            width=0.4,
-            name="Remaining"
-        ))
-
-        fig.update_layout(
-            barmode='stack',
-            xaxis=dict(range=[0, 100], title="Peratus (%)"),
-            yaxis=dict(showticklabels=False),
-            height=150,
-            showlegend=False,
-            margin=dict(l=20, r=20, t=20, b=20)
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-
         log_dev("Dashboard", "Buka Tab Info Program", "Success")
 
 # ========================================
