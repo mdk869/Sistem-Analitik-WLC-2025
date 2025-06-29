@@ -111,7 +111,7 @@ with st.expander("⚖️ Kemaskini Berat Terkini"):
 
     with st.form("kemaskini_berat"):
         nama = st.selectbox("Nama Peserta", nama_list)
-        tarikh = st.date_input("Tarikh Timbang", value=pd.Timestamp.today())
+        tarikh = st.date_input("Tarikh Timbang", value=pd.Timestamp.date())
         berat = st.number_input("Berat (kg)", min_value=0.0, step=0.1)
 
         submitted = st.form_submit_button("✅ Simpan Rekod")
