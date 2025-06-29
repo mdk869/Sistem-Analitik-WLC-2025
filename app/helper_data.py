@@ -239,7 +239,7 @@ def load_rekod_berat_semua():
                 data = ws.get_all_records()
 
                 if not data:
-                    st.warning(f"⚠️ Sheet '{sheet}' kosong. Diabaikan.")
+                    st.warning(f"⚠️ Sheet '{sheet}' kosong.")
                     continue
 
                 df = pd.DataFrame(data)
