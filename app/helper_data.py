@@ -220,24 +220,44 @@ def load_rekod_berat():
 
 def load_rekod_berat_semua():
     """
-    Load semua rekod berat dari semua sheet rekod_berat_*
+    Load semua rekod berat dari semua sheet yang bermula dengan 'rekod_berat_*'
     """
     try:
         sh = get_spreadsheet_by_name(SPREADSHEET_PESERTA)
         sheet_list = [ws.title for ws in sh.worksheets()]
 
-        rekod_list = [s for s in sheet_list if s.startswith("rekod_berat_")]
+        # Cari semua sheet yang bermula dengan 'rekod_berat_'
+        rekod_list = [s for s in sheet_list if s.lower().startswith("rekod_berat_")]
 
         df_list = []
 
         for sheet in rekod_list:
-            ws = get_worksheet(SPREADSHEET_PESERTA, sheet)
-            data = ws.get_all_records()
-            df = pd.DataFrame(data)
-            if not df.empty:
+            try:
+                ws = get_worksheet(SPREADSHEET_PESERTA, sheet)
+                data = ws.get_all_records()
+                df = pd.DataFrame(data)
+
+                if df.empty:
+                    st.warning(f"⚠️ Sheet '{sheet}' kosong. Diabaikan.")
+                    continue
+
+                # Semak sama ada kolum 'Tarikh' wujud
+                if "Tarikh" not in df.columns:
+                    st.warning(f"⚠️ Sheet '{sheet}' tiada kolum 'Tarikh'. Diabaikan.")
+                    continue
+
+                # Formatkan tarikh
                 df["Tarikh"] = pd.to_datetime(df["Tarikh"], errors='coerce')
+
+                # Tambah info sesi bulan untuk grouping
                 df["SesiBulan"] = df["Tarikh"].dt.strftime('%B %Y')
+
+                # Tambah ke senarai dataframe
                 df_list.append(df)
+
+            except Exception as e_sheet:
+                log_error(f"Error pada sheet {sheet}: {e_sheet}")
+                st.warning(f"❌ Gagal baca sheet '{sheet}': {e_sheet}")
 
         if df_list:
             final_df = pd.concat(df_list, ignore_index=True)
@@ -248,5 +268,5 @@ def load_rekod_berat_semua():
 
     except Exception as e:
         log_error(str(e))
-        st.error(f"❌ Gagal load data rekod berat: {e}")
+        st.error(f"❌ Gagal load semua data rekod berat: {e}")
         return pd.DataFrame()
