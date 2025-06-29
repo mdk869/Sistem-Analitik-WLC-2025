@@ -1,15 +1,18 @@
-import streamlit as st
+from app.helper_gsheet import get_worksheet
 
-# ✅ Fungsi dapatkan worksheet, cipta jika tidak wujud
-def get_worksheet(spreadsheet, worksheet_name, create_if_not_exist=True):
+
+def check_worksheet_exists(spreadsheet, worksheet_name):
+    """Semak sama ada worksheet wujud."""
     try:
-        ws = spreadsheet.worksheet(worksheet_name)
+        worksheet = get_worksheet(spreadsheet, worksheet_name)
+        return worksheet is not None
     except Exception:
-        if create_if_not_exist:
-            ws = spreadsheet.add_worksheet(title=worksheet_name, rows="1000", cols="20")
-            st.info(f"✅ Worksheet '{worksheet_name}' telah dicipta.")
-        else:
-            st.error(f"❌ Worksheet '{worksheet_name}' tidak wujud.")
-            log_error(f"Worksheet '{worksheet_name}' tidak wujud.")
-            return None
-    return ws
+        return False
+
+
+def create_worksheet_if_not_exists(spreadsheet, worksheet_name, rows=1000, cols=20):
+    """Cipta worksheet jika belum wujud."""
+    if not check_worksheet_exists(spreadsheet, worksheet_name):
+        spreadsheet.add_worksheet(title=worksheet_name, rows=str(rows), cols=str(cols))
+        return True
+    return False
