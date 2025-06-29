@@ -7,7 +7,7 @@ import plotly.express as px
 from datetime import datetime
 
 # Import helper
-from app.helper_data import load_data_peserta, load_data_cloud_or_local, load_rekod_berat_semua
+from app.helper_data import load_data_peserta, load_rekod_berat_semua
 from app.helper_ranking import leaderboard_dengan_status
 from app.helper_log import log_dev
 from app.helper_utils import check_header_consistency, proses_data_peserta
@@ -27,7 +27,7 @@ st.markdown("Selamat datang ke dashboard analitik program **WLC 2025**.")
 # ✅ Load Data
 # ========================================
 data_peserta = load_data_peserta()
-data_rekod = load_data_cloud_or_local()
+data_rekod = load_data_peserta()
 
 HEADER_PESERTA = [
     'Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan',
