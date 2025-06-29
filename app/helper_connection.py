@@ -5,6 +5,7 @@ import gspread
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from app.helper_log import log_error
 import io
 
 # ✅ Setup credentials
@@ -29,8 +30,35 @@ SPREADSHEET_PESERTA = gc.open_by_key(get_secret_id("data_peserta_id"))
 SPREADSHEET_LOG = gc.open_by_key(get_secret_id("log_wlc_dev_id"))
 SPREADSHEET_RANKING = gc.open_by_key(get_secret_id("rekod_ranking"))
 
+# ✅ Fungsi dapat spreadsheet
+def get_spreadsheet(spreadsheet_name):
+    """
+    Dapatkan objek spreadsheet berdasarkan nama.
+    Digunakan sebagai asas untuk akses worksheet dalam spreadsheet tersebut.
+
+    Args:
+        spreadsheet_name (str): Nama Google Spreadsheet (bukan ID).
+
+    Returns:
+        gspread.models.Spreadsheet: Objek Spreadsheet.
+    """
+    try:
+        sh = get_spreadsheet.open(spreadsheet_name)
+        return sh
+    except Exception as e:
+        st.error(f"❌ Gagal buka spreadsheet '{spreadsheet_name}': {e}")
+        log_error(f"get_spreadsheet error - {spreadsheet_name} - {e}")
+        return None
+
+
 # ✅ Fungsi dapat worksheet
-def get_worksheet(spreadsheet, worksheet_name):
+def get_worksheet(spreadsheet_name, worksheet_name):
+    sh = get_spreadsheet(spreadsheet_name)
+    if sh:
+        return sh.worksheet(worksheet_name)
+    else:
+        return None
+    
     try:
         ws = spreadsheet.worksheet(worksheet_name)
     except gspread.exceptions.WorksheetNotFound:
