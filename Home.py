@@ -41,12 +41,11 @@ st.subheader("📅 Jadual & Perjalanan Program")
 
 st.markdown("""
 - 🔥 **18 Jun 2025** — Pendaftaran & Timbang Awal
-- 📊 **Julai 2025** — Sesi Timbang Bulanan 1
-- 📊 **Ogos 2025** — Sesi Timbang Bulanan 2
-- 🏆 **20 Ogos 2025** — Timbang Akhir & Majlis Penutup
+- 📊 **17 Julai 2025** — Sesi Timbangan Ke-2
+- 🏆 **20 Ogos 2025** — Timbangan Akhir & Penilaian
 """)
 
-st.info("✅ Peserta wajib hadir sekurang-kurangnya 3 sesi timbang untuk melayakkan diri dalam penilaian akhir.")
+st.info("✅ Peserta wajib hadir 3 sesi timbangan untuk melayakkan diri dalam penilaian akhir.")
 
 st.divider()
 
@@ -74,7 +73,7 @@ st.subheader("📞 Hubungi Penganjur")
 st.markdown("""
 - 📧 Email: wlc2025@domain.com
 - ☎️ Telefon: 012-3456789
-- 🏢 Unit Sumber Manusia, Wilayah Kuala Selangor
+- 🏢 Unit HSE, Wilayah Kuala Selangor
 """)
 
 st.divider()
