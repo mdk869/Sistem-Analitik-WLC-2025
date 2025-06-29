@@ -103,8 +103,6 @@ with st.expander("➕ Tambah Peserta Baru"):
             else:
                 st.warning("⚠️ Sila isi semua maklumat peserta.")
 
-st.divider()
-
 # =============================================================
 # ✅ Kemaskini Berat Terkini
 # =============================================================
