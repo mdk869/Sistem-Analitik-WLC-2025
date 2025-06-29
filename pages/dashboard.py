@@ -80,11 +80,7 @@ with tab1:
 
         st.divider()
 
-        # 🎨 Timeline Progress Visual
-        
-        st.divider()
-
-        # ✅ Info Ringkas Program
+          # ✅ Info Ringkas Program
         with st.expander("ℹ️ Maklumat Program"):
             st.markdown(
                 """
@@ -96,6 +92,8 @@ with tab1:
                 - Memupuk gaya hidup aktif dan sihat.  
                 """
             )
+
+        st.divider()
 
         # ✅ Milestone Progress
         st.subheader("🚩 Milestone Program")
