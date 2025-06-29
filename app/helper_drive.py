@@ -20,7 +20,6 @@ drive_service = build("drive", "v3", credentials=credentials)
 DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
 
 # ======= Upload Function =======
-from app.helper_connection import connect_drive_service
 
 def upload_to_drive(file_path, file_name, folder_id=None):
     service = connect_drive()
