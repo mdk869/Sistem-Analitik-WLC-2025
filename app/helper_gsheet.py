@@ -1,4 +1,4 @@
-from app.helper_connection import conn, gc
+from app.helper_connection import client
 import pandas as pd
 import streamlit as st
 
@@ -36,7 +36,7 @@ def tambah_data_peserta(spreadsheet_id, worksheet_name, data_dict):
     """
     Tambah satu row data peserta ke Google Sheet.
     """
-    sh = gc.open_by_key(spreadsheet_id)
+    sh = client.open_by_key(spreadsheet_id)
     ws = sh.worksheet(worksheet_name)
 
     df_existing = pd.DataFrame(ws.get_all_records())
