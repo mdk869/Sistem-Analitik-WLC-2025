@@ -186,7 +186,7 @@ with tab4:
             confirm = st.checkbox("⚠️ Sahkan untuk padam peserta ini.")
             if st.button("🗑️ Padam Peserta"):
                 if confirm:
-                    berjaya = padam_peserta_dari_sheet(nama_edit)
+                    berjaya = update_data_peserta(nama_edit)
                     if berjaya:
                         log_dev("Admin", f"Padam peserta {nama_edit}", "Success")
                         st.success(f"✅ {nama_edit} telah dipadam.")
