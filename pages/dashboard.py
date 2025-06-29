@@ -75,7 +75,7 @@ with tab1:
         with col1:
             st.markdown(
                 f"""
-                <div style='text-align: center'>
+                <div style='text-align: left'>
                     👨‍🦱 <b>Lelaki:</b> {total_lelaki} <br>
                     👩 <b>Perempuan:</b> {total_perempuan}
                 </div>
