@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime
 from app.helper_connection import gc, get_secret_id
-from app.helper_utils import get_worksheet
+from app.helper_gsheet_utils import get_worksheet
 
 
 # ✅ Setup spreadsheet log
