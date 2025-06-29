@@ -150,7 +150,7 @@ from app.helper_ranking import leaderboard_peserta, trend_penurunan_bulanan
 from app.helper_data import load_rekod_berat_semua
 
 with tab2:
-    st.subheader("🏆 Leaderboard & Trend Berat Badan")
+    st.subheader("Leaderboard & Trend Berat Badan")
 
     col1, col2 = st.columns(2)
 
