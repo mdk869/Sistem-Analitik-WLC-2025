@@ -8,32 +8,19 @@ import os
 # =====================================================
 # ✅ Semak Header DataFrame Konsisten
 # =====================================================
-def check_header_consistency(df: pd.DataFrame, expected_header: list, label: str = "Data") -> bool:
-    df_header = list(df.columns)
-
-    missing = [h for h in expected_header if h not in df_header]
-    extra = [h for h in df_header if h not in expected_header]
-
-    if missing or extra:
-        st.error(f"❌ {label}: Struktur kolum tidak padan dengan template.")
-        if missing:
-            st.warning(f"🛑 Kolum **TIADA**: {missing}")
-        if extra:
-            st.warning(f"⚠️ Kolum **TERLEBIH**: {extra}")
+def check_header_consistency(df, header_list, name="Dataset"):
+    missing = [h for h in header_list if h not in df.columns]
+    if missing:
+        st.error(f"❌ {name} kurang header: {missing}")
         return False
-
     return True
 
 
 # =====================================================
 # ✅ Simpan DataFrame ke Excel (Backup Local)
 # =====================================================
-def save_dataframe_to_excel(df: pd.DataFrame, filename: str):
-    try:
-        df.to_excel(filename, index=False)
-        st.success(f"✅ Berjaya simpan fail ke {filename}")
-    except Exception as e:
-        st.error(f"❌ Gagal simpan fail ke {filename}: {e}")
+def save_dataframe_to_excel(df, filename):
+    df.to_excel(filename, index=False)
 
 
 # =====================================================
@@ -84,12 +71,9 @@ def kategori_bmi_asia(bmi: float) -> str:
         return "Obesiti Morbid"
 
 
-def kira_bmi(berat: float, tinggi: float) -> float:
-    if berat is None or tinggi is None or tinggi == 0:
-        return None
-    tinggi_meter = tinggi / 100
-    bmi = berat / (tinggi_meter ** 2)
-    return round(bmi, 1)
+def kira_bmi(berat, tinggi):
+    return round(berat / ((tinggi / 100) ** 2), 2)
+
 
 
 # =====================================================
@@ -138,18 +122,9 @@ def proses_data_peserta(df: pd.DataFrame) -> pd.DataFrame:
 # =====================================================
 # ✅ Fungsi Carian Nama dengan Auto Suggestion
 # =====================================================
-def carian_nama_suggestion(df: pd.DataFrame, label: str = "Cari Nama", key: str = "") -> str:
-    nama_list = df["Nama"].dropna().tolist()
-
-    nama_input = st.text_input(f"🔍 {label}", key=f"input_{key}").strip()
-
-    suggestion = [nama for nama in nama_list if nama_input.lower() in nama.lower()] if nama_input else []
-
-    if nama_input and suggestion:
-        nama_pilih = st.selectbox("✔️ Pilih dari cadangan", suggestion, key=f"select_{key}")
-        return nama_pilih
-    elif nama_input and not suggestion:
-        st.warning("❌ Tiada padanan nama ditemui.")
-        return None
-    else:
-        return None
+def carian_nama_suggestion(df, label="Nama", key="nama"):
+    nama_list = sorted(df['Nama'].dropna().unique())
+    input_nama = st.text_input(label, key=key).strip()
+    suggestion = [n for n in nama_list if input_nama.lower() in n.lower()]
+    nama = st.selectbox("Pilih Nama", suggestion) if suggestion else None
+    return nama if nama else input_nama if input_nama in nama_list else None
