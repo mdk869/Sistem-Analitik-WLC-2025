@@ -11,7 +11,6 @@ from app.helper_utils import check_header_consistency
 from app.styles import paparkan_tema, papar_header, papar_footer
 from app.helper_data import (
     load_data_peserta,
-    load_data_cloud_or_local,
     tambah_peserta_google_sheet,
     simpan_rekod_berat,
     update_berat_terkini_peserta,
@@ -41,7 +40,7 @@ st.markdown("Selamat datang ke Panel Admin. Anda mempunyai akses penuh ke fungsi
 # ✅ Load Data
 # =============================================================
 data_peserta = load_data_peserta()
-data_rekod = load_data_cloud_or_local()
+data_rekod = load_data_peserta()
 
 HEADER_PESERTA = [
     'Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan',
