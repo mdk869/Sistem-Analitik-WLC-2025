@@ -59,14 +59,16 @@ def kira_progress_program(tarikh_mula="2025-06-18", tarikh_akhir="2025-08-20"):
     tamat = datetime.strptime(tarikh_akhir, "%Y-%m-%d").date()
 
     total_hari = (tamat - mula).days
-    hari_berlalu = (today - mula).days
+    hari_berlalu = (today - mula).days + 1  # +1 supaya Hari ke-1 bermula pada hari mula
 
-    if hari_berlalu < 0:
+    if hari_berlalu < 1:
         progress = 0
         status = "⏳ Belum Bermula"
+        hari_berlalu = 0
     elif hari_berlalu > total_hari:
         progress = 100
         status = "✅ Program Tamat"
+        hari_berlalu = total_hari
     else:
         progress = round((hari_berlalu / total_hari) * 100, 2)
         status = "🚀 Sedang Berjalan"
@@ -74,11 +76,12 @@ def kira_progress_program(tarikh_mula="2025-06-18", tarikh_akhir="2025-08-20"):
     return {
         "progress": min(max(progress, 0), 100),
         "status": status,
-        "hari_berlalu": max(hari_berlalu, 0),
+        "hari_berlalu": hari_berlalu,
         "total_hari": total_hari,
         "tarikh_mula": mula,
         "tarikh_tamat": tamat
     }
+
 
 # ==========================================
 # ✅ Export Fungsi
