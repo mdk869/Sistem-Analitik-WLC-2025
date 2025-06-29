@@ -98,20 +98,17 @@ def simpan_rekod_berat(data):
 # ===============================
 # ✅ Update Data Peserta
 # ===============================
-def update_data_peserta(nama, nostaf, umur, jantina, jabatan, tinggi, berat_terkini, tarikh_timbang, bmi, kategori):
-    update = {
-        "Nama": nama,
-        "NoStaf": nostaf,
-        "Umur": umur,
-        "Jantina": jantina,
-        "Jabatan": jabatan,
-        "Tinggi": tinggi,
-        "BeratTerkini": berat_terkini,
-        "TarikhTimbang": str(tarikh_timbang),
-        "BMI": bmi,
-        "Kategori": kategori
-    }
-    return update_baris_dalam_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, "Nama", nama, update)
+def update_data_peserta(nostaf, update):
+    """
+    Kemas kini data peserta berdasarkan NoStaf.
+    - nostaf : string
+    - update : dict {kolum: nilai baru}
+    """
+    return update_baris_dalam_worksheet(
+        SPREADSHEET_PESERTA, SHEET_PESERTA,
+        key_column="NoStaf", key_value=nostaf,
+        update_dict=update
+    )
 
 # ===============================
 # ✅ Padam Peserta
