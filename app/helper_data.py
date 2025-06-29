@@ -128,8 +128,8 @@ def padam_peserta_dari_sheet(nama):
 def simpan_rekod_berat(nama, tarikh, berat):
     """
     Simpan data ke rekod_berat_BulanTahun (auto create jika belum ada).
-    Update juga kolum BeratTerkini dan TarikhTimbang dalam sheet data_peserta.
-    
+    Update juga kolum BeratTerkini dan TarikhTimbang dalam sheet peserta.
+
     Return dict:
     {
         'rekod_berat': True/False,
@@ -146,9 +146,7 @@ def simpan_rekod_berat(nama, tarikh, berat):
         bulan_tahun = pd.to_datetime(tarikh).strftime('%B%Y')
         sheet_nama = f"rekod_berat_{bulan_tahun}"
 
-        # ================
         # ✅ Simpan ke rekod_berat
-        # ================
         sh = get_spreadsheet_by_name(SPREADSHEET_PESERTA)
         sheet_list = [ws.title for ws in sh.worksheets()]
 
@@ -164,20 +162,21 @@ def simpan_rekod_berat(nama, tarikh, berat):
         result['rekod_berat'] = True
 
     except Exception as e:
-        log_error(f"❌ Gagal simpan ke {sheet_nama}: {e}")
-        st.error(f"❌ Gagal simpan ke {sheet_nama}: {e}")
+        log_error(f"❌ Error simpan ke {sheet_nama}: {e}")
+        st.error(f"❌ Error simpan ke {sheet_nama}: {e}")
         result['rekod_berat'] = False
 
 
     try:
-        # ============================
-        # ✅ Update BeratTerkini & TarikhTimbang ke sheet data_peserta
-        # ============================
-        ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "data_peserta")
-        header = ws_peserta.row_values(1)
+        # ✅ Update BeratTerkini & TarikhTimbang ke sheet peserta
+        ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "peserta")  # ✔️ Betulkan sini
 
-        # 🔍 Cari kolum ikut header
+        header = ws_peserta.row_values(1)
+        header = [h.strip().replace(" ", "").lower() for h in header]
+
+        # 🔍 Cari kolum
         def cari_kolum(nama_kolum):
+            nama_kolum = nama_kolum.strip().replace(" ", "").lower()
             try:
                 return header.index(nama_kolum) + 1
             except ValueError:
@@ -188,28 +187,26 @@ def simpan_rekod_berat(nama, tarikh, berat):
         col_nama = cari_kolum("Nama")
 
         if None in [col_berat, col_tarikh, col_nama]:
-            log_error("❌ Kolum Nama, BeratTerkini atau TarikhTimbang tidak ditemui di sheet data_peserta.")
             st.error("❌ Kolum Nama, BeratTerkini atau TarikhTimbang tidak ditemui.")
+            log_error("❌ Kolum Nama, BeratTerkini atau TarikhTimbang tidak ditemui di sheet peserta.")
             return result
 
-        # ✅ Dapatkan semua data peserta
         data_peserta = ws_peserta.get_all_records()
         df = pd.DataFrame(data_peserta)
 
         if df.empty:
-            st.error("❌ Sheet data_peserta kosong.")
-            log_error("❌ Sheet data_peserta kosong.")
+            st.error("❌ Sheet peserta kosong.")
+            log_error("❌ Sheet peserta kosong.")
             return result
 
         if nama not in df["Nama"].values:
-            st.warning(f"⚠️ Nama '{nama}' tidak ditemui dalam sheet data_peserta.")
-            log_warning(f"Nama '{nama}' tidak ditemui dalam sheet data_peserta.")
+            st.warning(f"⚠️ Nama '{nama}' tidak ditemui dalam sheet peserta.")
+            log_warning(f"Nama '{nama}' tidak ditemui dalam sheet peserta.")
             return result
 
-        # Cari row peserta
-        row_index = df[df["Nama"] == nama].index[0] + 2  # +2 untuk header dan index 1-based
+        row_index = df[df["Nama"] == nama].index[0] + 2  # +2 header +1 based
 
-        # 🔠 Fungsi tukar nombor ke notasi Excel
+        # 🔠 Tukar column number ke Excel notation
         def colnum_string(n):
             string = ""
             while n > 0:
@@ -223,16 +220,17 @@ def simpan_rekod_berat(nama, tarikh, berat):
         ws_peserta.update(cell_berat, berat)
         ws_peserta.update(cell_tarikh, str(tarikh))
 
-        log_dev("Admin", f"BeratTerkini dan TarikhTimbang untuk {nama} dikemaskini di data_peserta.", "Success")
+        log_dev("Admin", f"BeratTerkini dan TarikhTimbang untuk {nama} dikemaskini di peserta.", "Success")
 
         result['update_peserta'] = True
 
     except Exception as e:
-        log_error(f"❌ Error update data_peserta: {e}")
-        st.error(f"❌ Error update data_peserta: {e}")
+        log_error(f"❌ Error update peserta: {e}")
+        st.error(f"❌ Error update peserta: {e}")
         result['update_peserta'] = False
 
     return result
+
 
 
 
