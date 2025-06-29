@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import date
 
-# === Helper Import ===
+# === Import helper ===
 from app.styles import paparkan_tema, papar_header, papar_footer
 from app.helper_auth import check_login
 from app.helper_log import log_dev
@@ -23,11 +23,10 @@ paparkan_tema()
 papar_header("Admin Panel | WLC 2025")
 
 st.title("👑 Panel Admin")
-st.markdown("Panel untuk pengurusan penuh data peserta WLC 2025.")
+st.markdown("Panel pengurusan penuh data peserta WLC 2025.")
 
 # === Auth ===
-is_admin = check_login()
-if not is_admin:
+if not check_login():
     st.error("❌ Akses ditolak! Halaman ini hanya untuk Admin.")
     st.stop()
 
@@ -40,9 +39,7 @@ HEADER_PESERTA = [
     'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori'
 ]
 
-# ===================================================================================
-# ✅ Tab Layout
-# ===================================================================================
+# === Tab Layout ===
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "👥 Peserta", "⚖️ Rekod Timbang", "✏️ Kemaskini Data", "💾 Backup/Restore", "🗑️ Padam"
 ])
@@ -62,9 +59,8 @@ with tab1:
             use_container_width=True
         )
 
-
 # ===================================================================================
-# ✅ Tab 2: Rekod Timbangan
+# ✅ Tab 2: Rekod Timbang
 # ===================================================================================
 with tab2:
     st.subheader("⚖️ Kemaskini Rekod Timbang")
@@ -88,48 +84,45 @@ with tab2:
                 st.error("❌ Gagal simpan rekod timbang.")
 
 # ===================================================================================
-# ✅ Tab 3: Kemaskini Data Peserta
+# ✅ Tab 3: Tambah/Kemaskini Peserta
 # ===================================================================================
 with tab3:
-    st.subheader("✏️ Tambah atau Kemaskini Peserta")
+    st.subheader("✏️ Tambah Peserta")
 
-    with st.expander("➕ Tambah Peserta Baru"):
-        with st.form("form_tambah"):
-            nama = st.text_input("Nama")
-            nostaf = st.text_input("No Staf")
-            umur = st.number_input("Umur", min_value=10, max_value=100)
-            jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"])
-            jabatan = st.text_input("Jabatan")
-            tinggi = st.number_input("Tinggi (cm)", min_value=100, max_value=250)
-            berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=300.0)
-            tarikh_daftar = st.date_input("Tarikh Daftar", value=date.today())
+    with st.form("form_tambah"):
+        nama = st.text_input("Nama")
+        nostaf = st.text_input("No Staf")
+        umur = st.number_input("Umur", min_value=10, max_value=100)
+        jantina = st.selectbox("Jantina", ["Lelaki", "Perempuan"])
+        jabatan = st.text_input("Jabatan")
+        tinggi = st.number_input("Tinggi (cm)", min_value=100, max_value=250)
+        berat_awal = st.number_input("Berat Awal (kg)", min_value=30.0, max_value=300.0)
+        tarikh_daftar = st.date_input("Tarikh Daftar", value=date.today())
 
-            berat_terkini = berat_awal
-            bmi = kira_bmi(berat_awal, tinggi)
-            kategori = kategori_bmi_asia(bmi)
+        berat_terkini = berat_awal
+        bmi = kira_bmi(berat_awal, tinggi)
+        kategori = kategori_bmi_asia(bmi)
 
-            st.info(f"BMI: {bmi} ({kategori})")
+        st.info(f"BMI: {bmi} ({kategori})")
 
-            submit = st.form_submit_button("Tambah Peserta")
+        submit = st.form_submit_button("➕ Tambah Peserta")
 
-            if submit:
-                if nama and nostaf and jabatan:
-                    tambah_peserta_google_sheet(
-                        nama, nostaf, umur, jantina, jabatan,
-                        tinggi, berat_awal, tarikh_daftar
-                    )
-                    st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
-                    st.rerun()
-                else:
-                    st.warning("⚠️ Sila isi semua maklumat peserta.")
+        if submit:
+            if nama and nostaf and jabatan:
+                tambah_peserta_google_sheet(
+                    nama, nostaf, umur, jantina, jabatan,
+                    tinggi, berat_awal, tarikh_daftar
+                )
+                st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
+                st.rerun()
+            else:
+                st.warning("⚠️ Sila isi semua maklumat peserta.")
 
 # ===================================================================================
 # ✅ Tab 4: Backup & Restore
 # ===================================================================================
 with tab4:
     st.subheader("💾 Backup & Restore Data")
-
-    st.info("Backup akan disimpan ke Google Drive.")
 
     col1, col2 = st.columns(2)
 
@@ -175,9 +168,7 @@ with tab5:
     else:
         st.info("🚫 Tiada peserta untuk dipadam.")
 
-# ===================================================================================
-# ✅ Footer
-# ===================================================================================
+# === Footer ===
 papar_footer(
     owner="MKR Dev Team",
     version="v3.4.0",
