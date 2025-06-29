@@ -53,12 +53,13 @@ with tab1:
         df_kiraan = tambah_kiraan_peserta(data_peserta)
 
         total_peserta = len(df_kiraan)
+        avg_bmi = df_kiraan["BMI"].mean().round(2)
         avg_berat_awal = df_kiraan["BeratAwal"].mean().round(2)
         avg_penurunan = df_kiraan["% Penurunan"].mean().round(2)
 
         col1, col2, col3 = st.columns(3)
         col1.metric("👥 Jumlah Peserta", total_peserta)
-        col2.metric("⚖️ Berat Awal Purata (kg)", f"{avg_berat_awal:.2f}")
+        col2.metric("⚖️ BMI Purata", f"{avg_bmi:.2f}")
         col3.metric("📉 Penurunan Berat Purata (%)", f"{avg_penurunan:.2f}%")
 
         st.divider()
