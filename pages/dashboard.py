@@ -98,71 +98,55 @@ with tab2:
 # TAB 3: Status Timbang
 # =====================================================================================
 with tab3:
-        st.subheader("📅 Status Timbangan Mengikut Sesi Bulanan")
+    st.subheader("📅 Status Timbangan Mengikut Sesi Bulanan")
 
-        df = data_peserta.copy()
+    df_rekod = load_rekod_berat_semua()
+    df_peserta = data_peserta.copy()
 
-        # Pastikan kolum utama wujud
-        wajib_kolum = ["Nama", "NoStaf", "Jabatan", "BeratTerkini", "TarikhTimbang"]
-        if not set(wajib_kolum).issubset(df.columns):
-            st.error("❌ Kolum tidak lengkap dalam Google Sheet.")
-            st.stop()
+    if df_rekod.empty:
+        st.warning("❌ Tiada rekod timbang ditemui.")
+        st.stop()
 
-        # Bersihkan data
-        df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+    jumlah_peserta = len(df_peserta)
 
-        # Convert TarikhTimbang ke datetime
-        df["TarikhTimbang"] = pd.to_datetime(df["TarikhTimbang"], errors='coerce')
+    sesi_list = sorted(df_rekod["SesiBulan"].unique(), key=lambda x: pd.to_datetime(x))
 
-        # Extract bulan-tahun
-        df["SesiBulan"] = df["TarikhTimbang"].dt.strftime('%B %Y').fillna("Tiada Timbang")
+    for sesi in sesi_list:
+        st.subheader(f"📅 {sesi}")
 
-        # Dapatkan bulan sedia ada
-        sesi_terdahulu = df.loc[df["SesiBulan"] != "Tiada Timbang", "SesiBulan"].unique()
-        sesi_terdahulu = sorted(sesi_terdahulu, key=lambda x: pd.to_datetime(x))
+        df_sesi = df_rekod[df_rekod["SesiBulan"] == sesi]
+        nama_sudah = df_sesi["Nama"].unique().tolist()
 
-        if sesi_terdahulu:
-            st.info(f"🗓️ Sesi terakhir: {sesi_terdahulu[-1]}")
+        sudah_timbang = len(nama_sudah)
+        belum_timbang = jumlah_peserta - sudah_timbang
+
+        peratus_sudah = round(sudah_timbang / jumlah_peserta * 100, 1)
+        peratus_belum = round(belum_timbang / jumlah_peserta * 100, 1)
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("👥 Jumlah Peserta", jumlah_peserta)
+        col2.metric("✅ Sudah Timbang", f"{sudah_timbang} ({peratus_sudah}%)")
+        col3.metric("❌ Belum Timbang", f"{belum_timbang} ({peratus_belum}%)")
+
+        if peratus_sudah == 100:
+            st.success(f"✅ Sesi timbang bulan {sesi} selesai 100%.")
         else:
-            st.warning("❌ Tiada data timbang terdahulu.")
+            st.warning(f"⚠️ Sesi timbang bulan {sesi} belum lengkap.")
 
-        # Papar status untuk setiap sesi
-        for sesi in sesi_terdahulu:
-            st.subheader(f"📅 {sesi}")
+        df_belum = df_peserta[~df_peserta["Nama"].isin(nama_sudah)]
 
-            df_sesi = df[df["SesiBulan"] == sesi]
-            jumlah_peserta = len(df)
+        if not df_belum.empty:
+            with st.expander(f"📋 Senarai Peserta Belum Timbang {sesi}"):
+                df_belum_view = df_belum[["Nama", "NoStaf", "Jabatan"]].reset_index(drop=True)
+                df_belum_view.index = df_belum_view.index + 1
+                st.dataframe(df_belum_view, use_container_width=True)
 
-            sudah_timbang = len(df_sesi)
-            belum_timbang = jumlah_peserta - sudah_timbang
+        st.divider()
 
-            peratus_sudah = round(sudah_timbang / jumlah_peserta * 100, 1)
-            peratus_belum = round(belum_timbang / jumlah_peserta * 100, 1)
+    # 🔔 Reminder Next Session
+    bulan_seterusnya = (pd.to_datetime('today') + pd.DateOffset(months=1)).strftime('%B %Y')
+    st.info(f"🔔 Ingatan: Sesi timbang seterusnya adalah pada bulan **{bulan_seterusnya}**, disyorkan minggu pertama.")
 
-            col1, col2, col3 = st.columns(3)
-            col1.metric("👥 Jumlah Peserta", jumlah_peserta)
-            col2.metric("✅ Sudah Timbang", f"{sudah_timbang} ({peratus_sudah}%)")
-            col3.metric("❌ Belum Timbang", f"{belum_timbang} ({peratus_belum}%)")
-
-            # Status Sesi
-            if peratus_sudah == 100:
-                st.success(f"✅ Sesi timbang bulan {sesi} selesai 100%.")
-            else:
-                st.warning(f"⚠️ Sesi timbang bulan {sesi} belum lengkap. {belum_timbang} peserta belum timbang.")
-
-            # Papar peserta belum timbang
-            df_belum = df[~df["Nama"].isin(df_sesi["Nama"])]
-            if not df_belum.empty:
-                with st.expander(f"📋 Senarai Peserta Belum Timbang {sesi}"):
-                    df_belum_view = df_belum[["Nama", "NoStaf", "Jabatan"]].reset_index(drop=True)
-                    df_belum_view.index = df_belum_view.index + 1
-                    st.dataframe(df_belum_view, use_container_width=True)
-
-            st.divider()
-
-        # 🔔 Reminder Next Session
-        bulan_seterusnya = (pd.to_datetime('today') + pd.DateOffset(months=1)).strftime('%B %Y')
-        st.info(f"🔔 Ingatan: Sesi timbang seterusnya adalah pada bulan **{bulan_seterusnya}**, disyorkan minggu pertama.")
 
 
 
