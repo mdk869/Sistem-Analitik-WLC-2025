@@ -221,14 +221,30 @@ def check_and_create_worksheet(spreadsheet, sheet_name, header):
 # ✅ Fungsi Carian Nama dengan Auto Suggestion
 # ============================================
 
-def carian_nama(df, label="Cari Nama", key=None):
-    nama_list = df["Nama"].dropna().unique().tolist()
-    nama_list.sort()
+def carian_nama_suggestion(df, label="Cari Nama", key=""):
+    """
+    Fungsi carian nama dengan auto-suggestion ringan.
 
-    input_nama = st.text_input(f"🔍 {label}", key=f"{key}_input")
+    Args:
+        df (DataFrame): Data peserta.
+        label (str): Label input.
+        key (str): Unique key untuk Streamlit component.
 
-    suggestion = [n for n in nama_list if input_nama.lower() in n.lower()]
+    Returns:
+        str: Nama yang dipilih atau None.
+    """
+    nama_list = df["Nama"].dropna().tolist()
 
-    selected = st.selectbox(f"👉 Pilih Nama", suggestion, key=f"{key}_select") if suggestion else None
+    nama_input = st.text_input(f"🔍 {label}", key=f"input_{key}").strip()
 
-    return input_nama if input_nama else selected
+    suggestion = [nama for nama in nama_list if nama_input.lower() in nama.lower()] if nama_input else []
+
+    if nama_input and suggestion:
+        nama_pilih = st.selectbox("✔️ Pilih dari cadangan", suggestion, key=f"select_{key}")
+        return nama_pilih
+    elif nama_input and not suggestion:
+        st.warning("❌ Tiada padanan nama ditemui.")
+        return None
+    else:
+        return None
+
