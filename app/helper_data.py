@@ -301,4 +301,16 @@ def load_rekod_berat_semua():
         return pd.DataFrame()
 
 
+def save_dataframe_to_sheet(df, sheet_name="data_peserta"):
+    """
+    Simpan dataframe ke Google Sheet, gantikan isi sedia ada.
+    """
+    try:
+        sheet = connect_sheet(sheet_name)
+        sheet.clear()
+        sheet.update([df.columns.values.tolist()] + df.values.tolist())
+        return True
+    except Exception as e:
+        st.error(f"Gagal simpan ke Google Sheet: {e}")
+        return False
 
