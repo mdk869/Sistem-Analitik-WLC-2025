@@ -146,3 +146,15 @@ def papar_footer(
         """,
         unsafe_allow_html=True
     )
+
+# styles.py
+
+# 🎨 Warna untuk kategori BMI (standardize)
+WARNA_KATEGORI_BMI = {
+    "Kurang Berat Badan": "#00BFC4",  # Biru Cerah
+    "Normal": "#7CAE00",               # Hijau
+    "Lebih Berat Badan": "#F8766D",    # Oren
+    "Obesiti Tahap 1": "#C77CFF",      # Ungu
+    "Obesiti Tahap 2": "#FFB400",      # Kuning
+    "Obesiti Morbid": "#FF3D3D",       # Merah
+}
