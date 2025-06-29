@@ -1,136 +1,125 @@
-from app.helper_connection import client
+import gspread
 import pandas as pd
 import streamlit as st
 
 
+# ✅ Sambungan ke Google Sheet
+def connect_gsheet():
+    gc = gspread.service_account_from_dict(st.secrets["gcp_service_account"])
+    return gc
+
+
+# ✅ Buka worksheet
 def open_worksheet(spreadsheet_id, worksheet_name):
     try:
-        sheet = client.open_by_key(spreadsheet_id).worksheet(worksheet_name)
-        return sheet
+        gc = connect_gsheet()
+        sh = gc.open_by_key(spreadsheet_id)
+        worksheet = sh.worksheet(worksheet_name)
+        return worksheet
     except Exception as e:
         st.error(f"❌ Gagal buka sheet '{worksheet_name}': {e}")
         return None
 
 
+# ✅ Load worksheet ke DataFrame
 def load_worksheet_to_df(spreadsheet_id, worksheet_name):
-    sheet = open_worksheet(spreadsheet_id, worksheet_name)
-    if sheet:
-        data = sheet.get_all_records()
+    ws = open_worksheet(spreadsheet_id, worksheet_name)
+    if ws:
+        data = ws.get_all_records()
         df = pd.DataFrame(data)
         return df
     return pd.DataFrame()
 
 
+# ✅ Simpan DataFrame ke worksheet (overwrite)
 def save_df_to_worksheet(spreadsheet_id, worksheet_name, df):
-    sheet = open_worksheet(spreadsheet_id, worksheet_name)
-    if sheet is None:
+    ws = open_worksheet(spreadsheet_id, worksheet_name)
+    if ws is None:
         return False
 
-    sheet.clear()
-    sheet.update([df.columns.values.tolist()] + df.values.tolist())
-    return True
-
-
-
-def tambah_data_peserta(spreadsheet_id, worksheet_name, data_dict):
-    """
-    Tambah satu row data peserta ke Google Sheet.
-    """
-    sh = client.open_by_key(spreadsheet_id)
-    ws = sh.worksheet(worksheet_name)
-
-    df_existing = pd.DataFrame(ws.get_all_records())
-
-    new_row = pd.DataFrame([data_dict])
-
-    df_updated = pd.concat([df_existing, new_row], ignore_index=True)
-
     ws.clear()
-    ws.update([df_updated.columns.values.tolist()] + df_updated.values.tolist())
+    if df.empty:
+        return True
 
+    ws.update([df.columns.values.tolist()] + df.values.tolist())
     return True
 
 
-def append_data_to_worksheet(spreadsheet_id, worksheet_name, data_dict):
-    """
-    Tambah satu row data ke worksheet Google Sheet.
-    """
-    sh = client.open_by_key(spreadsheet_id)
-    worksheet = sh.worksheet(worksheet_name)
+# ✅ Append satu row ke worksheet
+def append_row_to_worksheet(spreadsheet_id, worksheet_name, data_dict):
+    ws = open_worksheet(spreadsheet_id, worksheet_name)
+    if ws is None:
+        return False
 
-    existing_data = worksheet.get_all_values()
+    existing_data = ws.get_all_values()
 
     if not existing_data:
         headers = list(data_dict.keys())
-        worksheet.append_row(headers)
+        ws.append_row(headers)
 
-    values = list(data_dict.values())
-    worksheet.append_row(values)
+    row = list(data_dict.values())
+    ws.append_row(row)
 
     return True
 
 
+# ✅ Padam baris berdasarkan column_key dan value
 def padam_baris_dari_worksheet(spreadsheet_id, worksheet_name, column_key, value):
-    """
-    Padam baris daripada worksheet berdasarkan nilai dalam column tertentu.
-    """
-    sh = client.open_by_key(spreadsheet_id)
-    worksheet = sh.worksheet(worksheet_name)
+    ws = open_worksheet(spreadsheet_id, worksheet_name)
+    if ws is None:
+        return False
 
-    data = worksheet.get_all_records()
+    data = ws.get_all_records()
 
     if not data:
         return False
 
     df = pd.DataFrame(data)
 
-    # Semak jika data wujud
+    if column_key not in df.columns:
+        st.warning(f"⚠️ Column '{column_key}' tidak wujud dalam sheet '{worksheet_name}'")
+        return False
+
     if value not in df[column_key].values:
         return False
 
-    # Buang baris yang sepadan
     df = df[df[column_key] != value]
 
-    # Clear worksheet dan update semula
-    worksheet.clear()
-    worksheet.update([df.columns.values.tolist()] + df.values.tolist())
+    ws.clear()
+    if not df.empty:
+        ws.update([df.columns.values.tolist()] + df.values.tolist())
 
     return True
 
 
+# ✅ Update baris berdasarkan key_column dan key_value
 def update_baris_dalam_worksheet(spreadsheet_id, worksheet_name, key_column, key_value, update_dict):
-    """
-    Kemas kini satu baris dalam worksheet berdasarkan nilai dalam column kunci.
+    ws = open_worksheet(spreadsheet_id, worksheet_name)
+    if ws is None:
+        return False
 
-    Args:
-        spreadsheet_id (str): ID Google Spreadsheet.
-        worksheet_name (str): Nama worksheet.
-        key_column (str): Nama column untuk dicari (contoh: 'Nama' atau 'NoStaf').
-        key_value (str): Nilai dalam column kunci untuk dicari.
-        update_dict (dict): Dictionary data yang ingin dikemaskini.
-
-    Returns:
-        bool: True jika berjaya, False jika tidak jumpa.
-    """
-    sh = client.open_by_key(spreadsheet_id)
-    worksheet = sh.worksheet(worksheet_name)
-
-    data = worksheet.get_all_records()
+    data = ws.get_all_records()
 
     if not data:
         return False
 
     df = pd.DataFrame(data)
+
+    if key_column not in df.columns:
+        st.warning(f"⚠️ Column '{key_column}' tidak wujud dalam sheet '{worksheet_name}'")
+        return False
 
     if key_value not in df[key_column].values:
         return False
 
-    # Update nilai
     for col, val in update_dict.items():
-        df.loc[df[key_column] == key_value, col] = val
+        if col in df.columns:
+            df.loc[df[key_column] == key_value, col] = val
+        else:
+            st.warning(f"⚠️ Column '{col}' tidak wujud dalam sheet '{worksheet_name}'")
 
-    # Clear dan update semula
-    worksheet.clear()
-    worksheet.update([df.columns.values.tolist()] + df.values.tolist())
+    ws.clear()
+    if not df.empty:
+        ws.update([df.columns.values.tolist()] + df.values.tolist())
 
     return True
