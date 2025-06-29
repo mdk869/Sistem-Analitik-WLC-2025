@@ -6,7 +6,7 @@ from datetime import datetime
 
 from app.helper_connection import SPREADSHEET_RANKING
 from app.helper_gsheet import get_worksheet
-from app.helper_data import load_data_peserta, tambah_peserta_google_sheet
+from app.helper_data import load_data_peserta
 from app.helper_utils import save_dataframe_to_excel
 
 
@@ -40,15 +40,30 @@ def save_rekod_ranking(df):
 # ====================================================
 # ✅ Kira Leaderboard Semasa
 # ====================================================
-def load_leaderboard_semasa():
-    df = load_data_peserta()
-    df = tambah_peserta_google_sheet(df)
+def leaderboard_dengan_status(df):
+    """
+    Terima dataframe peserta dan kira % penurunan berat serta ranking.
+    """
+    if df.empty:
+        st.warning("🚫 Tiada data peserta.")
+        return pd.DataFrame()
 
-    leaderboard = df[["Nama", "% Penurunan"]].copy()
-    leaderboard = leaderboard.sort_values(by="% Penurunan", ascending=False).reset_index(drop=True)
+    # ✅ Pastikan kolum numeric
+    df = df.copy()
+    df["BeratAwal"] = pd.to_numeric(df["BeratAwal"], errors="coerce")
+    df["BeratTerkini"] = pd.to_numeric(df["BeratTerkini"], errors="coerce")
 
-    return leaderboard
+    # ✅ Kiraan % Penurunan
+    df["% Penurunan"] = ((df["BeratAwal"] - df["BeratTerkini"]) / df["BeratAwal"]) * 100
+    df["% Penurunan"] = df["% Penurunan"].round(2).fillna(0)
 
+    # ✅ Susun ranking
+    df = df.sort_values(by="% Penurunan", ascending=False).reset_index(drop=True)
+    df["Ranking"] = df.index + 1
+
+    return df[[
+        "Ranking", "Nama", "BeratAwal", "BeratTerkini", "% Penurunan", "BMI", "Kategori"
+    ]]
 
 
 # ====================================================
