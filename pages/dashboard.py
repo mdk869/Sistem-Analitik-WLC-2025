@@ -101,7 +101,7 @@ with tab3:
     st.subheader("📅 Status Timbangan Mengikut Sesi Bulanan")
 
     df_rekod = load_rekod_berat_semua()
-    df_peserta = data_peserta.copy()
+    df_peserta = load_data_peserta()
 
     if df_rekod.empty:
         st.warning("❌ Tiada rekod timbang ditemui.")
@@ -143,9 +143,9 @@ with tab3:
 
         st.divider()
 
-    # 🔔 Reminder Next Session
     bulan_seterusnya = (pd.to_datetime('today') + pd.DateOffset(months=1)).strftime('%B %Y')
     st.info(f"🔔 Ingatan: Sesi timbang seterusnya adalah pada bulan **{bulan_seterusnya}**, disyorkan minggu pertama.")
+
 
 
 
