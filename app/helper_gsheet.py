@@ -4,17 +4,7 @@ import streamlit as st
 import pandas as pd
 from app.helper_connection import gc
 from app.helper_log import log_error
-
-
-# ====================================================
-# ✅ Dapatkan Worksheet (Auto Create Jika Tiada)
-# ====================================================
-def get_worksheet(spreadsheet, worksheet_name):
-    try:
-        ws = spreadsheet.worksheet(worksheet_name)
-    except Exception:
-        ws = spreadsheet.add_worksheet(title=worksheet_name, rows="1000", cols="20")
-    return ws
+from app.helper_gsheet_utils import get_worksheet
 
 
 # ====================================================
