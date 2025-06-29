@@ -39,3 +39,28 @@ def kira_progress_program():
         "progress": round(progress, 2),
         "status": status
     }
+
+def kira_bmi(berat, tinggi):
+    try:
+        tinggi_meter = tinggi / 100
+        bmi = berat / (tinggi_meter ** 2)
+        return round(bmi, 2)
+    except:
+        return 0
+
+
+def kategori_bmi_asia(bmi):
+    if bmi < 18.5:
+        return "Kurang Berat Badan"
+    elif 18.5 <= bmi <= 24.9:
+        return "Normal"
+    elif 25 <= bmi <= 29.9:
+        return "Lebih Berat Badan"
+    elif 30 <= bmi <= 34.9:
+        return "Obesiti Tahap 1"
+    elif 35 <= bmi <= 39.9:
+        return "Obesiti Tahap 2"
+    else:
+        return "Obesiti Morbid"
+
+df["KategoriBMI"] = df["BMI"].apply(kategori_bmi_asia)
