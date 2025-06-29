@@ -150,14 +150,12 @@ with tab1:
 with tab2:
     st.subheader("🏆 Leaderboard Top 10 Penurunan Berat")
 
-    # ✅ Load ranking dari helper_ranking
-    leaderboard = leaderboard_dengan_status()
+    df_kiraan = tambah_kiraan_peserta(data_peserta)  # Dari helper_logic
+    leaderboard = leaderboard_dengan_status(df_kiraan)
 
-    if leaderboard is not None and not leaderboard.empty:
-        leaderboard = leaderboard[["Nama", "% Penurunan"]].copy()
-        leaderboard = leaderboard.sort_values(by="% Penurunan", ascending=False).head(10).reset_index(drop=True)
+    if not leaderboard.empty:
+        leaderboard = leaderboard[["Nama", "% Penurunan"]].head(10)
 
-        # ✅ Paparan dataframe tanpa index
         st.dataframe(
             leaderboard.style.format({"% Penurunan": "{:.2f}%"}),
             use_container_width=True,
@@ -167,6 +165,7 @@ with tab2:
         st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
 
     log_dev("Dashboard", "Buka Tab Leaderboard", "Success")
+
 
 
 
