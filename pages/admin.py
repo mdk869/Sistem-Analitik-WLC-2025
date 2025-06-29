@@ -10,7 +10,6 @@ from app.helper_drive import upload_to_drive
 from app.helper_data import (
     load_data_peserta,
     load_rekod_berat_semua,
-    tambah_peserta_google_sheet,
     simpan_rekod_berat,
     padam_peserta_dari_sheet,
     update_data_peserta,
