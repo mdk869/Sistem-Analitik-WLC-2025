@@ -10,7 +10,7 @@ from app.helper_utils import check_header_consistency
 from app.helper_logic import kira_bmi, kategori_bmi_asia
 from app.helper_data import (
     load_data_peserta, load_rekod_berat_semua,
-    tambah_peserta_google_sheet, update_data_peserta,
+    tambah_peserta_google_sheet,
     padam_peserta_dari_sheet, simpan_rekod_berat
 )
 from app.helper_drive import upload_to_drive, download_from_drive, list_files_in_folder
@@ -164,7 +164,7 @@ with tab4:
                 st.info(f"BMI: {bmi} ({kategori})")
 
                 if st.form_submit_button("💾 Simpan Perubahan"):
-                    update_data_peserta(
+                    tambah_peserta_google_sheet(
                         nama_final, nostaf, umur, jantina, jabatan,
                         tinggi, berat_terkini, tarikh_timbang, bmi, kategori
                     )
