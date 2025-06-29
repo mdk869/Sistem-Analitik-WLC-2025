@@ -195,8 +195,8 @@ with tab4:
         fig = px.pie(Kategori_df, names="Kategori", values="Bilangan", title="Peratus Peserta Mengikut Tahap BMI")
         st.plotly_chart(fig, use_container_width=True)
 
-        with st.expander("📋 Lihat Senarai Nama Peserta Mengikut Kategori BMI"):
-            df_bmi_table = df_tapis[["Nama", "BMI", "Kategori"]].sort_values("Kategori", na_position="last").reset_index(drop=True)
+        with st.expander("📋 Lihat Senarai Peserta Mengikut Kategori BMI"):
+            df_bmi_table = df_tapis[["NoStaff", "BMI", "Kategori"]].sort_values("Kategori", na_position="last").reset_index(drop=True)
             df_bmi_table.index = df_bmi_table.index + 1
             st.dataframe(df_bmi_table, use_container_width=True)
         
