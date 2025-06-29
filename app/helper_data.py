@@ -14,31 +14,18 @@ from app.helper_gsheet import get_worksheet
 # ✅ Fungsi Load Data Peserta
 # ------------------------------------
 def load_data_peserta():
-    """
-    Load data peserta dari sheet 'data_peserta'
-    """
     try:
-        ws = get_worksheet(SPREADSHEET_PESERTA, "data_peserta")
+        ws = get_worksheet(SPREADSHEET_PESERTA, "peserta")
         data = ws.get_all_records()
-
-        if not data:
-            st.warning("⚠️ Sheet 'data_peserta' kosong.")
-            return pd.DataFrame()
-
         df = pd.DataFrame(data)
-        df.columns = df.columns.str.strip().str.title()
 
-        df["Tarikhtimbang"] = pd.to_datetime(df["Tarikhtimbang"], errors='coerce')
-
-        log_info(f"✅ Berjaya load 'data_peserta' ({len(df)} rekod).")
-
+        if df.empty:
+            st.warning("🚫 Data peserta kosong.")
         return df
 
     except Exception as e:
-        log_error(f"❌ Error load_data_peserta: {e}")
-        st.error(f"❌ Gagal load data dari 'data_peserta': {e}")
+        st.error(f"❌ Gagal load data peserta: {e}")
         return pd.DataFrame()
-
     
 # ------------------------------------
 # ✅ Simpan Dataframe ke Sheet Peserta
