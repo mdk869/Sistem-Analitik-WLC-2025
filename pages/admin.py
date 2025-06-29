@@ -9,7 +9,6 @@ from app.helper_data import (
     load_data_peserta,
     load_data_cloud_or_local,
     tambah_peserta_google_sheet,
-    kemaskini_berat_peserta,
     padam_peserta_dari_sheet,
     simpan_rekod_berat,
     update_berat_terkini_peserta
