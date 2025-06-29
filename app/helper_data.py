@@ -5,7 +5,7 @@ import pandas as pd
 import datetime
 from app.helper_connection import SPREADSHEET_PESERTA, get_spreadsheet_by_name
 from app.helper_utils import save_dataframe_to_excel, kategori_bmi_asia, get_column_index
-from app.helper_log import log_dev, log_error, log_info
+from app.helper_log import log_dev, log_error, log_info, log_warning
 from app.helper_gsheet import get_worksheet
 
 
@@ -218,70 +218,73 @@ def load_rekod_berat():
         st.error(f"❌ Gagal load data rekod berat: {e}")
         return pd.DataFrame()
 
-def load_rekod_berat_semua():
+def load_berat_peserta_terkini():
     """
-    Load semua rekod berat dari sheet yang bermula dengan 'rekod_berat_*'
+    Load data berat terkini dan tarikh timbang dari sheet 'data_peserta'
     """
     try:
-        sh = SPREADSHEET_PESERTA
-        sheet_list = [ws.title for ws in sh.worksheets()]
-        rekod_list = [s for s in sheet_list if s.lower().startswith("rekod_berat_")]
+        ws = get_worksheet(SPREADSHEET_PESERTA, "data_peserta")
+        data = ws.get_all_records()
 
-        if not rekod_list:
-            st.warning("⚠️ Tiada sheet bermula dengan 'rekod_berat_'.")
+        if not data:
+            st.warning("⚠️ Sheet 'data_peserta' kosong.")
+            log_warning("Sheet 'data_peserta' kosong.")
             return pd.DataFrame()
 
-        df_list = []
+        df = pd.DataFrame(data)
 
-        for sheet in rekod_list:
-            try:
-                ws = get_worksheet(SPREADSHEET_PESERTA, sheet)
-                data = ws.get_all_records()
+        # Normalize column names
+        df.columns = df.columns.str.strip().str.title()
 
-                if not data:
-                    st.warning(f"⚠️ Sheet '{sheet}' kosong. Diabaikan.")
-                    continue
+        required_columns = ["Beratt erkini", "Tarikhtimbang"]
+        available_columns = df.columns.str.replace(" ", "").str.lower().tolist()
 
-                df = pd.DataFrame(data)
+        # Map untuk pastikan nama kolum betul
+        column_map = {
+            "beratterkini": "BeratTerkini",
+            "tarikhtimbang": "TarikhTimbang"
+        }
 
-                # Normalize column names
-                df.columns = df.columns.str.strip().str.title()
+        # Semak jika kolum diperlukan ada
+        missing_columns = [
+            name for name in column_map.keys() if name not in available_columns
+        ]
 
-                if "Tarikh" not in df.columns:
-                    st.warning(f"⚠️ Sheet '{sheet}' tiada kolum 'Tarikh'. Diabaikan.")
-                    continue
+        if missing_columns:
+            st.warning(f"⚠️ Sheet 'data_peserta' tiada kolum: {', '.join(missing_columns)}")
+            log_warning(f"Missing columns in data_peserta: {missing_columns}")
+            return pd.DataFrame()
 
-                # Convert Tarikh
-                df["Tarikh"] = pd.to_datetime(df["Tarikh"], errors='coerce')
+        # Rename kolum ikut map
+        rename_dict = {}
+        for col in df.columns:
+            key = col.replace(" ", "").lower()
+            if key in column_map:
+                rename_dict[col] = column_map[key]
 
-                # Filter NaT (tarikh tak sah)
-                df = df.dropna(subset=["Tarikh"])
+        df = df.rename(columns=rename_dict)
 
-                if df.empty:
-                    st.warning(f"⚠️ Sheet '{sheet}' tiada data tarikh sah. Diabaikan.")
-                    continue
+        # Convert TarikhTimbang ke datetime
+        df["TarikhTimbang"] = pd.to_datetime(df["TarikhTimbang"], errors="coerce")
 
-                df["SesiBulan"] = df["Tarikh"].dt.strftime('%B %Y')
-                df["Sheet"] = sheet  # ✔️ Untuk jejak asal sheet
+        # Filter NaT pada TarikhTimbang
+        df = df.dropna(subset=["TarikhTimbang"])
 
-                df_list.append(df)
+        # Hanya ambil dua kolum utama + optional Nama/NoStaf jika nak
+        selected_columns = ["BeratTerkini", "TarikhTimbang"]
+        optional_columns = [col for col in ["Nama", "NoStaf"] if col in df.columns]
+        final_columns = optional_columns + selected_columns
 
-                log_info(f"✅ Berjaya load sheet '{sheet}' ({len(df)} rekod).")
+        df_final = df[final_columns].copy()
 
-            except Exception as e_sheet:
-                log_error(f"❌ Error pada sheet '{sheet}': {e_sheet}")
-                st.warning(f"❌ Gagal baca sheet '{sheet}': {e_sheet}")
+        log_info(f"✅ Berjaya load 'data_peserta' dengan {len(df_final)} rekod.")
 
-        if df_list:
-            final_df = pd.concat(df_list, ignore_index=True)
-        else:
-            final_df = pd.DataFrame()
-
-        return final_df
+        return df_final
 
     except Exception as e:
-        log_error(f"❌ Error utama load_rekod_berat_semua: {e}")
-        st.error(f"❌ Gagal load semua data rekod berat: {e}")
+        log_error(f"❌ Error load_berat_peserta_terkini: {e}")
+        st.error(f"❌ Gagal load data dari 'data_peserta': {e}")
         return pd.DataFrame()
+
 
 
