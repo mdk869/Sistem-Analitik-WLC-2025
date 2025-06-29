@@ -9,7 +9,6 @@ import plotly.graph_objects as go
 
 # ===== Import Helper =====
 from app.helper_data import load_data_peserta, load_rekod_berat_semua
-from app.helper_log import log_dev
 from app.helper_utils import check_header_consistency
 from app.helper_logic import tambah_kiraan_peserta, kira_progress_program
 from app.helper_ranking import leaderboard_peserta, trend_penurunan_bulanan
