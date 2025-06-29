@@ -129,13 +129,26 @@ def simpan_rekod_berat(nama, tarikh, berat):
     """
     Simpan data ke rekod_berat_BulanTahun (auto create jika belum ada).
     Update juga kolum BeratTerkini dan TarikhTimbang dalam sheet data_peserta.
+    
+    Return dict:
+    {
+        'rekod_berat': True/False,
+        'update_peserta': True/False
+    }
     """
+    result = {
+        'rekod_berat': False,
+        'update_peserta': False
+    }
+
     try:
         # Format bulan tahun
         bulan_tahun = pd.to_datetime(tarikh).strftime('%B%Y')
         sheet_nama = f"rekod_berat_{bulan_tahun}"
 
-        # ✅ Semak sheet rekod_berat - create jika belum ada
+        # ================
+        # ✅ Simpan ke rekod_berat
+        # ================
         sh = get_spreadsheet_by_name(SPREADSHEET_PESERTA)
         sheet_list = [ws.title for ws in sh.worksheets()]
 
@@ -144,41 +157,59 @@ def simpan_rekod_berat(nama, tarikh, berat):
             ws_new.append_row(["Nama", "Tarikh", "Berat"])
             log_dev("Admin", f"Sheet {sheet_nama} berjaya dicipta", "Success")
 
-        # ✅ Simpan ke rekod_berat bulan itu
         ws_rekod = get_worksheet(SPREADSHEET_PESERTA, sheet_nama)
         ws_rekod.append_row([nama, str(tarikh), berat])
         log_dev("Admin", f"Rekod berat {nama} pada {tarikh} disimpan ke {sheet_nama}", "Success")
 
-        # ✅ Update ke sheet data_peserta
+        result['rekod_berat'] = True
+
+    except Exception as e:
+        log_error(f"❌ Gagal simpan ke {sheet_nama}: {e}")
+        st.error(f"❌ Gagal simpan ke {sheet_nama}: {e}")
+        result['rekod_berat'] = False
+
+
+    try:
+        # ============================
+        # ✅ Update BeratTerkini & TarikhTimbang ke sheet data_peserta
+        # ============================
         ws_peserta = get_worksheet(SPREADSHEET_PESERTA, "data_peserta")
+        header = ws_peserta.row_values(1)
+
+        # 🔍 Cari kolum ikut header
+        def cari_kolum(nama_kolum):
+            try:
+                return header.index(nama_kolum) + 1
+            except ValueError:
+                return None
+
+        col_berat = cari_kolum("BeratTerkini")
+        col_tarikh = cari_kolum("TarikhTimbang")
+        col_nama = cari_kolum("Nama")
+
+        if None in [col_berat, col_tarikh, col_nama]:
+            log_error("❌ Kolum Nama, BeratTerkini atau TarikhTimbang tidak ditemui di sheet data_peserta.")
+            st.error("❌ Kolum Nama, BeratTerkini atau TarikhTimbang tidak ditemui.")
+            return result
+
+        # ✅ Dapatkan semua data peserta
         data_peserta = ws_peserta.get_all_records()
         df = pd.DataFrame(data_peserta)
 
         if df.empty:
             st.error("❌ Sheet data_peserta kosong.")
             log_error("❌ Sheet data_peserta kosong.")
-            return False
+            return result
 
         if nama not in df["Nama"].values:
             st.warning(f"⚠️ Nama '{nama}' tidak ditemui dalam sheet data_peserta.")
             log_warning(f"Nama '{nama}' tidak ditemui dalam sheet data_peserta.")
-            return False
+            return result
 
-        # ✅ Cari row peserta
+        # Cari row peserta
         row_index = df[df["Nama"] == nama].index[0] + 2  # +2 untuk header dan index 1-based
 
-        # ✅ Dapatkan posisi kolum
-        header = ws_peserta.row_values(1)
-
-        try:
-            col_berat = header.index("BeratTerkini") + 1  # 1-based index
-            col_tarikh = header.index("TarikhTimbang") + 1
-        except ValueError as e:
-            st.error("❌ Kolum 'BeratTerkini' atau 'TarikhTimbang' tidak ditemui.")
-            log_error(f"❌ Error cari kolum: {e}")
-            return False
-
-        # ✅ Translate ke notasi A1
+        # 🔠 Fungsi tukar nombor ke notasi Excel
         def colnum_string(n):
             string = ""
             while n > 0:
@@ -192,14 +223,17 @@ def simpan_rekod_berat(nama, tarikh, berat):
         ws_peserta.update(cell_berat, berat)
         ws_peserta.update(cell_tarikh, str(tarikh))
 
-        log_dev("Admin", f"BeratTerkini dan TarikhTimbang untuk {nama} dikemaskini.", "Success")
+        log_dev("Admin", f"BeratTerkini dan TarikhTimbang untuk {nama} dikemaskini di data_peserta.", "Success")
 
-        return True
+        result['update_peserta'] = True
 
     except Exception as e:
-        log_error(f"❌ Error simpan_rekod_berat: {e}")
-        st.error(f"❌ Gagal simpan rekod berat: {e}")
-        return False
+        log_error(f"❌ Error update data_peserta: {e}")
+        st.error(f"❌ Error update data_peserta: {e}")
+        result['update_peserta'] = False
+
+    return result
+
 
 
 
