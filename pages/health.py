@@ -1,9 +1,10 @@
 # pages/00_Connection_Checker.py
 
 import streamlit as st
+from app.helper_gsheet import get_worksheet
+from app.helper_drive import list_files_in_folder
 from app.helper_connection import (
-    SPREADSHEET_PESERTA, SPREADSHEET_LOG, SPREADSHEET_RANKING,
-    get_worksheet, list_files_in_folder
+    SPREADSHEET_PESERTA, SPREADSHEET_LOG, SPREADSHEET_RANKING
 )
 
 st.set_page_config(page_title="Connection Checker", page_icon="🔗", layout="wide")
