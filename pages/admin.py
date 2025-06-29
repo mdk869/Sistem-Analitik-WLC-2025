@@ -201,7 +201,7 @@ with tab4:
                     update_data_peserta(
                         nostaf,
                         {
-                            "Nama": nama_edit,
+                            "Nama": nama,
                             "Umur": umur,
                             "Jantina": jantina,
                             "Jabatan": jabatan,
@@ -212,8 +212,7 @@ with tab4:
                             "Kategori": kategori
                         }
                     )
-                    st.success(f"✅ Data peserta '{nama_edit}' berjaya dikemaskini.")
-                    st.rerun()
+
 
 # =========================================
 # ✅ Tab 5: Backup & Restore
