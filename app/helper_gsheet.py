@@ -96,3 +96,41 @@ def padam_baris_dari_worksheet(spreadsheet_id, worksheet_name, column_key, value
     worksheet.update([df.columns.values.tolist()] + df.values.tolist())
 
     return True
+
+
+def update_baris_dalam_worksheet(spreadsheet_id, worksheet_name, key_column, key_value, update_dict):
+    """
+    Kemas kini satu baris dalam worksheet berdasarkan nilai dalam column kunci.
+
+    Args:
+        spreadsheet_id (str): ID Google Spreadsheet.
+        worksheet_name (str): Nama worksheet.
+        key_column (str): Nama column untuk dicari (contoh: 'Nama' atau 'NoStaf').
+        key_value (str): Nilai dalam column kunci untuk dicari.
+        update_dict (dict): Dictionary data yang ingin dikemaskini.
+
+    Returns:
+        bool: True jika berjaya, False jika tidak jumpa.
+    """
+    sh = client.open_by_key(spreadsheet_id)
+    worksheet = sh.worksheet(worksheet_name)
+
+    data = worksheet.get_all_records()
+
+    if not data:
+        return False
+
+    df = pd.DataFrame(data)
+
+    if key_value not in df[key_column].values:
+        return False
+
+    # Update nilai
+    for col, val in update_dict.items():
+        df.loc[df[key_column] == key_value, col] = val
+
+    # Clear dan update semula
+    worksheet.clear()
+    worksheet.update([df.columns.values.tolist()] + df.values.tolist())
+
+    return True
