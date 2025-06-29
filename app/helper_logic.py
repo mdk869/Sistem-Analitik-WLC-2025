@@ -50,6 +50,35 @@ def kira_status_ranking(berat_awal, berat_terkini):
     except:
         return "Belum"
 
+from datetime import datetime
+
+
+def kira_progress_program(tarikh_mula="2025-06-18", tarikh_akhir="2025-08-20"):
+    today = datetime.today().date()
+    mula = datetime.strptime(tarikh_mula, "%Y-%m-%d").date()
+    tamat = datetime.strptime(tarikh_akhir, "%Y-%m-%d").date()
+
+    total_hari = (tamat - mula).days
+    hari_berlalu = (today - mula).days
+
+    if hari_berlalu < 0:
+        progress = 0
+        status = "⏳ Belum Bermula"
+    elif hari_berlalu > total_hari:
+        progress = 100
+        status = "✅ Program Tamat"
+    else:
+        progress = round((hari_berlalu / total_hari) * 100, 2)
+        status = "🚀 Sedang Berjalan"
+
+    return {
+        "progress": min(max(progress, 0), 100),  # Clamp between 0-100
+        "status": status,
+        "hari_berlalu": max(hari_berlalu, 0),
+        "total_hari": total_hari,
+        "tarikh_mula": mula,
+        "tarikh_tamat": tamat
+    }
 
 # ==========================================
 # ✅ Export Fungsi
