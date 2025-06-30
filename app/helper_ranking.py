@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from app.helper_utils import convert_columns_to_numeric
+from app.helper_utils import convert_columns_to_numeric, tambah_sesi_bulan
 
 def leaderboard_peserta(df, top_n=10):
     """
@@ -40,7 +40,8 @@ def trend_penurunan_bulanan(df_rekod):
     if df_rekod.empty:
         return None
 
-    df = df_rekod.copy()
+    df = tambah_sesi_bulan(df_rekod)
+
 
     # Tukar Tarikh ke datetime
     df["Tarikh"] = pd.to_datetime(df["Tarikh"], errors="coerce")
