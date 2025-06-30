@@ -179,87 +179,116 @@ with tab3:
 
         st.divider()
 
-# ========================================
+# =========================================
 # ✅ Tab 4: Analitik BMI
-# ========================================
+# =========================================
 with tab4:
     st.subheader("📊 Analisis BMI Peserta")
 
-    try:
-        # ========================================
-        # ✅ Load & Kiraan Data
-        # ========================================
-        data_peserta = load_data_peserta()
-        df_tapis = tambah_kiraan_peserta(data_peserta)
+    # =========================================
+    # ✅ Pilihan Filter Jantina
+    # =========================================
+    filter_jantina = st.selectbox(
+        "Pilih Jantina untuk Analisis:",
+        ["Semua", "Lelaki", "Perempuan"]
+    )
 
-        # ========================================
-        # ✅ Kiraan Bilangan Setiap Kategori BMI
-        # ========================================
-        kategori_list = [
-            "Kurang Berat Badan", "Normal", "Lebih Berat Badan",
-            "Obesiti Tahap 1", "Obesiti Tahap 2", "Obesiti Morbid"
-        ]
+    # =========================================
+    # ✅ Apply Filter
+    # =========================================
+    if filter_jantina == "Lelaki":
+        df_filter = data_peserta[data_peserta["Jantina"].str.lower() == "lelaki"]
+    elif filter_jantina == "Perempuan":
+        df_filter = data_peserta[data_peserta["Jantina"].str.lower() == "perempuan"]
+    else:
+        df_filter = data_peserta.copy()
 
-        kiraan_bmi = {
-            kategori: (df_tapis["Kategori"] == kategori).sum()
-            for kategori in kategori_list
-        }
+    df_filter = tambah_kiraan_peserta(df_filter)
 
-        # ========================================
-        # ✅ Paparan Metrik BMI (CSS Box)
-        # ========================================
-        cols = st.columns(6)
+    # =========================================
+    # ✅ Metrik BMI
+    # =========================================
+    cols = st.columns(6)
+    kategori_bmi_data = [
+        ("Kurang Berat Badan", "kurang", (df_filter["Kategori"] == "Kurang Berat Badan").sum()),
+        ("Normal", "normal", (df_filter["Kategori"] == "Normal").sum()),
+        ("Lebih Berat Badan", "lebih", (df_filter["Kategori"] == "Lebih Berat Badan").sum()),
+        ("Obesiti Tahap 1", "obes1", (df_filter["Kategori"] == "Obesiti Tahap 1").sum()),
+        ("Obesiti Tahap 2", "obes2", (df_filter["Kategori"] == "Obesiti Tahap 2").sum()),
+        ("Obesiti Morbid", "morbid", (df_filter["Kategori"] == "Obesiti Morbid").sum()),
+    ]
 
-        kategori_bmi_data = [
-            ("Kurang Berat Badan", "kurang", (df_tapis["Kategori"] == "Kurang Berat Badan").sum()),
-            ("Normal", "normal", (df_tapis["Kategori"] == "Normal").sum()),
-            ("Lebih Berat Badan", "lebih", (df_tapis["Kategori"] == "Lebih Berat Badan").sum()),
-            ("Obesiti Tahap 1", "obes1", (df_tapis["Kategori"] == "Obesiti Tahap 1").sum()),
-            ("Obesiti Tahap 2", "obes2", (df_tapis["Kategori"] == "Obesiti Tahap 2").sum()),
-            ("Obesiti Morbid", "morbid", (df_tapis["Kategori"] == "Obesiti Morbid").sum()),
-        ]
+    for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
+        col.markdown(f"""
+        <div class="bmi-box {css_class}">
+            <div class="bmi-title">{label}</div>
+            <div class="bmi-value">{value}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-        for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
-            col.markdown(f"""
-                <div class="bmi-box {css_class}">
-                    <div class="bmi-title">{label}</div>
-                    <div class="bmi-value">{value}</div>
-                </div>
-            """, unsafe_allow_html=True)
+    # =========================================
+    # ✅ Pie Chart Ikut Filter
+    # =========================================
+    st.markdown(f"### 🎯 Peratus BMI ({filter_jantina})")
+    kategori_bmi = df_filter.groupby("Kategori").size().reset_index(name="Bilangan")
 
-        # ========================================
-        # ✅ Pie Chart Analitik
-        # ========================================
-        df_kategori = (
-            df_tapis.groupby("Kategori")
-            .size().reset_index(name="Bilangan")
-        )
+    fig = px.pie(
+        kategori_bmi,
+        names="Kategori",
+        values="Bilangan",
+        title=f"Peratus Peserta ({filter_jantina}) Mengikut Tahap BMI",
+        color="Kategori",
+        color_discrete_map=warna_mapping
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
-        fig = px.pie(
-            df_kategori,
+    # =========================================
+    # ✅ Dual Pie Chart: Lelaki vs Perempuan
+    # =========================================
+    st.markdown("### 👥 Perbandingan BMI Lelaki & Perempuan")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("#### 👨 Lelaki")
+        df_male = data_peserta[data_peserta["Jantina"].str.lower() == "lelaki"]
+        df_male = tambah_kiraan_peserta(df_male)
+
+        kategori_male = df_male.groupby("Kategori").size().reset_index(name="Bilangan")
+        fig_male = px.pie(
+            kategori_male,
             names="Kategori",
             values="Bilangan",
-            title="Peratus Peserta Mengikut Tahap BMI",
+            title="BMI Lelaki",
             color="Kategori",
             color_discrete_map=warna_mapping
         )
+        st.plotly_chart(fig_male, use_container_width=True)
 
-        st.plotly_chart(fig, use_container_width=True)
+    with col2:
+        st.markdown("#### 👩 Perempuan")
+        df_female = data_peserta[data_peserta["Jantina"].str.lower() == "perempuan"]
+        df_female = tambah_kiraan_peserta(df_female)
 
-        # ========================================
-        # ✅ Paparan Senarai Data
-        # ========================================
-        with st.expander("📋 Lihat Senarai Peserta Mengikut Kategori BMI"):
-            df_bmi = (
-                df_tapis[["NoStaf", "BMI", "Kategori"]]
-                .sort_values("Kategori")
-                .reset_index(drop=True)
-            )
-            df_bmi.index += 1
-            st.dataframe(df_bmi, use_container_width=True)
+        kategori_female = df_female.groupby("Kategori").size().reset_index(name="Bilangan")
+        fig_female = px.pie(
+            kategori_female,
+            names="Kategori",
+            values="Bilangan",
+            title="BMI Perempuan",
+            color="Kategori",
+            color_discrete_map=warna_mapping
+        )
+        st.plotly_chart(fig_female, use_container_width=True)
 
-    except Exception as e:
-        st.error(f"❌ Error memuatkan data: {e}")
+    # =========================================
+    # ✅ Senarai Data Mengikut Filter
+    # =========================================
+    with st.expander(f"📋 Lihat Senarai Peserta ({filter_jantina}) Mengikut Kategori BMI"):
+        df_bmi = df_filter[["NoStaf", "BMI", "Kategori"]].sort_values("Kategori")
+        df_bmi.index = df_bmi.index + 1
+        st.dataframe(df_bmi, use_container_width=True)
+
 
 
 
