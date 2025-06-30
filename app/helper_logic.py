@@ -34,8 +34,8 @@ def tambah_kiraan_peserta(df):
 
 
 def kira_progress_program():
-    tarikh_mula = pd.Timestamp("2025-06-01")
-    tarikh_tamat = pd.Timestamp("2025-12-31")
+    tarikh_mula = pd.Timestamp("2025-06-18")
+    tarikh_tamat = pd.Timestamp("2025-08-20")
     hari_berlalu = (pd.Timestamp.now().normalize() - tarikh_mula).days + 1
     total_hari = (tarikh_tamat - tarikh_mula).days + 1
     progress = min(max(hari_berlalu / total_hari * 100, 0), 100)
