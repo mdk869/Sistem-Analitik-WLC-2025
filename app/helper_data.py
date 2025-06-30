@@ -1,137 +1,54 @@
 import pandas as pd
 import streamlit as st
 from datetime import datetime
+from app.helper_logic import kira_bmi, kategori_bmi_asia
 from app.helper_gsheet import (
     load_worksheet_to_df,
     save_df_to_worksheet,
     append_row_to_worksheet,
-    create_worksheet_if_not_exist
+    update_baris_dalam_worksheet,
+    delete_baris_dalam_worksheet
 )
-from app.helper_logic import kira_bmi, kategori_bmi_asia
-from app.helper_utils import bulan_tahun_nice
+from app.helper_connection import connect_drive, connect_gspread
 
 # =========================================
-# ✅ Konfigurasi Spreadsheet & Sheet
+# ✅ Spreadsheet Settings
 # =========================================
-SPREADSHEET_ID = st.secrets["data_peserta_id"]
+SPREADSHEET_PESERTA = st.secrets["spreadsheet"]["data_peserta_id"]
 
 SHEET_PESERTA = "peserta"
-
-HEADER_PESERTA = [
-    'Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan',
-    'Tinggi', 'BeratAwal', 'TarikhDaftar',
-    'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori'
-]
-
-HEADER_REKOD = ['Nama', 'NoStaf', 'Tarikh', 'Berat']
 
 # =========================================
 # ✅ Load Data Peserta
 # =========================================
 def load_data_peserta():
-    df = load_worksheet_to_df(SPREADSHEET_ID, SHEET_PESERTA)
-
-    if df.empty:
-        df = pd.DataFrame(columns=HEADER_PESERTA)
-
-    # Sync BeratTerkini & TarikhTimbang dari rekod timbang
-    df = sync_berat_terkini(df)
-
+    df = load_worksheet_to_df(SPREADSHEET_PESERTA, SHEET_PESERTA)
+    df = sync_berat_dari_rekod(df)
     return df
 
-
 # =========================================
-# ✅ Simpan Rekod Timbangan
-# =========================================
-def simpan_rekod_berat(data):
-    """
-    Simpan rekod timbang ke sheet ikut bulan.
-    Contoh sheet: rekod_berat_Jun2025
-    """
-    sesi = bulan_tahun_nice(datetime.strptime(data["Tarikh"], "%Y-%m-%d"))
-    sheet_name = f"rekod_berat_{sesi}"
-
-    # Auto create sheet jika belum ada
-    create_worksheet_if_not_exist(SPREADSHEET_ID, sheet_name, HEADER_REKOD)
-
-    row = {
-        "Nama": data["Nama"],
-        "NoStaf": data["NoStaf"],
-        "Tarikh": data["Tarikh"],
-        "Berat": data["Berat"]
-    }
-
-    append_row_to_worksheet(SPREADSHEET_ID, sheet_name, row)
-    return True
-
-
-# =========================================
-# ✅ Load Semua Rekod Timbangan
+# ✅ Load Semua Rekod Berat (semua sheet rekod_berat_*)
 # =========================================
 def load_rekod_berat_semua():
-    from app.helper_gsheet import list_worksheets
+    sh = connect_gspread(SPREADSHEET_PESERTA)
+    sheet_list = [ws.title for ws in sh.worksheets() if ws.title.startswith("rekod_berat_")]
 
-    sheet_list = list_worksheets(SPREADSHEET_ID)
-    rekod_sheets = [s for s in sheet_list if s.startswith("rekod_berat_")]
-
-    df_list = []
-
-    for sheet in rekod_sheets:
-        df = load_worksheet_to_df(SPREADSHEET_ID, sheet)
+    dfs = []
+    for sheet in sheet_list:
+        df = load_worksheet_to_df(SPREADSHEET_PESERTA, sheet)
         if not df.empty:
-            df["SesiBulan"] = sheet.replace("rekod_berat_", "")
-            df_list.append(df)
+            df["Sheet"] = sheet
+            dfs.append(df)
 
-    if df_list:
-        return pd.concat(df_list, ignore_index=True)
+    if dfs:
+        return pd.concat(dfs, ignore_index=True)
     else:
-        return pd.DataFrame(columns=HEADER_REKOD + ["SesiBulan"])
-
-
-# =========================================
-# ✅ Sync BeratTerkini & TarikhTimbang ke Sheet Peserta
-# =========================================
-def sync_berat_terkini(df_peserta):
-    df_rekod = load_rekod_berat_semua()
-
-    if df_rekod.empty:
-        return df_peserta
-
-    df_rekod["Tarikh"] = pd.to_datetime(df_rekod["Tarikh"])
-
-    rekod_terkini = (
-        df_rekod.sort_values("Tarikh")
-        .groupby("NoStaf")
-        .last()
-        .reset_index()
-    )
-
-    for idx, row in df_peserta.iterrows():
-        no_staf = row["NoStaf"]
-
-        rekod = rekod_terkini[rekod_terkini["NoStaf"] == no_staf]
-
-        if not rekod.empty:
-            berat = rekod.iloc[0]["Berat"]
-            tarikh = rekod.iloc[0]["Tarikh"]
-
-            bmi = kira_bmi(berat, row["Tinggi"])
-            kategori = kategori_bmi_asia(bmi)
-
-            df_peserta.at[idx, "BeratTerkini"] = berat
-            df_peserta.at[idx, "TarikhTimbang"] = tarikh.strftime("%Y-%m-%d")
-            df_peserta.at[idx, "BMI"] = bmi
-            df_peserta.at[idx, "Kategori"] = kategori
-
-    save_df_to_worksheet(SPREADSHEET_ID, SHEET_PESERTA, df_peserta)
-
-    return df_peserta
-
+        return pd.DataFrame(columns=["Nama", "Tarikh", "Berat", "Sheet"])
 
 # =========================================
 # ✅ Daftar Peserta Baru
 # =========================================
-def daftar_peserta(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tarikh):
+def daftar_peserta(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tarikh_daftar):
     bmi = kira_bmi(berat_awal, tinggi)
     kategori = kategori_bmi_asia(bmi)
 
@@ -143,37 +60,82 @@ def daftar_peserta(nama, nostaf, umur, jantina, jabatan, tinggi, berat_awal, tar
         "Jabatan": jabatan,
         "Tinggi": tinggi,
         "BeratAwal": berat_awal,
-        "TarikhDaftar": str(tarikh),
+        "TarikhDaftar": str(tarikh_daftar),
         "BeratTerkini": berat_awal,
-        "TarikhTimbang": str(tarikh),
+        "TarikhTimbang": str(tarikh_daftar),
         "BMI": bmi,
         "Kategori": kategori
     }
 
-    append_row_to_worksheet(SPREADSHEET_ID, SHEET_PESERTA, data)
+    append_row_to_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, data)
+
+# =========================================
+# ✅ Simpan Rekod Berat (ke sheet rekod_berat_*)
+# =========================================
+def simpan_rekod_berat(data):
+    # Tetapkan sheet nama ikut bulan contoh: rekod_berat_Jun2025
+    tarikh_obj = pd.to_datetime(data["Tarikh"])
+    sheet_bulan = f"rekod_berat_{tarikh_obj.strftime('%b%Y')}"
+
+    # Buat sheet jika belum wujud
+    try:
+        sh = connect_gspread(SPREADSHEET_PESERTA)
+        sheet_names = [ws.title for ws in sh.worksheets()]
+        if sheet_bulan not in sheet_names:
+            sh.add_worksheet(title=sheet_bulan, rows=1000, cols=10)
+    except:
+        pass
+
+    # Simpan rekod timbang
+    data_rekod = {
+        "Nama": data["Nama"],
+        "Tarikh": data["Tarikh"],
+        "Berat": data["Berat"]
+    }
+    append_row_to_worksheet(SPREADSHEET_PESERTA, sheet_bulan, data_rekod)
+
     return True
-
-
-# =========================================
-# ✅ Update Data Peserta Berdasarkan NoStaf
-# =========================================
-def update_data_peserta(nostaf, update):
-    from app.helper_gsheet import update_baris_dalam_worksheet
-
-    return update_baris_dalam_worksheet(
-        SPREADSHEET_ID, SHEET_PESERTA,
-        key_column="NoStaf", key_value=nostaf,
-        update_dict=update
-    )
-
 
 # =========================================
 # ✅ Padam Peserta
 # =========================================
 def padam_peserta_dari_sheet(nostaf):
-    from app.helper_gsheet import padam_baris_dalam_worksheet
+    delete_baris_dalam_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, "NoStaf", nostaf)
 
-    return padam_baris_dalam_worksheet(
-        SPREADSHEET_ID, SHEET_PESERTA,
-        key_column="NoStaf", key_value=nostaf
+# =========================================
+# ✅ Update Data Peserta
+# =========================================
+def update_data_peserta(nostaf, update):
+    return update_baris_dalam_worksheet(
+        SPREADSHEET_PESERTA, SHEET_PESERTA,
+        key_column="NoStaf", key_value=nostaf,
+        update_dict=update
     )
+
+# =========================================
+# ✅ Sync Berat Terkini & Tarikh Timbang
+# =========================================
+def sync_berat_dari_rekod(df_peserta):
+    rekod = load_rekod_berat_semua()
+    if rekod.empty:
+        return df_peserta
+
+    rekod["Tarikh"] = pd.to_datetime(rekod["Tarikh"], errors="coerce")
+    rekod = rekod.dropna(subset=["Tarikh"])
+
+    rekod_sorted = rekod.sort_values(by="Tarikh", ascending=False).drop_duplicates(subset=["Nama"])
+
+    for _, row in rekod_sorted.iterrows():
+        idx = df_peserta[df_peserta["Nama"].str.lower() == str(row["Nama"]).lower()].index
+        if not idx.empty:
+            peserta_idx = idx[0]
+            df_peserta.at[peserta_idx, "BeratTerkini"] = row["Berat"]
+            df_peserta.at[peserta_idx, "TarikhTimbang"] = row["Tarikh"].strftime("%Y-%m-%d")
+
+            # Auto update BMI & Kategori
+            tinggi = df_peserta.at[peserta_idx, "Tinggi"]
+            bmi = kira_bmi(row["Berat"], tinggi)
+            df_peserta.at[peserta_idx, "BMI"] = bmi
+            df_peserta.at[peserta_idx, "Kategori"] = kategori_bmi_asia(bmi)
+
+    return df_peserta
