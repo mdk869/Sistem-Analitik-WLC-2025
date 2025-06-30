@@ -135,3 +135,10 @@ def proses_data_peserta(df: pd.DataFrame) -> pd.DataFrame:
 def carian_nama_suggestion(df, label="Nama", key=None):
     nama_list = sorted(df["Nama"].unique()) if "Nama" in df.columns else []
     return st.selectbox(label, nama_list, key=key)
+
+# ============================
+# ✅ Format Bulan Tahun
+# ============================
+def bulan_tahun_nice(tarikh):
+    return tarikh.strftime("%b%Y")  # Contoh: Jun2025
+
