@@ -190,3 +190,17 @@ def carian_nama_suggestion(df, label="Cari Nama", key="carian"):
     nama = st.selectbox("Senarai Nama:", options=suggestion, key=f"{key}_select") if suggestion else None
 
     return nama
+
+
+def tambah_sesi_bulan(df):
+    """
+    Tambah kolum 'SesiBulan' berdasarkan kolum 'Tarikh'.
+    """
+    if "Tarikh" not in df.columns:
+        return df
+
+    df = df.copy()
+    df["Tarikh"] = pd.to_datetime(df["Tarikh"], errors="coerce")
+    df = df.dropna(subset=["Tarikh"])
+    df["SesiBulan"] = df["Tarikh"].dt.strftime('%b %Y')
+    return df
