@@ -1,8 +1,10 @@
 import streamlit as st
 
-# ✅ CSS
-st.markdown("""
+# ✅ Fungsi Apply CSS Global
+def apply_css():
+    st.markdown("""
     <style>
+    /* ✅ Box BMI */
     .bmi-box {
         border-radius: 12px;
         padding: 1rem;
@@ -15,40 +17,59 @@ st.markdown("""
         animation: fadeIn 0.8s ease forwards;
         transition: transform 0.2s, box-shadow 0.2s;
     }
-
     .bmi-box:hover {
         transform: translateY(-5px);
         box-shadow: 4px 6px 12px rgba(0,0,0,0.2);
     }
-
     .bmi-title {
         font-size: 0.95rem;
         font-weight: 600;
         margin-bottom: 0.4rem;
     }
-
     .bmi-value {
         font-size: 2rem;
         font-weight: bold;
     }
 
+    /* ✅ Animation Fade In */
     @keyframes fadeIn {
         to { opacity: 1; }
     }
 
+    /* ✅ Warna Kategori BMI */
     .kurang { background-color: #00BFFF; }    /* Biru Cerah */
     .normal { background-color: #32CD32; }    /* Hijau */
     .lebih  { background-color: #FFD700; }    /* Kuning Emas */
     .obes1  { background-color: #FF8C00; }    /* Oren Gelap */
     .obes2  { background-color: #FF4500; }    /* Merah Tua */
     .morbid { background-color: #8B0000; }    /* Merah Gelap */
+
+    /* ✅ Customize Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    /* ✅ Table Styling */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    th, td {
+        padding: 6px;
+    }
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 
-
-
-# ✅ Warna kategori BMI
+# ✅ Warna kategori BMI untuk digunakan pada plotly dan lain-lain
 warna_mapping = {
     "Kurang Berat Badan": "#00BFFF",
     "Normal": "#32CD32",
@@ -59,7 +80,7 @@ warna_mapping = {
 }
 
 
-# ✅ Tema
+# ✅ Tema Global
 def paparkan_tema():
     st.set_page_config(
         page_title="Sistem Analitik WLC 2025",
@@ -68,12 +89,12 @@ def paparkan_tema():
     )
 
 
-# ✅ Header
+# ✅ Header Page
 def papar_header(title):
     st.markdown(f"## {title}")
 
 
-# ✅ Footer
+# ✅ Footer Page
 def papar_footer(owner, version, last_update, tagline):
     st.markdown(f"""
     <hr>
