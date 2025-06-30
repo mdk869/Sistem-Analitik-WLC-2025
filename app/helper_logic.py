@@ -7,26 +7,31 @@ def tambah_kiraan_peserta(df):
     """
     df = df.copy()
 
-    # Tukar ke nombor
+    # Tukar kolum kepada numeric
     df = convert_columns_to_numeric(df, ["Tinggi", "BeratAwal", "BeratTerkini"])
 
-    # Elakkan error NaN
-    df["Tinggi"] = df["Tinggi"].fillna(0)
-    df["BeratAwal"] = df["BeratAwal"].fillna(0)
-    df["BeratTerkini"] = df["BeratTerkini"].fillna(0)
+    # Isi NaN dengan 0 untuk elakkan error
+    df[["Tinggi", "BeratAwal", "BeratTerkini"]] = df[["Tinggi", "BeratAwal", "BeratTerkini"]].fillna(0)
 
-    # Kiraan BMI
-    df["BMI"] = (df["BeratTerkini"] / (df["Tinggi"] / 100) ** 2).round(2)
+    # Kiraan BMI dengan kawalan ZeroDivisionError
+    df["BMI"] = df.apply(
+        lambda x: round(x["BeratTerkini"] / (x["Tinggi"] / 100) ** 2, 2) if x["Tinggi"] > 0 else 0,
+        axis=1
+    )
     df["Kategori"] = df["BMI"].apply(kategori_bmi_asia)
 
-    # Kiraan % Penurunan
-    df["% Penurunan"] = (
-        ((df["BeratAwal"] - df["BeratTerkini"]) / df["BeratAwal"]) * 100
-    ).round(2)
+    # Kiraan % Penurunan dengan kawalan ZeroDivisionError
+    df["% Penurunan"] = df.apply(
+        lambda x: round(((x["BeratAwal"] - x["BeratTerkini"]) / x["BeratAwal"]) * 100, 2)
+        if x["BeratAwal"] > 0 else 0,
+        axis=1
+    )
 
+    # Bersihkan nilai -ve atau NaN
     df["% Penurunan"] = df["% Penurunan"].fillna(0).clip(lower=0)
 
     return df
+
 
 def kira_progress_program():
     tarikh_mula = pd.Timestamp("2025-06-01")
