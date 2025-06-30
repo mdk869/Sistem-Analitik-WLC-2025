@@ -170,7 +170,7 @@ with tab3:
 # ✅ Tab 4: Kemaskini Data Peserta
 # =========================================
 with tab4:
-    st.subheader("🛠️ Kemaskini Data Peserta")
+    st.subheader("🛠️ Kemaskini & Padam Data Peserta")
 
     nama_edit = carian_nama_suggestion(data_peserta, label="Nama Peserta", key="edit")
 
@@ -179,6 +179,7 @@ with tab4:
 
         if not df_row.empty:
             row = df_row.iloc[0]
+
             with st.form("form_edit", clear_on_submit=True):
                 col1, col2 = st.columns(2)
 
@@ -205,7 +206,13 @@ with tab4:
 
                 st.info(f"BMI: {bmi} ({kategori})")
 
-                submit = st.form_submit_button("✅ Kemaskini")
+                col_submit, col_delete = st.columns(2)
+
+                with col_submit:
+                    submit = st.form_submit_button("✅ Kemaskini")
+
+                with col_delete:
+                    padam = st.form_submit_button("🗑️ Padam Peserta")
 
                 if submit:
                     update_data_peserta(
@@ -225,6 +232,25 @@ with tab4:
                     st.success(f"✅ Data peserta '{nama_edit}' berjaya dikemaskini.")
                     refresh_data()
                     st.rerun()
+
+                if padam:
+                    with st.expander("⚠️ Pengesahan Padam Peserta"):
+                        st.warning("❌ Tindakan ini akan padam peserta secara kekal dari senarai.")
+                        confirm = st.checkbox("✔️ Saya faham dan bersetuju untuk padam peserta ini.")
+
+                        input_nama = st.text_input(
+                            "Taip semula nama peserta untuk pengesahan:",
+                            placeholder="Contoh: Ahmad Bin Ali"
+                        )
+
+                        if confirm and input_nama.lower().strip() == nama_edit.lower().strip():
+                            padam_peserta_dari_sheet(nostaf)
+                            st.success(f"✅ Peserta '{nama_edit}' berjaya dipadam.")
+                            refresh_data()
+                            st.rerun()
+                        else:
+                            st.info("ℹ️ Sahkan checkbox dan taip nama dengan betul untuk teruskan padam.")
+
 
 # =========================================
 # ✅ Tab 5: Backup & Restore
