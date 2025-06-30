@@ -1,5 +1,34 @@
 import streamlit as st
 
+st.markdown("""
+    <style>
+    .bmi-box {
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        color: white;
+        font-family: sans-serif;
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+        margin-bottom: 1rem;
+    }
+    .bmi-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+    }
+    .bmi-value {
+        font-size: 1.6rem;
+        font-weight: bold;
+    }
+.kurang { background-color: #00BFFF; }         /* Hijau */
+.normal { background-color: #32CD32; }         /* Kuning */
+.lebih { background-color: #FFD700; }          /* Oren */
+.obes1 { background-color: #FF8C00; }          /* Merah */
+.obes2 { background-color: #FF4500; }          /* Ungu */
+.morbid { background-color: #8B0000; }         /* Biru Gelap */
+</style>
+""", unsafe_allow_html=True)
+
 
 # ✅ Warna kategori BMI
 warna_mapping = {
