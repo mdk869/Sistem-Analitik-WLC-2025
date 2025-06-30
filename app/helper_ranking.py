@@ -30,18 +30,55 @@ def leaderboard_peserta(df, top_n=10):
 
     return df[["Ranking", "Nama", "NoStaf", "% Penurunan"]].head(top_n)
 
+
+
+
 def trend_penurunan_bulanan(df_rekod):
+    """
+    Jana graf trend berat purata bulanan.
+    """
     if df_rekod.empty:
         return None
 
-    df_rekod = df_rekod.copy()
-    df_rekod['Tarikh'] = pd.to_datetime(df_rekod['Tarikh'], errors='coerce')
-    df_group = df_rekod.groupby("SesiBulan")["Berat"].mean().reset_index()
+    df = df_rekod.copy()
 
+    # Tukar Tarikh ke datetime
+    df["Tarikh"] = pd.to_datetime(df["Tarikh"], errors="coerce")
+    df = df.dropna(subset=["Tarikh"])
+
+    # Wujudkan kolum 'SesiBulan' contoh: 'Jun 2025'
+    df["SesiBulan"] = df["Tarikh"].dt.strftime('%b %Y')
+
+    # Convert Berat ke numeric
+    df["Berat"] = pd.to_numeric(df["Berat"], errors="coerce")
+    df = df.dropna(subset=["Berat"])
+
+    # Group by bulan
+    df_group = df.groupby("SesiBulan").agg(
+        BeratPurata=('Berat', 'mean'),
+        BilanganTimbang=('Berat', 'count')
+    ).reset_index()
+
+    # Susun ikut tarikh sebenar
+    df_group["TarikhSort"] = pd.to_datetime(
+        df_group["SesiBulan"], format='%b %Y', errors='coerce'
+    )
+    df_group = df_group.sort_values(by="TarikhSort")
+
+    # Plot
     fig = px.line(
-        df_group, x="SesiBulan", y="Berat",
-        title="Trend Berat Purata Bulanan",
-        markers=True
+        df_group,
+        x="SesiBulan",
+        y="BeratPurata",
+        markers=True,
+        text="BilanganTimbang",
+        title="Trend Berat Purata Bulanan"
+    )
+    fig.update_traces(textposition="top center")
+    fig.update_layout(
+        xaxis_title="Bulan",
+        yaxis_title="Berat Purata (kg)",
+        showlegend=False
     )
 
     return fig
