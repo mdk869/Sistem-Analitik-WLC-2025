@@ -105,10 +105,13 @@ def update_data_peserta(nostaf, update):
     - update : dict {kolum: nilai baru}
     """
     return update_baris_dalam_worksheet(
-        SPREADSHEET_PESERTA, SHEET_PESERTA,
-        key_column="NoStaf", key_value=nostaf,
+        spreadsheet_id=SPREADSHEET_PESERTA,
+        sheet_name=SHEET_PESERTA,
+        key_col="NoStaf",
+        key_value=nostaf,
         update_dict=update
     )
+
 
 # ===============================
 # ✅ Padam Peserta
