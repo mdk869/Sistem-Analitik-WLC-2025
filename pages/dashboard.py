@@ -210,24 +210,21 @@ with tab4:
         cols = st.columns(6)
 
         kategori_bmi_data = [
-            (label, css_class, kiraan_bmi[label])
-            for label, css_class in zip(
-                kategori_list,
-                ["kurang", "normal", "lebih", "obes1", "obes2", "morbid"]
-            )
+            ("Kurang Berat Badan", "kurang", (df_tapis["Kategori"] == "Kurang Berat Badan").sum()),
+            ("Normal", "normal", (df_tapis["Kategori"] == "Normal").sum()),
+            ("Lebih Berat Badan", "lebih", (df_tapis["Kategori"] == "Lebih Berat Badan").sum()),
+            ("Obesiti Tahap 1", "obes1", (df_tapis["Kategori"] == "Obesiti Tahap 1").sum()),
+            ("Obesiti Tahap 2", "obes2", (df_tapis["Kategori"] == "Obesiti Tahap 2").sum()),
+            ("Obesiti Morbid", "morbid", (df_tapis["Kategori"] == "Obesiti Morbid").sum()),
         ]
 
-        st.markdown('<div class="bmi-container">', unsafe_allow_html=True)
-
-        for label, css_class, value in kategori_bmi_data:
-            st.markdown(f"""
+        for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
+            col.markdown(f"""
                 <div class="bmi-box {css_class}">
                     <div class="bmi-title">{label}</div>
                     <div class="bmi-value">{value}</div>
                 </div>
             """, unsafe_allow_html=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
 
         # ========================================
         # ✅ Pie Chart Analitik
