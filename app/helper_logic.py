@@ -1,5 +1,5 @@
 import pandas as pd
-
+from app.helper_utils import convert_columns_to_numeric
 
 def tambah_kiraan_peserta(df):
     df = df.copy()
@@ -63,3 +63,49 @@ def kategori_bmi_asia(bmi):
     else:
         return "Obesiti Morbid"
 
+# =========================================
+# ✅ Formula BMI
+# =========================================
+def kira_bmi(berat, tinggi):
+    """
+    BMI = berat (kg) / (tinggi (m))^2
+    """
+    try:
+        tinggi_meter = tinggi / 100
+        bmi = berat / (tinggi_meter ** 2)
+        return round(bmi, 2)
+    except Exception:
+        return 0
+
+
+# =========================================
+# ✅ Kategori BMI Asia
+# =========================================
+def kategori_bmi_asia(bmi):
+    """
+    Kategori BMI berdasarkan standard Asia.
+    """
+    if bmi < 18.5:
+        return "Underweight"
+    elif 18.5 <= bmi < 23:
+        return "Normal"
+    elif 23 <= bmi < 27.5:
+        return "Overweight"
+    else:
+        return "Obese"
+
+
+# =========================================
+# ✅ Tambah Kiraan BMI & Kategori
+# =========================================
+def tambah_kiraan_peserta(df):
+    """
+    Tambah kolum BMI dan Kategori ke dataframe peserta.
+    """
+    df = df.copy()
+    df = convert_columns_to_numeric(df, ["Tinggi", "BeratTerkini"])
+
+    df["BMI"] = (df["BeratTerkini"] / (df["Tinggi"] / 100) ** 2).round(2)
+    df["Kategori"] = df["BMI"].apply(kategori_bmi_asia)
+
+    return df
