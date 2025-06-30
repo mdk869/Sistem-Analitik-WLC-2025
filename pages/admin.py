@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import date
+from io import BytesIO
 
 # ✅ Import Helper
 from app.helper_auth import check_login
@@ -130,6 +131,7 @@ with tab3:
             if submit:
                 data = {
                     "Nama": nama_timbang,
+                    "NoStaf": nostaf,
                     "Tarikh": tarikh.strftime("%Y-%m-%d"),
                     "Berat": berat
                 }
@@ -204,10 +206,10 @@ with tab4:
 with tab5:
     st.subheader("🗄️ Backup & Restore Data")
 
-    with st.expander("📥 Backup Data"):
+    with st.expander("📥 Backup Data ke Google Drive"):
         st.info("Backup semua data ke Google Drive.")
         if st.button("🔽 Backup Data"):
-            file_name = f"backup_data_peserta_{date.today()}.xlsx"
+            file_name = f"data_peserta_{date.today().strftime('%Y%m%d')}.xlsx"
             data_peserta.to_excel(file_name, index=False)
             upload_to_drive(file_name, file_name)
             st.success(f"✅ Data berjaya dibackup ke Google Drive sebagai '{file_name}'.")
@@ -215,28 +217,31 @@ with tab5:
     with st.expander("📤 Export Data Manual"):
         pilihan = st.selectbox("Pilih Data untuk Export", ["Data Peserta", "Rekod Timbang"])
         if st.button("🔽 Export"):
-            if pilihan == "Data Peserta":
-                df = data_peserta
-            else:
-                df = data_rekod
-            file_name = f"{pilihan.lower().replace(' ','_')}_{date.today()}.xlsx"
-            df.to_excel(file_name, index=False)
-            st.download_button("💾 Download", data=open(file_name, "rb"), file_name=file_name)
+            df = data_peserta if pilihan == "Data Peserta" else data_rekod
+            towrite = BytesIO()
+            df.to_excel(towrite, index=False, engine='openpyxl')
+            towrite.seek(0)
+            st.download_button(
+                label="💾 Download File",
+                data=towrite,
+                file_name=f"{pilihan.lower().replace(' ','_')}_{date.today().strftime('%Y%m%d')}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
 
-    with st.expander("♻️ Restore Data"):
-        st.warning("⚠️ Fungsi Restore manual. Upload akan overwrite data sedia ada.")
+    with st.expander("♻️ Restore Data (Manual)"):
+        st.warning("⚠️ Fungsi Restore manual. Upload akan overwrite data sedia ada (belum auto sync ke Google Sheet).")
         file_upload = st.file_uploader("Upload Fail XLSX untuk Restore", type=["xlsx"])
         if file_upload:
             df_restore = pd.read_excel(file_upload)
             st.dataframe(df_restore)
-            st.success("✅ Data berjaya dimuat naik. Sila implement restore ke Google Sheets secara manual.")
+            st.info("✅ Data berjaya dimuat naik. **Sila implement restore ke Google Sheets secara manual.**")
 
 # =========================================
 # ✅ Footer
 # =========================================
 papar_footer(
     owner="MKR Dev Team",
-    version="v4.1.0",
+    version="v4.2.1",
     last_update="2025-06-30",
     tagline="Empowering Data-Driven Decisions."
 )
