@@ -142,3 +142,8 @@ def carian_nama_suggestion(df, label="Nama", key=None):
 def bulan_tahun_nice(tarikh):
     return tarikh.strftime("%b%Y")  # Contoh: Jun2025
 
+
+def convert_columns_to_numeric(df, columns):
+    for col in columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    return df
