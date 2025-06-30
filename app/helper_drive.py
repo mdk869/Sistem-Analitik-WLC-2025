@@ -1,7 +1,7 @@
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
-from app.helper_connection import connect_drive
+from app.helper_connection import get_drive_service
 import io
 import streamlit as st
 
@@ -22,7 +22,7 @@ DRIVE_FOLDER_ID = st.secrets["drive"]["folder_id"]
 # ======= Upload Function =======
 
 def upload_to_drive(file_path, file_name, folder_id=None):
-    service = connect_drive()
+    service = get_drive_service()
     file_metadata = {'name': file_name}
     if folder_id:
         file_metadata['parents'] = [folder_id]
