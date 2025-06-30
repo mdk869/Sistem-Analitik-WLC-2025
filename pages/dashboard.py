@@ -167,60 +167,62 @@ with tab3:
 with tab4:
     st.subheader("📊 Analisis BMI Peserta")
 
-    # ========================================
-    # ✅ Load & Kiraan Data
-    # ========================================
     try:
-        data_peserta = load_data_peserta()  # ✅ Auto sync dengan rekod timbang
-        df_tapis = tambah_kiraan_peserta(data_peserta)  # ✅ Tambah BMI, Kategori, % Penurunan
+        # ========================================
+        # ✅ Load & Kiraan Data
+        # ========================================
+        data_peserta = load_data_peserta()
+        df_tapis = tambah_kiraan_peserta(data_peserta)
 
         # ========================================
         # ✅ Kiraan Bilangan Setiap Kategori BMI
         # ========================================
+        kategori_list = [
+            "Kurang Berat Badan", "Normal", "Lebih Berat Badan",
+            "Obesiti Tahap 1", "Obesiti Tahap 2", "Obesiti Morbid"
+        ]
+
         kiraan_bmi = {
-            "Kurang Berat Badan": (df_tapis["Kategori"] == "Kurang Berat Badan").sum(),
-            "Normal": (df_tapis["Kategori"] == "Normal").sum(),
-            "Lebih Berat Badan": (df_tapis["Kategori"] == "Lebih Berat Badan").sum(),
-            "Obesiti Tahap 1": (df_tapis["Kategori"] == "Obesiti Tahap 1").sum(),
-            "Obesiti Tahap 2": (df_tapis["Kategori"] == "Obesiti Tahap 2").sum(),
-            "Obesiti Morbid": (df_tapis["Kategori"] == "Obesiti Morbid").sum(),
+            kategori: (df_tapis["Kategori"] == kategori).sum()
+            for kategori in kategori_list
         }
 
         # ========================================
-        # ✅ Paparan Metrik
+        # ✅ Paparan Metrik BMI (CSS Box)
         # ========================================
-        col1, col2, col3, col4, col5, col6 = st.columns(6)
-
         cols = st.columns(6)
+
         kategori_bmi_data = [
-            ("Kurang Berat Badan", "kurang", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum()),
-            ("Normal", "normal", (df_tapis["KategoriBMI"] == "Normal").sum()),
-            ("Lebih Berat Badan", "lebih", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum()),
-            ("Obesiti Tahap 1", "obes1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum()),
-            ("Obesiti Tahap 2", "obes2", (df_tapis["KategoriBMI"] == "Obesiti Tahap 2").sum()),
-            ("Obesiti Morbid", "morbid", (df_tapis["KategoriBMI"] == "Obesiti Morbid").sum()),
+            (label, css_class, kiraan_bmi[label])
+            for label, css_class in zip(
+                kategori_list,
+                ["kurang", "normal", "lebih", "obes1", "obes2", "morbid"]
+            )
         ]
 
         for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
             col.markdown(f"""
-            <div class="bmi-box {css_class}">
-                <div class="bmi-title">{label}</div>
-                <div class="bmi-value">{value}</div>
-            </div>
+                <div class="bmi-box {css_class}">
+                    <div class="bmi-title">{label}</div>
+                    <div class="bmi-value">{value}</div>
+                </div>
             """, unsafe_allow_html=True)
 
         # ========================================
         # ✅ Pie Chart Analitik
         # ========================================
-        kategori_bmi = df_tapis.groupby("Kategori").size().reset_index(name="Bilangan")
+        df_kategori = (
+            df_tapis.groupby("Kategori")
+            .size().reset_index(name="Bilangan")
+        )
 
         fig = px.pie(
-            kategori_bmi,
+            df_kategori,
             names="Kategori",
             values="Bilangan",
             title="Peratus Peserta Mengikut Tahap BMI",
             color="Kategori",
-            color_discrete_map=warna_mapping  # ✅ Map warna boleh define di global
+            color_discrete_map=warna_mapping
         )
 
         st.plotly_chart(fig, use_container_width=True)
@@ -229,12 +231,17 @@ with tab4:
         # ✅ Paparan Senarai Data
         # ========================================
         with st.expander("📋 Lihat Senarai Peserta Mengikut Kategori BMI"):
-            df_bmi = df_tapis[["NoStaf", "BMI", "Kategori"]].sort_values("Kategori")
-            df_bmi.index = df_bmi.index + 1
+            df_bmi = (
+                df_tapis[["NoStaf", "BMI", "Kategori"]]
+                .sort_values("Kategori")
+                .reset_index(drop=True)
+            )
+            df_bmi.index += 1
             st.dataframe(df_bmi, use_container_width=True)
 
     except Exception as e:
         st.error(f"❌ Error memuatkan data: {e}")
+
 
 
 
