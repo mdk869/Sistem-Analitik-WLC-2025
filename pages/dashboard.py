@@ -11,10 +11,11 @@ from app.helper_data import load_data_peserta, load_rekod_berat_semua
 from app.helper_utils import check_header_consistency, tambah_sesi_bulan
 from app.helper_logic import tambah_kiraan_peserta, kira_progress_program
 from app.helper_ranking import leaderboard_peserta, trend_penurunan_bulanan
-from app.styles import paparkan_tema, papar_header, papar_footer, warna_mapping
+from app.styles import paparkan_tema, papar_header, papar_footer, warna_mapping, apply_css
 
 # ===== Layout & Tema =====
 paparkan_tema()
+apply_css()
 papar_header("Dashboard | WLC 2025")
 
 st.title("📊 Dashboard Analitik WLC 2025")
