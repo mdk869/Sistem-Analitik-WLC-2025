@@ -178,7 +178,7 @@ with tab4:
     st.plotly_chart(fig, use_container_width=True)
 
     with st.expander("📋 Lihat Senarai Peserta Mengikut Kategori BMI"):
-        df_bmi = df_kiraan[["Nama", "NoStaf", "BMI", "Kategori"]].sort_values("Kategori")
+        df_bmi = df_kiraan[["NoStaf", "BMI", "Kategori"]].sort_values("Kategori")
         df_bmi.index = df_bmi.index + 1
         st.dataframe(df_bmi, use_container_width=True)
 
