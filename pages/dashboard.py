@@ -229,7 +229,7 @@ with tab4:
     # =========================================
     # ✅ Pie Chart Ikut Filter
     # =========================================
-    st.markdown(f"### 🎯 Peratus BMI ({filter_jantina})")
+    st.markdown(f"###Peratus BMI ({filter_jantina})")
     kategori_bmi = df_filter.groupby("Kategori").size().reset_index(name="Bilangan")
 
     fig = px.pie(
@@ -245,7 +245,7 @@ with tab4:
     # =========================================
     # ✅ Dual Pie Chart: Lelaki vs Perempuan
     # =========================================
-    st.markdown("### 👥 Perbandingan BMI Lelaki & Perempuan")
+    st.markdown("###Perbandingan BMI Lelaki & Perempuan")
 
     col1, col2 = st.columns(2)
 
