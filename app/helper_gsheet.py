@@ -112,3 +112,21 @@ def load_multiple_sheets_by_prefix(spreadsheet_id, prefix):
         return pd.concat(df_list, ignore_index=True)
     else:
         return pd.DataFrame()
+
+
+# =========================================
+# ✅ Padam Baris Berdasarkan Key
+# =========================================
+def delete_baris_dalam_worksheet(spreadsheet_id, sheet_name, key_column, key_value):
+    df = load_worksheet_to_df(spreadsheet_id, sheet_name)
+    if df.empty:
+        return False
+
+    new_df = df[df[key_column] != key_value]
+
+    if len(new_df) == len(df):
+        # Tidak jumpa key
+        return False
+
+    save_df_to_worksheet(spreadsheet_id, sheet_name, new_df)
+    return True
