@@ -86,32 +86,48 @@ with tab1:
 # ✅ Tab 2: Leaderboard
 # ========================================
 with tab2:
-    st.subheader("Leaderboard & Trend Berat")
+    st.subheader("🏆 Leaderboard & Trend Berat")
 
     col1, col2 = st.columns(2)
 
+    # ========================================
+    # ✅ Leaderboard Penurunan Berat
+    # ========================================
     with col1:
         st.markdown("### 🏅 Top 10 Penurunan Berat (%)")
+
         leaderboard = leaderboard_peserta(data_peserta, top_n=10)
 
         if not leaderboard.empty:
+            # ✅ Tambah Icon Medal
+            leaderboard = leaderboard.copy()
+            leaderboard["RankingIcon"] = leaderboard.apply(
+                lambda row: f"🥇 {row['Ranking']}" if row["% Penurunan"] > 0
+                else f"{row['Ranking']}", axis=1
+            )
+
             st.dataframe(
-                leaderboard.set_index("Ranking").style.format({"% Penurunan": "{:.2f}%"}),
+                leaderboard.set_index("RankingIcon")
+                .style.format({"% Penurunan": "{:.2f}%"}),
                 use_container_width=True
             )
         else:
             st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
 
+    # ========================================
+    # ✅ Trend Berat Purata Bulanan
+    # ========================================
     with col2:
         st.markdown("### 📈 Trend Berat Purata Bulanan")
-        df_rekod = load_rekod_berat_semua()
 
+        df_rekod = load_rekod_berat_semua()
         fig = trend_penurunan_bulanan(df_rekod)
 
         if fig:
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.info("⚠️ Tiada data trend untuk dipaparkan.")
+
 
 # ========================================
 # ✅ Tab 3: Status Timbang
