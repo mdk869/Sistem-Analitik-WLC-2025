@@ -2,19 +2,31 @@ import pandas as pd
 from app.helper_utils import convert_columns_to_numeric
 
 def tambah_kiraan_peserta(df):
+    """
+    Tambah kolum BMI, Kategori dan % Penurunan ke dataframe peserta.
+    """
     df = df.copy()
 
-    df["BMI"] = ((df["BeratTerkini"] / (df["Tinggi"]/100) ** 2)).round(2)
-    df["% Penurunan"] = ((df["BeratAwal"] - df["BeratTerkini"]) / df["BeratAwal"] * 100).round(2)
+    # Tukar ke nombor
+    df = convert_columns_to_numeric(df, ["Tinggi", "BeratAwal", "BeratTerkini"])
 
-    df["Kategori"] = pd.cut(
-        df["BMI"],
-        bins=[0, 18.5, 24.9, 29.9, 100],
-        labels=["Underweight", "Normal", "Overweight", "Obese"]
-    ).astype(str)
+    # Elakkan error NaN
+    df["Tinggi"] = df["Tinggi"].fillna(0)
+    df["BeratAwal"] = df["BeratAwal"].fillna(0)
+    df["BeratTerkini"] = df["BeratTerkini"].fillna(0)
+
+    # Kiraan BMI
+    df["BMI"] = (df["BeratTerkini"] / (df["Tinggi"] / 100) ** 2).round(2)
+    df["Kategori"] = df["BMI"].apply(kategori_bmi_asia)
+
+    # Kiraan % Penurunan
+    df["% Penurunan"] = (
+        ((df["BeratAwal"] - df["BeratTerkini"]) / df["BeratAwal"]) * 100
+    ).round(2)
+
+    df["% Penurunan"] = df["% Penurunan"].fillna(0).clip(lower=0)
 
     return df
-
 
 def kira_progress_program():
     tarikh_mula = pd.Timestamp("2025-06-01")
