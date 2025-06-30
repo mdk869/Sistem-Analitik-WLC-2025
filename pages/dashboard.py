@@ -145,7 +145,6 @@ with col1:
             rank = int(row["Ranking"])
             nama = row["Nama"]
             peratus = row["% Penurunan"]
-            berat_terkini = row["BeratTerkini"]
 
             # Tetapkan ikon medal dan warna
             if peratus > 0:
