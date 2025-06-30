@@ -167,20 +167,70 @@ with tab3:
 with tab4:
     st.subheader("📊 Analisis BMI Peserta")
 
-    df_kiraan = tambah_kiraan_peserta(data_peserta)
+    # ========================================
+    # ✅ Load & Kiraan Data
+    # ========================================
+    try:
+        data_peserta = load_data_peserta()  # ✅ Auto sync dengan rekod timbang
+        df_tapis = tambah_kiraan_peserta(data_peserta)  # ✅ Tambah BMI, Kategori, % Penurunan
 
-    kategori_bmi = df_kiraan.groupby("Kategori").size().reset_index(name="Bilangan")
-    fig = px.pie(
-        kategori_bmi, names="Kategori", values="Bilangan",
-        color="Kategori", color_discrete_map=warna_mapping,
-        title="Peratus Peserta Mengikut Tahap BMI"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+        # ========================================
+        # ✅ Kiraan Bilangan Setiap Kategori BMI
+        # ========================================
+        kiraan_bmi = {
+            "Kurang Berat Badan": (df_tapis["Kategori"] == "Kurang Berat Badan").sum(),
+            "Normal": (df_tapis["Kategori"] == "Normal").sum(),
+            "Lebih Berat Badan": (df_tapis["Kategori"] == "Lebih Berat Badan").sum(),
+            "Obesiti Tahap 1": (df_tapis["Kategori"] == "Obesiti Tahap 1").sum(),
+            "Obesiti Tahap 2": (df_tapis["Kategori"] == "Obesiti Tahap 2").sum(),
+            "Obesiti Morbid": (df_tapis["Kategori"] == "Obesiti Morbid").sum(),
+        }
 
-    with st.expander("📋 Lihat Senarai Peserta Mengikut Kategori BMI"):
-        df_bmi = df_kiraan[["NoStaf", "BMI", "Kategori"]].sort_values("Kategori")
-        df_bmi.index = df_bmi.index + 1
-        st.dataframe(df_bmi, use_container_width=True)
+        # ========================================
+        # ✅ Paparan Metrik
+        # ========================================
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric("🟦 Kurang Berat Badan", kiraan_bmi["Kurang Berat Badan"])
+            st.metric("🟩 Normal", kiraan_bmi["Normal"])
+
+        with col2:
+            st.metric("🟨 Lebih Berat Badan", kiraan_bmi["Lebih Berat Badan"])
+            st.metric("🟥 Obesiti Tahap 1", kiraan_bmi["Obesiti Tahap 1"])
+
+        with col3:
+            st.metric("🟥 Obesiti Tahap 2", kiraan_bmi["Obesiti Tahap 2"])
+            st.metric("🟥 Obesiti Morbid", kiraan_bmi["Obesiti Morbid"])
+
+        # ========================================
+        # ✅ Pie Chart Analitik
+        # ========================================
+        kategori_bmi = df_tapis.groupby("Kategori").size().reset_index(name="Bilangan")
+
+        fig = px.pie(
+            kategori_bmi,
+            names="Kategori",
+            values="Bilangan",
+            title="Peratus Peserta Mengikut Tahap BMI",
+            color="Kategori",
+            color_discrete_map=warna_mapping  # ✅ Map warna boleh define di global
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        # ========================================
+        # ✅ Paparan Senarai Data
+        # ========================================
+        with st.expander("📋 Lihat Senarai Peserta Mengikut Kategori BMI"):
+            df_bmi = df_tapis[["NoStaf", "BMI", "Kategori"]].sort_values("Kategori")
+            df_bmi.index = df_bmi.index + 1
+            st.dataframe(df_bmi, use_container_width=True)
+
+    except Exception as e:
+        st.error(f"❌ Error memuatkan data: {e}")
+
+
 
 # ========================================
 # ✅ Footer
