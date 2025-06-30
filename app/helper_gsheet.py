@@ -1,65 +1,70 @@
-import pandas as pd
 import streamlit as st
+import pandas as pd
 import gspread
-from gspread_dataframe import get_as_dataframe, set_with_dataframe
+from gspread.exceptions import WorksheetNotFound
 from google.oauth2.service_account import Credentials
 
+
 # =========================================
-# ✅ Connection Google Sheets
+# ✅ Connect ke Google Spreadsheet
 # =========================================
 def connect_gsheet(spreadsheet_id):
-    scopes = [
+    """
+    Connect ke Google Spreadsheet menggunakan credentials dari st.secrets.
+    """
+    scope = [
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive"
     ]
-    credentials = Credentials.from_service_account_info(
+    creds = Credentials.from_service_account_info(
         st.secrets["gcp_service_account"],
-        scopes=scopes
+        scopes=scope
     )
-    client = gspread.authorize(credentials)
-    sh = client.open_by_key(spreadsheet_id)
-    return sh
+    client = gspread.authorize(creds)
+    spreadsheet = client.open_by_key(spreadsheet_id)
+    return spreadsheet
+
 
 # =========================================
 # ✅ Load Sheet ke DataFrame
 # =========================================
 def load_worksheet_to_df(spreadsheet_id, sheet_name):
     try:
-        sh = connect_gsheet(spreadsheet_id)
-        worksheet = sh.worksheet(sheet_name)
-        df = get_as_dataframe(worksheet).dropna(how="all")
-        df = df.dropna(axis=1, how="all")
-        df = df.fillna("")
+        spreadsheet = connect_gsheet(spreadsheet_id)
+        worksheet = spreadsheet.worksheet(sheet_name)
+        data = worksheet.get_all_records()
+        df = pd.DataFrame(data)
         return df
-    except Exception:
+    except WorksheetNotFound:
         return pd.DataFrame()
 
+
 # =========================================
-# ✅ Save DataFrame ke Sheet
+# ✅ Save DataFrame ke Sheet (Replace)
 # =========================================
 def save_df_to_worksheet(spreadsheet_id, sheet_name, df):
-    sh = connect_gsheet(spreadsheet_id)
+    spreadsheet = connect_gsheet(spreadsheet_id)
     try:
-        worksheet = sh.worksheet(sheet_name)
-        worksheet.clear()
-    except gspread.exceptions.WorksheetNotFound:
-        worksheet = sh.add_worksheet(title=sheet_name, rows=1000, cols=26)
+        worksheet = spreadsheet.worksheet(sheet_name)
+    except WorksheetNotFound:
+        worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="1000", cols="50")
 
-    set_with_dataframe(worksheet, df)
+    worksheet.clear()
+    if not df.empty:
+        worksheet.update([df.columns.values.tolist()] + df.values.tolist())
+
 
 # =========================================
-# ✅ Append Row ke Sheet
+# ✅ Append Baris Baru ke Sheet
 # =========================================
 def append_row_to_worksheet(spreadsheet_id, sheet_name, data_dict):
-    df_existing = load_worksheet_to_df(spreadsheet_id, sheet_name)
+    df = load_worksheet_to_df(spreadsheet_id, sheet_name)
+    df = pd.concat([df, pd.DataFrame([data_dict])], ignore_index=True)
+    save_df_to_worksheet(spreadsheet_id, sheet_name, df)
 
-    df_new = pd.DataFrame([data_dict])
-
-    df_combined = pd.concat([df_existing, df_new], ignore_index=True)
-    save_df_to_worksheet(spreadsheet_id, sheet_name, df_combined)
 
 # =========================================
-# ✅ Update Row Berdasarkan Key
+# ✅ Update Baris Berdasarkan Key
 # =========================================
 def update_baris_dalam_worksheet(spreadsheet_id, sheet_name, key_column, key_value, update_dict):
     df = load_worksheet_to_df(spreadsheet_id, sheet_name)
@@ -76,10 +81,34 @@ def update_baris_dalam_worksheet(spreadsheet_id, sheet_name, key_column, key_val
         return True
     return False
 
+
 # =========================================
-# ✅ Delete Row Berdasarkan Key
+# ✅ Semak & Cipta Sheet Jika Tiada
 # =========================================
-def delete_baris_dalam_worksheet(spreadsheet_id, sheet_name, key_column, key_value):
-    df = load_worksheet_to_df(spreadsheet_id, sheet_name)
-    df = df[df[key_column] != key_value]
-    save_df_to_worksheet(spreadsheet_id, sheet_name, df)
+def check_or_create_sheet(spreadsheet_id, sheet_name, header_list):
+    spreadsheet = connect_gsheet(spreadsheet_id)
+    try:
+        spreadsheet.worksheet(sheet_name)
+    except WorksheetNotFound:
+        worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="1000", cols="50")
+        worksheet.append_row(header_list)
+
+
+# =========================================
+# ✅ Load Banyak Sheet Ikut Prefix (Contoh rekod_berat_*)
+# =========================================
+def load_multiple_sheets_by_prefix(spreadsheet_id, prefix):
+    spreadsheet = connect_gsheet(spreadsheet_id)
+    sheet_list = [ws.title for ws in spreadsheet.worksheets() if ws.title.startswith(prefix)]
+
+    df_list = []
+    for sheet in sheet_list:
+        df = load_worksheet_to_df(spreadsheet_id, sheet)
+        if not df.empty:
+            df["Sheet"] = sheet  # Tambah info sheet
+            df_list.append(df)
+
+    if df_list:
+        return pd.concat(df_list, ignore_index=True)
+    else:
+        return pd.DataFrame()
