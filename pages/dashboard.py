@@ -90,8 +90,8 @@ with tab2:
 
     col1, col2 = st.columns(2)
 
-# ========================================
-# ✅ Leaderboard Penurunan Berat (Card Grid)
+    # ========================================
+# ✅ Leaderboard Penurunan Berat
 # ========================================
 with col1:
     st.markdown("### 🏅 Top 10 Penurunan Berat (%)")
@@ -99,87 +99,21 @@ with col1:
     leaderboard = leaderboard_peserta(data_peserta, top_n=10)
 
     if not leaderboard.empty:
+        # ✅ Masukkan Icon 🏆 ke dalam kolum Ranking
         leaderboard = leaderboard.copy()
+        leaderboard["Ranking"] = leaderboard.apply(
+            lambda row: f"🏆 {row['Ranking']}" if row["% Penurunan"] > 0 else f"{row['Ranking']}",
+            axis=1
+        )
 
-        # Tetapkan Gradient Warna ikut ranking
-        warna_gradient = {
-            1: "linear-gradient(135deg, #FFD700, #FFEF8A)",  # 🥇 Emas
-            2: "linear-gradient(135deg, #C0C0C0, #D9D9D9)",  # 🥈 Perak
-            3: "linear-gradient(135deg, #cd7f32, #D2A679)",  # 🥉 Gangsa
-        }
-
-        # CSS untuk Grid dan Animation
-        st.markdown("""
-            <style>
-            .grid-container {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                gap: 16px;
-            }
-            .card {
-                border-radius: 16px;
-                padding: 18px;
-                background: #f0f0f0;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-                transition: transform 0.3s ease;
-                position: relative;
-            }
-            .card:hover {
-                transform: translateY(-5px);
-            }
-            .badge {
-                background-color: #FF4136;
-                color: white;
-                padding: 2px 8px;
-                border-radius: 8px;
-                font-size: 0.8rem;
-                margin-left: 8px;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-
-        # Buka grid container
-        st.markdown('<div class="grid-container">', unsafe_allow_html=True)
-
-        for _, row in leaderboard.iterrows():
-            rank = int(row["Ranking"])
-            nama = row["Nama"]
-            peratus = row["% Penurunan"]
-
-            # Tetapkan ikon medal dan warna
-            if peratus > 0:
-                if rank == 1:
-                    ikon = "🥇"
-                    badge = '<span class="badge">🏆 Champion</span>'
-                elif rank == 2:
-                    ikon = "🥈"
-                    badge = ""
-                elif rank == 3:
-                    ikon = "🥉"
-                    badge = ""
-                else:
-                    ikon = "🏅"
-                    badge = ""
-            else:
-                ikon = f"{rank}"
-                badge = ""
-
-            background = warna_gradient.get(rank, "#f9f9f9")
-
-            # Paparkan dalam kad grid
-            st.markdown(f"""
-            <div class="card" style="background: {background};">
-                <h4 style="margin:0;">{ikon} {nama} {badge}</h4>
-                <p style="margin:4px 0;">🔢 <b>Ranking:</b> {rank}</p>
-                <p style="margin:4px 0;">🎯 <b>% Penurunan:</b> {peratus:.2f}%</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Tutup grid container
-        st.markdown('</div>', unsafe_allow_html=True)
-
+        st.dataframe(
+            leaderboard.set_index("Ranking")
+            .style.format({"% Penurunan": "{:.2f}%"}),
+            use_container_width=True
+        )
     else:
         st.info("⚠️ Tiada data leaderboard untuk dipaparkan.")
+
 
     # ========================================
     # ✅ Trend Berat Purata Bulanan
