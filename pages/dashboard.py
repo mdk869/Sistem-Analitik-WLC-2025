@@ -217,13 +217,17 @@ with tab4:
             )
         ]
 
-        for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
-            col.markdown(f"""
+        st.markdown('<div class="bmi-container">', unsafe_allow_html=True)
+
+        for label, css_class, value in kategori_bmi_data:
+            st.markdown(f"""
                 <div class="bmi-box {css_class}">
                     <div class="bmi-title">{label}</div>
                     <div class="bmi-value">{value}</div>
                 </div>
             """, unsafe_allow_html=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
         # ========================================
         # ✅ Pie Chart Analitik
