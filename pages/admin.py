@@ -17,7 +17,6 @@ from app.helper_data import (
 )
 from app.styles import paparkan_tema, papar_header, papar_footer
 
-
 # =========================================
 # ✅ Semakan Login
 # =========================================
@@ -128,31 +127,14 @@ with tab3:
             submit = st.form_submit_button("✅ Simpan Rekod")
 
             if submit:
-                data = {
+                simpan_rekod_berat({
                     "Nama": nama_timbang,
                     "NoStaf": nostaf,
                     "Tarikh": tarikh.strftime("%Y-%m-%d"),
-                    "Berat": berat,
-                    "SesiBulan": tarikh.strftime("%Y-%m")
-                }
+                    "Berat": berat
+                })
 
-                status = simpan_rekod_berat(data)
-
-                # Kemas kini berat terkini peserta
-                update_data_peserta(
-                    nostaf,
-                    {
-                        "BeratTerkini": berat,
-                        "TarikhTimbang": tarikh.strftime("%Y-%m-%d"),
-                        "BMI": kira_bmi(berat, row.iloc[0]["Tinggi"]),
-                        "Kategori": kategori_bmi_asia(kira_bmi(berat, row.iloc[0]["Tinggi"]))
-                    }
-                )
-
-                if status:
-                    st.success(f"✅ Rekod berat untuk {nama_timbang} berjaya disimpan.")
-                else:
-                    st.warning("⚠️ Terdapat isu semasa simpan rekod.")
+                st.success(f"✅ Rekod berat untuk {nama_timbang} berjaya disimpan.")
                 st.rerun()
 
 # =========================================
@@ -189,7 +171,6 @@ with tab4:
                         "Tarikh Timbang", pd.to_datetime(row["TarikhTimbang"])
                     )
 
-                # ✅ Auto BMI & Kategori
                 bmi = kira_bmi(berat_terkini, tinggi)
                 kategori = kategori_bmi_asia(bmi)
 
@@ -201,7 +182,7 @@ with tab4:
                     update_data_peserta(
                         nostaf,
                         {
-                            "Nama": nama,
+                            "Nama": nama_edit,
                             "Umur": umur,
                             "Jantina": jantina,
                             "Jabatan": jabatan,
@@ -212,6 +193,8 @@ with tab4:
                             "Kategori": kategori
                         }
                     )
+                    st.success(f"✅ Data peserta '{nama_edit}' berjaya dikemaskini.")
+                    st.rerun()
 
 # =========================================
 # ✅ Tab 5: Backup & Restore
@@ -251,7 +234,7 @@ with tab5:
 # =========================================
 papar_footer(
     owner="MKR Dev Team",
-    version="v4.1.0",
+    version="v4.2.0",
     last_update="2025-06-29",
     tagline="Empowering Data-Driven Decisions."
 )
