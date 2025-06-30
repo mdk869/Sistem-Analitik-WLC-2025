@@ -86,7 +86,7 @@ with tab1:
 # ✅ Tab 2: Leaderboard
 # ========================================
 with tab2:
-    st.subheader("🏆 Leaderboard & Trend Berat")
+    st.subheader("Leaderboard & Trend Berat")
 
     col1, col2 = st.columns(2)
 
@@ -102,7 +102,7 @@ with tab2:
             # ✅ Tambah Icon Medal
             leaderboard = leaderboard.copy()
             leaderboard["RankingIcon"] = leaderboard.apply(
-                lambda row: f"🥇 {row['Ranking']}" if row["% Penurunan"] > 0
+                lambda row: f"🏆 {row['Ranking']}" if row["% Penurunan"] > 0
                 else f"{row['Ranking']}", axis=1
             )
 
