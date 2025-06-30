@@ -145,7 +145,6 @@ with col1:
             rank = int(row["Ranking"])
             nama = row["Nama"]
             peratus = row["% Penurunan"]
-            berat_awal = row["BeratAwal"]
             berat_terkini = row["BeratTerkini"]
 
             # Tetapkan ikon medal dan warna
@@ -174,7 +173,7 @@ with col1:
                 <h4 style="margin:0;">{ikon} {nama} {badge}</h4>
                 <p style="margin:4px 0;">🔢 <b>Ranking:</b> {rank}</p>
                 <p style="margin:4px 0;">🎯 <b>% Penurunan:</b> {peratus:.2f}%</p>
-                <p style="margin:4px 0;">⚖️ <b>Berat Awal:</b> {berat_awal} kg ➡️ <b>Berat Terkini:</b> {berat_terkini} kg</p>
+                <p style="margin:4px 0;">⚖️ <b>Berat Awal:</b>  kg ➡️ <b>Berat Terkini:</b> {berat_terkini} kg</p>
             </div>
             """, unsafe_allow_html=True)
 
