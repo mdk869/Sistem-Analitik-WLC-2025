@@ -18,7 +18,6 @@ from app.helper_data import (
 )
 from app.styles import paparkan_tema, papar_header, papar_footer
 
-
 # =========================================
 # ✅ Semakan Login
 # =========================================
@@ -35,15 +34,41 @@ papar_header("Admin Panel | WLC 2025")
 st.title("👑 Halaman Admin")
 st.markdown("Panel kawalan penuh untuk pengurusan data peserta dan rekod timbang WLC 2025.")
 
-# ✅ Butang Refresh Page (Manual)
-with st.container():
-    col1, col2 = st.columns([0.85, 0.15])
-    with col1:
-        st.caption("Data sentiasa dikemaskini setiap kali buka tab.")
-    with col2:
-        if st.button("🔄 Refresh Page"):
-            st.rerun()
+# =========================================
+# ✅ Header
+# =========================================
+HEADER_PESERTA = [
+    'Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan',
+    'Tinggi', 'BeratAwal', 'TarikhDaftar',
+    'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori'
+]
 
+# =========================================
+# ✅ Fungsi Refresh Cache
+# =========================================
+def refresh_data():
+    with st.spinner("🔄 Memuat semula data..."):
+        st.session_state.data_peserta = load_data_peserta()
+        st.session_state.data_rekod = load_rekod_berat_semua()
+    st.success("✅ Data berjaya dikemaskini.")
+
+# =========================================
+# ✅ Load Data ke Cache jika belum ada
+# =========================================
+if "data_peserta" not in st.session_state:
+    refresh_data()
+
+data_peserta = st.session_state.data_peserta
+data_rekod = st.session_state.data_rekod
+
+# =========================================
+# ✅ Butang Manual Refresh Page
+# =========================================
+with st.sidebar:
+    st.info("ℹ️ Gunakan butang di bawah untuk refresh data daripada Google Sheets.")
+    if st.button("🔄 Refresh Data"):
+        refresh_data()
+        st.rerun()
 
 # =========================================
 # ✅ Tabs Layout
@@ -62,14 +87,6 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 with tab1:
     st.subheader("📋 Senarai Peserta")
 
-    data_peserta = load_data_peserta()
-
-    HEADER_PESERTA = [
-        'Nama', 'NoStaf', 'Umur', 'Jantina', 'Jabatan',
-        'Tinggi', 'BeratAwal', 'TarikhDaftar',
-        'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori'
-    ]
-
     if check_header_consistency(data_peserta, HEADER_PESERTA, "Data Peserta"):
         st.dataframe(
             data_peserta.set_index(
@@ -83,8 +100,6 @@ with tab1:
 # =========================================
 with tab2:
     st.subheader("➕ Tambah Peserta Baru")
-
-    data_peserta = load_data_peserta()
 
     with st.form("form_tambah", clear_on_submit=True):
         col1, col2 = st.columns(2)
@@ -112,16 +127,14 @@ with tab2:
                 tinggi, berat_awal, tarikh
             )
             st.success(f"✅ Peserta '{nama}' berjaya ditambah.")
+            refresh_data()
             st.rerun()
-
 
 # =========================================
 # ✅ Tab 3: Rekod Timbang
 # =========================================
 with tab3:
     st.subheader("⚖️ Rekod Timbangan Berat")
-
-    data_peserta = load_data_peserta()
 
     nama_timbang = carian_nama_suggestion(data_peserta, label="Nama untuk Timbang", key="timbang")
 
@@ -150,16 +163,14 @@ with tab3:
                 simpan_rekod_berat(data)
 
                 st.success(f"✅ Rekod berat untuk {nama_timbang} berjaya disimpan.")
+                refresh_data()
                 st.rerun()
-
 
 # =========================================
 # ✅ Tab 4: Kemaskini Data Peserta
 # =========================================
 with tab4:
     st.subheader("🛠️ Kemaskini Data Peserta")
-
-    data_peserta = load_data_peserta()
 
     nama_edit = carian_nama_suggestion(data_peserta, label="Nama Peserta", key="edit")
 
@@ -212,17 +223,14 @@ with tab4:
                         }
                     )
                     st.success(f"✅ Data peserta '{nama_edit}' berjaya dikemaskini.")
+                    refresh_data()
                     st.rerun()
-
 
 # =========================================
 # ✅ Tab 5: Backup & Restore
 # =========================================
 with tab5:
     st.subheader("🗄️ Backup & Restore Data")
-
-    data_peserta = load_data_peserta()
-    data_rekod = load_rekod_berat_semua()
 
     with st.expander("📥 Backup Data ke Google Drive"):
         st.info("Backup semua data ke Google Drive.")
@@ -253,7 +261,6 @@ with tab5:
             df_restore = pd.read_excel(file_upload)
             st.dataframe(df_restore)
             st.info("✅ Data berjaya dimuat naik. **Sila implement restore ke Google Sheets secara manual.**")
-
 
 # =========================================
 # ✅ Footer
