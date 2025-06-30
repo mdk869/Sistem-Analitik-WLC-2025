@@ -17,6 +17,7 @@ from app.helper_data import (
 )
 from app.styles import paparkan_tema, papar_header, papar_footer
 
+
 # =========================================
 # ✅ Semakan Login
 # =========================================
@@ -49,10 +50,10 @@ HEADER_PESERTA = [
 # ✅ Tabs Layout
 # =========================================
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📋 Senarai Peserta", 
-    "➕ Tambah Peserta", 
-    "⚖️ Rekod Timbang", 
-    "🛠️ Kemaskini Data", 
+    "📋 Senarai Peserta",
+    "➕ Tambah Peserta",
+    "⚖️ Rekod Timbang",
+    "🛠️ Kemaskini Data",
     "🗄️ Backup & Restore"
 ])
 
@@ -127,12 +128,13 @@ with tab3:
             submit = st.form_submit_button("✅ Simpan Rekod")
 
             if submit:
-                simpan_rekod_berat({
+                data = {
                     "Nama": nama_timbang,
-                    "NoStaf": nostaf,
                     "Tarikh": tarikh.strftime("%Y-%m-%d"),
                     "Berat": berat
-                })
+                }
+
+                simpan_rekod_berat(data)
 
                 st.success(f"✅ Rekod berat untuk {nama_timbang} berjaya disimpan.")
                 st.rerun()
@@ -234,7 +236,7 @@ with tab5:
 # =========================================
 papar_footer(
     owner="MKR Dev Team",
-    version="v4.2.0",
-    last_update="2025-06-29",
+    version="v4.1.0",
+    last_update="2025-06-30",
     tagline="Empowering Data-Driven Decisions."
 )
