@@ -189,19 +189,25 @@ with tab4:
         # ========================================
         # ✅ Paparan Metrik
         # ========================================
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-        with col1:
-            st.metric("🟦 Kurang Berat Badan", kiraan_bmi["Kurang Berat Badan"])
-            st.metric("🟩 Normal", kiraan_bmi["Normal"])
+        cols = st.columns(6)
+        kategori_bmi_data = [
+            ("Kurang Berat Badan", "kurang", (df_tapis["KategoriBMI"] == "Kurang Berat Badan").sum()),
+            ("Normal", "normal", (df_tapis["KategoriBMI"] == "Normal").sum()),
+            ("Lebih Berat Badan", "lebih", (df_tapis["KategoriBMI"] == "Lebih Berat Badan").sum()),
+            ("Obesiti Tahap 1", "obes1", (df_tapis["KategoriBMI"] == "Obesiti Tahap 1").sum()),
+            ("Obesiti Tahap 2", "obes2", (df_tapis["KategoriBMI"] == "Obesiti Tahap 2").sum()),
+            ("Obesiti Morbid", "morbid", (df_tapis["KategoriBMI"] == "Obesiti Morbid").sum()),
+        ]
 
-        with col2:
-            st.metric("🟨 Lebih Berat Badan", kiraan_bmi["Lebih Berat Badan"])
-            st.metric("🟥 Obesiti Tahap 1", kiraan_bmi["Obesiti Tahap 1"])
-
-        with col3:
-            st.metric("🟥 Obesiti Tahap 2", kiraan_bmi["Obesiti Tahap 2"])
-            st.metric("🟥 Obesiti Morbid", kiraan_bmi["Obesiti Morbid"])
+        for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
+            col.markdown(f"""
+            <div class="bmi-box {css_class}">
+                <div class="bmi-title">{label}</div>
+                <div class="bmi-value">{value}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
         # ========================================
         # ✅ Pie Chart Analitik
