@@ -143,7 +143,50 @@ def bulan_tahun_nice(tarikh):
     return tarikh.strftime("%b%Y")  # Contoh: Jun2025
 
 
+# =========================================
+# ✅ Convert Kolum ke Numeric (Standard)
+# =========================================
 def convert_columns_to_numeric(df, columns):
+    """
+    Convert kolum dalam dataframe kepada jenis numeric.
+    Jika tidak sah, akan jadi NaN.
+    """
     for col in columns:
         df[col] = pd.to_numeric(df[col], errors="coerce")
     return df
+
+
+# =========================================
+# ✅ Check Header Consistency
+# =========================================
+def check_header_consistency(df, expected_headers, label="Data"):
+    """
+    Semak sama ada header dataframe sama seperti yang dijangka.
+    """
+    current_headers = list(df.columns)
+    missing = [col for col in expected_headers if col not in current_headers]
+    extra = [col for col in current_headers if col not in expected_headers]
+
+    if missing or extra:
+        st.warning(
+            f"⚠️ Header tidak konsisten dalam {label}. "
+            f"\n\nMissing: {missing} | Extra: {extra}"
+        )
+        return False
+    return True
+
+
+# =========================================
+# ✅ Carian Nama dengan Auto Suggestion
+# =========================================
+def carian_nama_suggestion(df, label="Cari Nama", key="carian"):
+    """
+    Fungsi carian nama dengan autosuggestion.
+    """
+    nama_list = sorted(df["Nama"].dropna().unique())
+    nama_input = st.text_input(f"{label} (Taip nama...)", key=f"{key}_input")
+
+    suggestion = [n for n in nama_list if nama_input.lower() in n.lower()]
+    nama = st.selectbox("Senarai Nama:", options=suggestion, key=f"{key}_select") if suggestion else None
+
+    return nama
