@@ -7,7 +7,7 @@ from datetime import datetime
 import plotly.express as px
 
 # ===== Import Helper =====
-from app.helper_data import load_data_peserta, load_rekod_berat_semua, dataframe_status_berat
+from app.helper_data import load_data_peserta, load_rekod_berat_semua
 from app.helper_utils import check_header_consistency, tambah_sesi_bulan
 from app.helper_logic import tambah_kiraan_peserta, kira_progress_program
 from app.helper_ranking import leaderboard_peserta, trend_penurunan_bulanan
@@ -282,10 +282,21 @@ with tab4:
         st.plotly_chart(fig_female, use_container_width=True)
 
 
-    with st.expander("🎯 Status Berat, Target Realistik & Ideal"):
-        df_status = dataframe_status_berat(data_peserta)
-        df_status.index = range(1, len(df_status) + 1)
-        st.dataframe(df_status, use_container_width=True)   
+    with st.expander("🎯 Kiraan Berat Ideal & Sasaran Penurunan"):
+        df_kiraan = generate_kiraan_penurunan(df_tapis)
+
+        df_kiraan.index = range(1, len(df_kiraan) + 1)
+        st.dataframe(df_kiraan, use_container_width=True)
+
+        st.info(
+            """
+            📌 **Nota:**  
+            • Berat Ideal dikira berdasarkan BMI = 22.  
+            • Target Realistik berdasarkan tahap BMI yang lebih mudah dicapai dalam tempoh program.  
+            • Kategori 'Normal' tiada target turun, hanya maintain atau buffer +2 BMI.  
+            • Kategori 'Kurang Berat Badan' diarahkan untuk naik berat ke BMI 18.5.
+            """
+        )
 
     # =========================================
     # ✅ Senarai Data Mengikut Filter
