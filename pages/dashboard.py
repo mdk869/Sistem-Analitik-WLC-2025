@@ -9,7 +9,7 @@ import plotly.express as px
 # ===== Import Helper =====
 from app.helper_data import load_data_peserta, load_rekod_berat_semua
 from app.helper_utils import check_header_consistency, tambah_sesi_bulan
-from app.helper_logic import tambah_kiraan_peserta, kira_progress_program
+from app.helper_logic import tambah_kiraan_peserta, kira_progress_program, generate_kiraan_penurunan
 from app.helper_ranking import leaderboard_peserta, trend_penurunan_bulanan
 from app.styles import paparkan_tema, papar_header, papar_footer, warna_mapping, apply_css
 
@@ -282,6 +282,8 @@ with tab4:
         st.plotly_chart(fig_female, use_container_width=True)
 
 
+    df_tapis = tambah_kiraan_peserta(data_peserta)
+    
     with st.expander("🎯 Kiraan Berat Ideal & Sasaran Penurunan"):
         df_kiraan = generate_kiraan_penurunan(df_tapis)
 
