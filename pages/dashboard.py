@@ -205,26 +205,38 @@ with tab4:
 
     df_filter = tambah_kiraan_peserta(df_filter)
 
-    # =========================================
-    # ✅ Metrik BMI
-    # =========================================
-    cols = st.columns(6)
-    kategori_bmi_data = [
-        ("Kurang Berat Badan", "kurang", (df_filter["Kategori"] == "Kurang Berat Badan").sum()),
-        ("Normal", "normal", (df_filter["Kategori"] == "Normal").sum()),
-        ("Lebih Berat Badan", "lebih", (df_filter["Kategori"] == "Lebih Berat Badan").sum()),
-        ("Obesiti Tahap 1", "obes1", (df_filter["Kategori"] == "Obesiti Tahap 1").sum()),
-        ("Obesiti Tahap 2", "obes2", (df_filter["Kategori"] == "Obesiti Tahap 2").sum()),
-        ("Obesiti Morbid", "morbid", (df_filter["Kategori"] == "Obesiti Morbid").sum()),
-    ]
+   # =========================================
+# ✅ Metrik BMI dengan Tooltip
+# =========================================
+cols = st.columns(6)
 
-    for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
-        col.markdown(f"""
-        <div class="bmi-box {css_class}">
-            <div class="bmi-title">{label}</div>
-            <div class="bmi-value">{value}</div>
-        </div>
-        """, unsafe_allow_html=True)
+# Dictionary penerangan kategori BMI
+penerangan_bmi = {
+    "Kurang Berat Badan": "BMI < 18.5\nRisiko: Kurang berat badan, boleh menjejaskan imuniti dan kesihatan.",
+    "Normal": "BMI 18.5 - 24.9\nRisiko paling rendah. Kekalkan gaya hidup sihat.",
+    "Lebih Berat Badan": "BMI 25 - 29.9\nBerat berlebihan. Risiko penyakit seperti darah tinggi & diabetes.",
+    "Obesiti Tahap 1": "BMI 30 - 34.9\nObesiti ringan. Risiko meningkat untuk penyakit kronik.",
+    "Obesiti Tahap 2": "BMI 35 - 39.9\nObesiti tinggi. Risiko lebih serius untuk jantung & strok.",
+    "Obesiti Morbid": "BMI ≥ 40\nObesiti kritikal. Memerlukan pengurusan berat secara intensif.",
+}
+
+kategori_bmi_data = [
+    ("Kurang Berat Badan", "kurang", (df_filter["Kategori"] == "Kurang Berat Badan").sum()),
+    ("Normal", "normal", (df_filter["Kategori"] == "Normal").sum()),
+    ("Lebih Berat Badan", "lebih", (df_filter["Kategori"] == "Lebih Berat Badan").sum()),
+    ("Obesiti Tahap 1", "obes1", (df_filter["Kategori"] == "Obesiti Tahap 1").sum()),
+    ("Obesiti Tahap 2", "obes2", (df_filter["Kategori"] == "Obesiti Tahap 2").sum()),
+    ("Obesiti Morbid", "morbid", (df_filter["Kategori"] == "Obesiti Morbid").sum()),
+]
+
+for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
+    col.markdown(f"""
+    <div class="bmi-box {css_class}" title="{penerangan_bmi[label]}">
+        <div class="bmi-title">{label}</div>
+        <div class="bmi-value">{value}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
 
     # =========================================
     # ✅ Pie Chart Ikut Filter
