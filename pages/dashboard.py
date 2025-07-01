@@ -194,7 +194,7 @@ with tab4:
 
     .tooltip .tooltiptext {
         visibility: hidden;
-        width: 300px;
+        width: 600px;
         background-color: #555;
         color: #fff;
         text-align: left;
