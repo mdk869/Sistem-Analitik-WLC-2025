@@ -194,19 +194,20 @@ with tab4:
 
     .tooltip .tooltiptext {
         visibility: hidden;
-        width: 600px;
+        width: 400px;
         background-color: #555;
         color: #fff;
         text-align: left;
         border-radius: 6px;
-        padding: 8px;
+        padding: 10px;
         position: absolute;
         z-index: 1;
-        bottom: 125%;
-        left: 50%;
-        margin-left: -150px;
+        top: -5px
+        left: 105%;
         opacity: 0;
         transition: opacity 0.3s;
+        white-space: normal; /* Allow line breaks */
+        word-wrap: break-word; /* Break long words if needed */
     }
 
     .tooltip:hover .tooltiptext {
@@ -225,7 +226,9 @@ with tab4:
         • Obesiti Tahap 1: BMI 30 - 34.9<br>
         • Obesiti Tahap 2: BMI 35 - 39.9<br>
         • Obesiti Morbid: BMI ≥ 40<br><br>
-        <i>Nota:</i> BMI adalah penunjuk berat badan sihat. Untuk populasi Asia, risiko penyakit berlaku pada BMI lebih rendah berbanding populasi Barat.
+        <i>Nota:</i> BMI adalah indikator berat badan sihat berdasarkan ketinggian. 
+        Untuk populasi Asia, risiko penyakit metabolik seperti diabetes dan jantung 
+        meningkat pada BMI lebih rendah berbanding populasi Barat.
         </span>
     </div>
     """, unsafe_allow_html=True)
