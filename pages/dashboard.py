@@ -331,7 +331,7 @@ with tab4:
         st.plotly_chart(fig_male, use_container_width=True)
 
     with col2:
-    st.markdown("#### 👩 Perempuan")
+        st.markdown("#### 👩 Perempuan")
     
     # Pie Chart BMI Perempuan
     df_female = data_peserta[data_peserta["Jantina"].str.lower() == "perempuan"]
