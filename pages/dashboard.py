@@ -202,7 +202,7 @@ with tab4:
         padding: 10px;
         position: absolute;
         z-index: 1;
-        top: 10px
+        top: 50px
         left: 105%;
         opacity: 0;
         transition: opacity 0.3s;
