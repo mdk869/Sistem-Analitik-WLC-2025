@@ -217,8 +217,9 @@ with tab4:
     </style>
 
     
-    <div class="tooltip"> 🛈
-        <span class="tooltiptext">
+    <div class="tooltip">
+    📊 Analisis BMI Peserta
+    <span class="tooltiptext">
         <b>Kategori BMI Asia:</b><br><br>
         • Kurang Berat Badan: BMI &lt; 18.5<br>
         • Normal: BMI 18.5 - 24.9<br>
@@ -229,7 +230,7 @@ with tab4:
         <i>Nota:</i> BMI adalah indikator berat badan sihat berdasarkan ketinggian. 
         Untuk populasi Asia, risiko penyakit metabolik seperti diabetes dan jantung 
         meningkat pada BMI lebih rendah berbanding populasi Barat.
-        </span>
+    </span>
     </div>
     """, unsafe_allow_html=True)
 
