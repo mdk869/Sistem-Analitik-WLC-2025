@@ -184,6 +184,54 @@ with tab3:
 # =========================================
 with tab4:
     st.subheader("📊 Analisis BMI Peserta")
+    st.markdown("""
+<style>
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 300px;
+  background-color: #555;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -150px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+
+<h3 style='display: inline;'>📊 Analisis BMI Peserta</h3>
+<div class="tooltip"> 🛈
+  <span class="tooltiptext">
+  <b>Kategori BMI Asia:</b><br><br>
+  • Kurang Berat Badan: BMI &lt; 18.5<br>
+  • Normal: BMI 18.5 - 24.9<br>
+  • Lebih Berat Badan: BMI 25 - 29.9<br>
+  • Obesiti Tahap 1: BMI 30 - 34.9<br>
+  • Obesiti Tahap 2: BMI 35 - 39.9<br>
+  • Obesiti Morbid: BMI ≥ 40<br><br>
+  <i>Nota:</i> BMI adalah penunjuk berat badan sihat. Untuk populasi Asia, risiko penyakit berlaku pada BMI lebih rendah berbanding populasi Barat.
+  </span>
+</div>
+""", unsafe_allow_html=True)
+
+
+
 
     # =========================================
     # ✅ Pilihan Filter Jantina
