@@ -145,3 +145,59 @@ def tambah_kiraan_peserta(df):
     df["% Penurunan"] = df["% Penurunan"].fillna(0).clip(lower=0)
 
     return df
+
+# =========================================
+# ✅ Kiraan Berat Ideal dan Target Realistik
+# =========================================
+
+def kira_berat_ideal(tinggi_cm, target_bmi=22.0):
+    tinggi_m = tinggi_cm / 100
+    berat_ideal = target_bmi * (tinggi_m ** 2)
+    return round(berat_ideal, 2)
+
+
+def kira_berat_target(tinggi_cm, target_bmi):
+    tinggi_m = tinggi_cm / 100
+    berat_target = target_bmi * (tinggi_m ** 2)
+    return round(berat_target, 2)
+
+
+def kira_target_realistik(berat_sekarang, tinggi_cm):
+    berat_overweight = kira_berat_target(tinggi_cm, 24.9)
+    penurunan_5 = berat_sekarang * 0.05
+    penurunan_10 = berat_sekarang * 0.10
+
+    # Pilih target yang lebih logik: capai overweight atau turun 10%
+    target = max(berat_overweight, berat_sekarang - penurunan_10)
+    return round(target, 2)
+
+
+def dataframe_status_berat(df):
+    data = []
+
+    for _, row in df.iterrows():
+        tinggi = row["Tinggi"]
+        berat = row["BeratTerkini"]
+        nama = row["Nama"]
+        kategori = row["Kategori"]
+
+        berat_overweight = kira_berat_target(tinggi, 24.9)
+        berat_ideal = kira_berat_ideal(tinggi)
+
+        target_realistik = kira_target_realistik(berat, tinggi)
+
+        perlu_turun_ideal = max(0, round(berat - berat_ideal, 2))
+        perlu_turun_realistik = max(0, round(berat - target_realistik, 2))
+
+        data.append({
+            "Nama": nama,
+            "Kategori Sekarang": kategori,
+            "Berat Sekarang (kg)": berat,
+            "Target Realistik (kg)": target_realistik,
+            "Perlu Turun (Realistik) (kg)": perlu_turun_realistik,
+            "Berat Ideal (kg)": berat_ideal,
+            "Perlu Turun (Ideal) (kg)": perlu_turun_ideal
+        })
+
+    df_status = pd.DataFrame(data)
+    return df_status.sort_values(by="Perlu Turun (Realistik) (kg)", ascending=False)
