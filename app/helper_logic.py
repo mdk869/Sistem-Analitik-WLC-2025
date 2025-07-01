@@ -201,3 +201,15 @@ def dataframe_status_berat(df):
 
     df_status = pd.DataFrame(data)
     return df_status.sort_values(by="Perlu Turun (Realistik) (kg)", ascending=False)
+
+def generate_kiraan_penurunan(df):
+    df = df.copy()
+
+    df['Berat Ideal'] = df.apply(kira_berat_ideal, axis=1)
+    df['Target Realistik'] = df.apply(kira_target_realistik, axis=1)
+
+    df['Perlu Turun (Ideal)'] = (df['BeratTerkini'] - df['Berat Ideal']).apply(lambda x: round(x, 2) if x > 0 else 0)
+    df['Perlu Turun (Realistik)'] = (df['BeratTerkini'] - df['Target Realistik']).apply(lambda x: round(x, 2) if x > 0 else 0)
+
+    df_output = df[['Nama', 'Kategori', 'BeratTerkini', 'Target Realistik', 'Perlu Turun (Realistik)', 'Berat Ideal', 'Perlu Turun (Ideal)']]
+    return df_output.sort_values(by="Perlu Turun (Realistik)", ascending=False).reset_index(drop=True)
