@@ -215,7 +215,7 @@ with tab4:
         ("Lebih Berat Badan", "lebih", (df_filter["Kategori"] == "Lebih Berat Badan").sum()),
         ("Obesiti Tahap 1", "obes1", (df_filter["Kategori"] == "Obesiti Tahap 1").sum()),
         ("Obesiti Tahap 2", "obes2", (df_filter["Kategori"] == "Obesiti Tahap 2").sum()),
-        ("Obesiti Morbid", "morbid", (df_filter["Kategori"] == "Obesiti Morbid", "Lebih 40.0").sum()),
+        ("Obesiti Morbid", "morbid", (df_filter["Kategori"] == "Obesiti Morbid").sum()),
     ]
 
     for col, (label, css_class, value) in zip(cols, kategori_bmi_data):
