@@ -183,7 +183,7 @@ with tab3:
 # ✅ Tab 4: Analitik BMI
 # =========================================
 with tab4:
-    st.subheader("📊 Analisis BMI Peserta")
+   with tab4:
     st.markdown("""
 <style>
 .tooltip {
@@ -193,16 +193,16 @@ with tab4:
 }
 
 .tooltip .tooltiptext {
-    display: none;
-    width: 400px;
-    background-color: #333; /* Solid background */
+    visibility: hidden;
+    width: 420px;
+    background-color: #333;
     color: #fff;
     text-align: left;
     border-radius: 6px;
     padding: 12px;
     position: absolute;
     z-index: 999;
-    top: -5px;
+    top: 0;
     left: 105%;
     white-space: normal;
     word-wrap: break-word;
@@ -211,14 +211,15 @@ with tab4:
 }
 
 .tooltip:hover .tooltiptext {
-    display: block;
+    visibility: visible;
+    opacity: 1;
 }
 
 /* Arrow */
 .tooltip .tooltiptext::after {
     content: "";
     position: absolute;
-    top: 12px;
+    top: 10px;
     right: 100%;
     margin-top: -5px;
     border-width: 6px;
@@ -227,21 +228,22 @@ with tab4:
 }
 </style>
 
-
-<div class="tooltip"><h3 style='display: inline;'>📊 Analisis BMI Peserta</h3>
-  <span class="tooltiptext">
-    <b>Kategori BMI Asia:</b><br><br>
-    • <b>Kurang Berat Badan:</b> BMI &lt; 18.5<br>
-    • <b>Normal:</b> BMI 18.5 - 24.9<br>
-    • <b>Lebih Berat Badan:</b> BMI 25 - 29.9<br>
-    • <b>Obesiti Tahap 1:</b> BMI 30 - 34.9<br>
-    • <b>Obesiti Tahap 2:</b> BMI 35 - 39.9<br>
-    • <b>Obesiti Morbid:</b> BMI ≥ 40<br><br>
-    <i>Nota:</i><br>
-    BMI adalah indikator berat badan sihat berdasarkan ketinggian.<br>
-    Untuk populasi Asia, risiko penyakit metabolik seperti diabetes dan jantung 
-    meningkat pada BMI lebih rendah berbanding populasi Barat.
-  </span>
+<div style='display:flex; align-items:center; gap:8px;'>
+    <h3 style='margin:0;'>📊 Analisis BMI Peserta</h3>
+    <div class="tooltip">🛈
+      <span class="tooltiptext">
+        <b>Kategori BMI Asia:</b><br><br>
+        • <b>Kurang Berat Badan:</b> BMI &lt; 18.5<br>
+        • <b>Normal:</b> BMI 18.5 - 24.9<br>
+        • <b>Lebih Berat Badan:</b> BMI 25 - 29.9<br>
+        • <b>Obesiti Tahap 1:</b> BMI 30 - 34.9<br>
+        • <b>Obesiti Tahap 2:</b> BMI 35 - 39.9<br>
+        • <b>Obesiti Morbid:</b> BMI ≥ 40<br><br>
+        <i>Nota:</i><br>
+        BMI adalah indikator berat badan sihat berdasarkan ketinggian.<br>
+        Populasi Asia menggunakan julat ini kerana risiko penyakit metabolik seperti diabetes dan jantung berlaku pada BMI lebih rendah berbanding populasi Barat.
+      </span>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
