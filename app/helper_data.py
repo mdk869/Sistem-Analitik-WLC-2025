@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 from datetime import datetime
 
-from app.helper_logic import kira_bmi, kategori_bmi_asia
+from app.helper_logic import kira_bmi, kategori_bmi_asia, kira_berat_ideal, kira_berat_target, kira_target_realistik
 from app.helper_gsheet import (
     load_worksheet_to_df,
     save_df_to_worksheet,
@@ -180,3 +180,58 @@ def sync_berat_terkini(nostaf, berat, tarikh):
         df.at[peserta_idx, "Kategori"] = kategori_bmi_asia(bmi)
 
         save_df_to_worksheet(SPREADSHEET_PESERTA, SHEET_PESERTA, df)
+
+
+def dataframe_target_penurunan(df):
+    data = []
+
+    for _, row in df.iterrows():
+        tinggi = row["Tinggi"]
+        berat = row["BeratTerkini"]
+        nama = row["Nama"]
+        kategori = row["Kategori"]
+
+        berat_target = kira_berat_target(tinggi, 24.9)  # Target overweight max
+        perlu_turun = max(0, round(berat - berat_target, 2))
+
+        data.append({
+            "Nama": nama,
+            "Kategori Sekarang": kategori,
+            "Berat Sekarang (kg)": berat,
+            "Berat Maks (Overweight) (kg)": berat_target,
+            "Perlu Turun (kg)": perlu_turun
+        })
+
+    df_target = pd.DataFrame(data)
+    return df_target.sort_values(by="Perlu Turun (kg)", ascending=False)
+
+
+def dataframe_status_berat(df):
+    data = []
+
+    for _, row in df.iterrows():
+        tinggi = row["Tinggi"]
+        berat = row["BeratTerkini"]
+        nama = row["Nama"]
+        kategori = row["Kategori"]
+
+        berat_overweight = kira_berat_target(tinggi, 24.9)
+        berat_ideal = kira_berat_ideal(tinggi)
+
+        target_realistik = kira_target_realistik(berat, tinggi)
+
+        perlu_turun_ideal = max(0, round(berat - berat_ideal, 2))
+        perlu_turun_realistik = max(0, round(berat - target_realistik, 2))
+
+        data.append({
+            "Nama": nama,
+            "Kategori Sekarang": kategori,
+            "Berat Sekarang (kg)": berat,
+            "Target Realistik (kg)": target_realistik,
+            "Perlu Turun (Realistik) (kg)": perlu_turun_realistik,
+            "Berat Ideal (kg)": berat_ideal,
+            "Perlu Turun (Ideal) (kg)": perlu_turun_ideal
+        })
+
+    df_status = pd.DataFrame(data)
+    return df_status.sort_values(by="Perlu Turun (Realistik) (kg)", ascending=False)
