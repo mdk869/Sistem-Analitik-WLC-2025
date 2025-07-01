@@ -348,69 +348,71 @@ with tab4:
     )
     st.plotly_chart(fig_female, use_container_width=True)
 
-    # ✅ Tooltip Tajuk
-    st.markdown("""
-    <style>
-    .tooltip {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-    }
+ # ✅ Tajuk dengan Tooltip
+st.markdown("""
+<style>
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
 
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        width: 320px;
-        background-color: #333;
-        color: #fff;
-        text-align: left;
-        border-radius: 6px;
-        padding: 8px;
-        position: absolute;
-        z-index: 999;
-        top: 0;
-        left: 105%;
-        white-space: normal;
-        word-wrap: break-word;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-        border: 1px solid #999;
-    }
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 320px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 999;
+    top: 0;
+    left: 105%;
+    white-space: normal;
+    word-wrap: break-word;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+    border: 1px solid #999;
+}
 
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1;
-    }
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
 
-    .tooltip .tooltiptext::after {
-        content: "";
-        position: absolute;
-        top: 10px;
-        right: 100%;
-        margin-top: -5px;
-        border-width: 6px;
-        border-style: solid;
-        border-color: transparent #333 transparent transparent;
-    }
-    </style>
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent #333 transparent transparent;
+}
+</style>
 
-    <div style='display:flex; align-items:center; gap:6px;'>
-        <h4 style='margin:0;'>🎯 Status Berat, Target Realistik & Ideal</h4>
-        <div class="tooltip">🛈
-          <span class="tooltiptext">
-            <b>Penerangan:</b><br><br>
-            • <b>Status Berat:</b> Bandingkan berat semasa dengan julat sihat.<br>
-            • <b>Target Realistik:</b> Penurunan 5-10% dari berat semasa — selamat & boleh dicapai.<br>
-            • <b>Target Ideal:</b> Berat dalam julat BMI Normal (18.5 - 24.9 kg/m²).<br><br>
-            BMI membantu kenalpasti risiko kesihatan seperti darah tinggi, diabetes dan penyakit jantung.
-          </span>
-        </div>
+<div style='display:flex; align-items:center; gap:6px;'>
+    <h4 style='margin:0;'>🎯 Status Berat, Target Realistik & Ideal</h4>
+    <div class="tooltip">🛈
+      <span class="tooltiptext">
+        <b>Penerangan:</b><br><br>
+        • <b>Status Berat:</b> Bandingkan berat semasa dengan julat sihat.<br>
+        • <b>Target Realistik:</b> Penurunan 5-10% dari berat semasa — selamat & boleh dicapai.<br>
+        • <b>Target Ideal:</b> Berat dalam julat BMI Normal (18.5 - 24.9 kg/m²).<br><br>
+        BMI membantu kenalpasti risiko kesihatan seperti darah tinggi, diabetes dan penyakit jantung.
+      </span>
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
-    # ✅ Expander Kandungan
-    with st.expander("🎯 Status Berat, Target Realistik & Ideal"):
-        df_status = dataframe_status_berat(df_female)  # ✅ guna data peserta perempuan sahaja
-        df_status.index = range(1, len(df_status) + 1)
-        st.dataframe(df_status, use_container_width=True)
+
+# ✅ Expander dengan tajuk ringkas sahaja
+with st.expander("Lihat Status Berat & Target"):
+    df_status = dataframe_status_berat(df_female)
+    df_status.index = range(1, len(df_status) + 1)
+    st.dataframe(df_status, use_container_width=True)
+
 
 
     # =========================================
