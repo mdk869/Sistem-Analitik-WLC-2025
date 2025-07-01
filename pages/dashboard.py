@@ -389,10 +389,10 @@ with tab4:
             </div>
             """, unsafe_allow_html=True)
 
-with st.expander("🎯 Status Berat, Target Realistik & Ideal"):
-    df_status = dataframe_status_berat(data_peserta)
-    df_status.index = range(1, len(df_status) + 1)
-    st.dataframe(df_status, use_container_width=True)
+    with st.expander("🎯 Status Berat, Target Realistik & Ideal"):
+        df_status = dataframe_status_berat(data_peserta)
+        df_status.index = range(1, len(df_status) + 1)
+        st.dataframe(df_status, use_container_width=True)
 
 
     # =========================================
