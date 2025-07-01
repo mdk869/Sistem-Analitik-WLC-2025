@@ -229,8 +229,8 @@ with tab4:
 }
 </style>
 
-<h3 style='display: inline;'>📊 Analisis BMI Peserta</h3>
-<div class="tooltip"> 🛈
+
+<div class="tooltip"><h3 style='display: inline;'>📊 Analisis BMI Peserta</h3>
   <span class="tooltiptext">
     <b>Kategori BMI Asia:</b><br><br>
     • <b>Kurang Berat Badan:</b> BMI &lt; 18.5<br>
