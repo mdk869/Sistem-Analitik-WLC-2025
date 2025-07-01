@@ -282,31 +282,10 @@ with tab4:
         st.plotly_chart(fig_female, use_container_width=True)
 
 
-with st.expander("🎯 Status Berat, Target Realistik & Ideal"):
-    df_status = dataframe_status_berat(data_peserta)
-    df_status.index = range(1, len(df_status) + 1)
-
-    # ✅ Dapatkan senarai kategori unik
-    senarai_kategori = df_status["Kategori"].unique().tolist()
-
-    # ✅ Checkbox untuk filter kategori
-    st.markdown("**Tapis mengikut kategori BMI:**")
-    kategori_dipilih = st.multiselect(
-        label="Pilih Kategori",
-        options=senarai_kategori,
-        default=senarai_kategori,  # ✅ Secara default semua kategori dipilih
-        placeholder="Pilih kategori untuk ditapis"
-    )
-
-    # ✅ Tapis dataframe ikut kategori dipilih
-    if kategori_dipilih:
-        df_tapis = df_status[df_status["Kategori"].isin(kategori_dipilih)]
-    else:
-        df_tapis = pd.DataFrame(columns=df_status.columns)  # Jika tiada pilihan
-
-    # ✅ Paparkan Data
-    st.dataframe(df_tapis, use_container_width=True)
-
+    with st.expander("🎯 Status Berat, Target Realistik & Ideal"):
+        df_status = dataframe_status_berat(data_peserta)
+        df_status.index = range(1, len(df_status) + 1)
+        st.dataframe(df_status, use_container_width=True)   
 
     # =========================================
     # ✅ Senarai Data Mengikut Filter
