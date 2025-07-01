@@ -193,44 +193,42 @@ with tab4:
 }
 
 .tooltip .tooltiptext {
-    visibility: hidden;
+    display: none;
     width: 400px;
-    background-color: rgba(34, 34, 34, 0.95); /* Gelap + 95% opacity */
+    background-color: #333; /* Solid background */
     color: #fff;
     text-align: left;
     border-radius: 6px;
-    padding: 10px;
+    padding: 12px;
     position: absolute;
     z-index: 999;
     top: -5px;
     left: 105%;
-    transition: visibility 0s, opacity 0.3s;
     white-space: normal;
     word-wrap: break-word;
-    box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
-    opacity: 0; /* Control visibility only */
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+    border: 1px solid #999;
 }
 
 .tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
+    display: block;
 }
 
-/* Optional: Arrow */
+/* Arrow */
 .tooltip .tooltiptext::after {
     content: "";
     position: absolute;
-    top: 10px;
+    top: 12px;
     right: 100%;
     margin-top: -5px;
-    border-width: 5px;
+    border-width: 6px;
     border-style: solid;
-    border-color: transparent rgba(34,34,34,0.95) transparent transparent;
+    border-color: transparent #333 transparent transparent;
 }
 </style>
 
-
-<div class="tooltip"><h3 style='display: inline;'>📊 Analisis BMI Peserta</h3>
+<h3 style='display: inline;'>📊 Analisis BMI Peserta</h3>
+<div class="tooltip"> 🛈
   <span class="tooltiptext">
     <b>Kategori BMI Asia:</b><br><br>
     • <b>Kurang Berat Badan:</b> BMI &lt; 18.5<br>
@@ -241,12 +239,12 @@ with tab4:
     • <b>Obesiti Morbid:</b> BMI ≥ 40<br><br>
     <i>Nota:</i><br>
     BMI adalah indikator berat badan sihat berdasarkan ketinggian.<br>
-    Populasi Asia menggunakan julat ini kerana risiko penyakit metabolik 
-    seperti diabetes dan jantung berlaku pada BMI lebih rendah berbanding 
-    populasi Barat.
+    Untuk populasi Asia, risiko penyakit metabolik seperti diabetes dan jantung 
+    meningkat pada BMI lebih rendah berbanding populasi Barat.
   </span>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
