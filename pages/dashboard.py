@@ -204,7 +204,7 @@ with tab4:
         z-index: 1;
         top: 50px;
         left: 105%;
-        opacity: 0;
+        opacity: 50;
         transition: opacity 0.3s;
         white-space: normal; /* Allow line breaks */
         word-wrap: break-word; /* Break long words if needed */
