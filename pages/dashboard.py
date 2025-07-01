@@ -185,54 +185,68 @@ with tab3:
 with tab4:
     st.subheader("📊 Analisis BMI Peserta")
     st.markdown("""
-    <style>
-    .tooltip {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-    }
+<style>
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
 
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        width: 400px;
-        background-color: #555;
-        color: #fff;
-        text-align: left;
-        border-radius: 6px;
-        padding: 10px;
-        position: absolute;
-        z-index: 1;
-        top: 50px;
-        left: 105%;
-        opacity: 50;
-        transition: opacity 0.3s;
-        white-space: normal; /* Allow line breaks */
-        word-wrap: break-word; /* Break long words if needed */
-    }
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 400px;
+    background-color: rgba(34, 34, 34, 0.95); /* Gelap + 95% opacity */
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 999;
+    top: -5px;
+    left: 105%;
+    transition: visibility 0s, opacity 0.3s;
+    white-space: normal;
+    word-wrap: break-word;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
+    opacity: 0; /* Control visibility only */
+}
 
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1;
-    }
-    </style>
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
 
-    
-    <div class="tooltip">
-    📊 Analisis BMI Peserta
-    <span class="tooltiptext">
-        <b>Kategori BMI Asia:</b><br><br>
-        • Kurang Berat Badan: BMI &lt; 18.5<br>
-        • Normal: BMI 18.5 - 24.9<br>
-        • Lebih Berat Badan: BMI 25 - 29.9<br>
-        • Obesiti Tahap 1: BMI 30 - 34.9<br>
-        • Obesiti Tahap 2: BMI 35 - 39.9<br>
-        • Obesiti Morbid: BMI ≥ 40<br><br>
-        <i>Nota:</i> BMI adalah indikator berat badan sihat berdasarkan ketinggian. 
-        Untuk populasi Asia, risiko penyakit metabolik seperti diabetes dan jantung 
-        meningkat pada BMI lebih rendah berbanding populasi Barat.
-    </span>
-    </div>
-    """, unsafe_allow_html=True)
+/* Optional: Arrow */
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent rgba(34,34,34,0.95) transparent transparent;
+}
+</style>
+
+<h3 style='display: inline;'>📊 Analisis BMI Peserta</h3>
+<div class="tooltip"> 🛈
+  <span class="tooltiptext">
+    <b>Kategori BMI Asia:</b><br><br>
+    • <b>Kurang Berat Badan:</b> BMI &lt; 18.5<br>
+    • <b>Normal:</b> BMI 18.5 - 24.9<br>
+    • <b>Lebih Berat Badan:</b> BMI 25 - 29.9<br>
+    • <b>Obesiti Tahap 1:</b> BMI 30 - 34.9<br>
+    • <b>Obesiti Tahap 2:</b> BMI 35 - 39.9<br>
+    • <b>Obesiti Morbid:</b> BMI ≥ 40<br><br>
+    <i>Nota:</i><br>
+    BMI adalah indikator berat badan sihat berdasarkan ketinggian.<br>
+    Populasi Asia menggunakan julat ini kerana risiko penyakit metabolik 
+    seperti diabetes dan jantung berlaku pada BMI lebih rendah berbanding 
+    populasi Barat.
+  </span>
+</div>
+""", unsafe_allow_html=True)
 
 
 
