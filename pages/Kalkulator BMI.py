@@ -63,7 +63,6 @@ with st.expander("ℹ️ Rujukan Kategori BMI Asia"):
     - **35 – 39.9** : Obesiti Tahap 2  
     - **≥ 40** : Obesiti Morbid  
     """)
-
 with st.expander("ℹ️ Info Kategori BMI & Nasihat Kesihatan"):
     st.markdown("""
     ### 🔎 **Kategori BMI Asia (WHO & KKM)**
