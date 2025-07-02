@@ -14,7 +14,28 @@ st.markdown("Sistem ini direka untuk membantu penganjur memantau perkembangan pe
 
 st.divider()
 
+def papar_disclaimer():
+    with st.expander("⚠️ Penting! Sila baca sebelum teruskan.", expanded=True):
+        st.markdown("""
+        ## ⚠️ **Disclaimer Sistem WLC**
 
+        Sistem ini adalah alat pemantauan untuk tujuan informasi bagi program Weight Loss Challenge (WLC) sahaja.
+
+        - **Bukan alat diagnostik atau pengganti nasihat perubatan.**
+        - Semua kiraan dan info adalah anggaran berdasarkan formula BMI piawai dan mungkin tidak tepat untuk semua individu.
+        - Sila dapatkan nasihat doktor atau pakar pemakanan untuk penilaian kesihatan yang lengkap.
+
+        **Dengan meneruskan, anda faham dan bersetuju dengan terma ini.**
+        """)
+        return st.checkbox("✔️ Saya faham dan bersetuju dengan Disclaimer di atas.")
+
+
+# Contoh penggunaan
+if not papar_disclaimer():
+    st.warning("❌ Anda perlu bersetuju dengan disclaimer sebelum meneruskan.")
+    st.stop()
+
+    
 # ========================================
 # ✅ Info Program
 # ========================================
