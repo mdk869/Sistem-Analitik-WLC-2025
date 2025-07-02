@@ -12,6 +12,9 @@ from app.helper_utils import check_header_consistency, tambah_sesi_bulan
 from app.helper_logic import tambah_kiraan_peserta, kira_progress_program
 from app.helper_ranking import leaderboard_peserta, trend_penurunan_bulanan
 from app.styles import paparkan_tema, papar_header, papar_footer, warna_mapping, apply_css, css_tooltip, tooltip
+from app.logger import log_traffic_to_sheet
+
+
 
 # ===== Layout & Tema =====
 paparkan_tema()
@@ -36,6 +39,7 @@ HEADER_PESERTA = [
     'BeratTerkini', 'TarikhTimbang', 'BMI', 'Kategori'
 ]
 
+log_traffic_to_sheet()
 
 def papar_disclaimer():
     with st.expander("⚠️ Penting! Sila baca sebelum teruskan.", expanded=True):

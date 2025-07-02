@@ -49,3 +49,5 @@ def get_weather(city="Kuala Selangor"):
             return "Tidak dapat capai API cuaca"
     except:
         return "Tidak dapat capai API cuaca"
+
+
