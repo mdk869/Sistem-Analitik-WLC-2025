@@ -41,6 +41,11 @@ HEADER_PESERTA = [
 
 log_traffic_to_sheet()
 
+if "logged" not in st.session_state:
+    log_traffic_to_sheet()
+    st.session_state["logged"] = True
+
+
 def papar_disclaimer():
     with st.expander("⚠️ Penting! Sila baca sebelum teruskan.", expanded=True):
         st.markdown("""
