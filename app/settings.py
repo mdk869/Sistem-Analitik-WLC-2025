@@ -8,7 +8,7 @@ info_program = {
     "versi": "v3.3.0"
 }
 
-version = "v4.3.1"
+version = "v3.3.5"
 last_update = "2025-07-02"
 owner = "MKR Dev Team"
 tagline = "Empowering Data-Driven Decisions."

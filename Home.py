@@ -82,9 +82,4 @@ st.divider()
 # ========================================
 # ✅ Footer
 # ========================================
-papar_footer(
-    owner="MKR Dev Team",
-    version=info_program["versi"],
-    last_update="2025-06-29",
-    tagline="Empowering Data-Driven Decisions."
-)
+papar_footer()
