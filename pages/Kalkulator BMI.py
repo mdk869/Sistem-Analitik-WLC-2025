@@ -54,15 +54,6 @@ st.success(f"**Kategori BMI:** `{kategori}`")
 # ===========================
 # ✅ Info Panduan
 # ===========================
-with st.expander("ℹ️ Rujukan Kategori BMI Asia"):
-    st.markdown("""
-    - **< 18.5** : Kurang Berat Badan  
-    - **18.5 – 24.9** : Normal  
-    - **25 – 29.9** : Lebih Berat Badan  
-    - **30 – 34.9** : Obesiti Tahap 1  
-    - **35 – 39.9** : Obesiti Tahap 2  
-    - **≥ 40** : Obesiti Morbid  
-    """)
 with st.expander("ℹ️ Info Kategori BMI & Nasihat Kesihatan"):
     st.markdown("""
     ### 🔎 **Kategori BMI Asia (WHO & KKM)**
