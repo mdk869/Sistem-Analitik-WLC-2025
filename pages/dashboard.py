@@ -11,10 +11,11 @@ from app.helper_data import load_data_peserta, load_rekod_berat_semua, dataframe
 from app.helper_utils import check_header_consistency, tambah_sesi_bulan
 from app.helper_logic import tambah_kiraan_peserta, kira_progress_program
 from app.helper_ranking import leaderboard_peserta, trend_penurunan_bulanan
-from app.styles import paparkan_tema, papar_header, papar_footer, warna_mapping, apply_css
+from app.styles import paparkan_tema, papar_header, papar_footer, warna_mapping, apply_css, css_tooltip, tooltip
 
 # ===== Layout & Tema =====
 paparkan_tema()
+css_tooltip()
 apply_css()
 papar_header("Dashboard | WLC 2025")
 
@@ -349,62 +350,17 @@ with tab4:
     st.plotly_chart(fig_female, use_container_width=True)
 
  # ✅ Tajuk dengan Tooltip
-st.markdown("""
-<style>
-.tooltip {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 320px;
-    background-color: #333;
-    color: #fff;
-    text-align: left;
-    border-radius: 6px;
-    padding: 8px;
-    position: absolute;
-    z-index: 999;
-    top: 0;
-    left: 105%;
-    white-space: normal;
-    word-wrap: break-word;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-    border: 1px solid #999;
-}
-
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-
-.tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 10px;
-    right: 100%;
-    margin-top: -5px;
-    border-width: 6px;
-    border-style: solid;
-    border-color: transparent #333 transparent transparent;
-}
-</style>
-
-<div style='display:flex; align-items:center; gap:6px;'>
-    <h4 style='margin:0;'>🎯 Status Berat, Target Realistik & Ideal</h4>
-    <div class="tooltip">🛈
-      <span class="tooltiptext">
+    tooltip(
+        "🎯 Status Berat, Target Realistik & Ideal",
+        """
         <b>Penerangan:</b><br><br>
         • <b>Status Berat:</b> Bandingkan berat semasa dengan julat sihat.<br>
         • <b>Target Realistik:</b> Penurunan 5-10% dari berat semasa — selamat & boleh dicapai.<br>
         • <b>Target Ideal:</b> Berat dalam julat BMI Normal (18.5 - 24.9 kg/m²).<br><br>
         BMI membantu kenalpasti risiko kesihatan seperti darah tinggi, diabetes dan penyakit jantung.
-      </span>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+        """,
+        size="h4"
+    )
 
 
 # ✅ Expander dengan tajuk ringkas sahaja
