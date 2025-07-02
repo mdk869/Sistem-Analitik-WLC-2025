@@ -106,3 +106,62 @@ def papar_footer(owner, version, last_update, tagline):
     </small>
     </center>
     """, unsafe_allow_html=True)
+
+# ✅ Tooltip
+def css_tooltip():
+    st.markdown("""
+    <style>
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 320px;
+        background-color: #333;
+        color: #fff;
+        text-align: left;
+        border-radius: 6px;
+        padding: 8px;
+        position: absolute;
+        z-index: 999;
+        top: 0;
+        left: 105%;
+        white-space: normal;
+        word-wrap: break-word;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+        border: 1px solid #999;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .tooltip .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 10px;
+        right: 100%;
+        margin-top: -5px;
+        border-width: 6px;
+        border-style: solid;
+        border-color: transparent #333 transparent transparent;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# ✅ Tooltip Component
+def tooltip(tajuk, keterangan, size="h4"):
+    st.markdown(f"""
+    <div style='display:flex; align-items:center; gap:6px;'>
+        <{size} style='margin:0;'>{tajuk}</{size}>
+        <div class="tooltip">🛈
+          <span class="tooltiptext">
+            {keterangan}
+          </span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
