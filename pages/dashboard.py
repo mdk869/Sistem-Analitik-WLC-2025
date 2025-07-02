@@ -301,15 +301,15 @@ with tab4:
 
  # ✅ Tajuk dengan Tooltip
     tooltip(
-        "🎯 Status Berat, Target Realistik & Ideal",
-        """
-        <b>Penerangan:</b><br><br>
-        • <b>Status Berat:</b> Bandingkan berat semasa dengan julat sihat.<br>
-        • <b>Target Realistik:</b> Penurunan 5-10% dari berat semasa — selamat & boleh dicapai.<br>
-        • <b>Target Ideal:</b> Berat dalam julat BMI Normal (18.5 - 24.9 kg/m²).<br><br>
-        BMI membantu kenalpasti risiko kesihatan seperti darah tinggi, diabetes dan penyakit jantung.
-        """,
-        size="h4"
+    "🎯 Status Berat, Target Realistik & Ideal",
+    """
+    <b>Penerangan:</b><br><br>
+    • <b>Status Berat:</b> Bandingkan berat semasa dengan julat sihat.<br>
+    • <b>Target Realistik:</b> Penurunan 5-10% dari berat semasa — selamat & boleh dicapai.<br>
+    • <b>Target Ideal:</b> Berat dalam julat BMI Normal (18.5 - 24.9 kg/m²).<br><br>
+    BMI membantu kenalpasti risiko kesihatan seperti darah tinggi, diabetes dan penyakit jantung.
+    """,
+    size="h4"
     )
 
 
