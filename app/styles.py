@@ -107,7 +107,7 @@ def papar_footer(owner, version, last_update, tagline):
     </center>
     """, unsafe_allow_html=True)
 
-# ✅ Tooltip
+# ✅ CSS Tooltip
 def css_tooltip():
     st.markdown("""
     <style>
@@ -119,18 +119,17 @@ def css_tooltip():
 
     .tooltip .tooltiptext {
         visibility: hidden;
-        width: 320px;
+        width: 340px;
         background-color: #333;
         color: #fff;
         text-align: left;
         border-radius: 6px;
-        padding: 8px;
+        padding: 10px;
         position: absolute;
         z-index: 999;
         top: 0;
         left: 105%;
         white-space: normal;
-        word-wrap: break-word;
         box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
         border: 1px solid #999;
     }
@@ -153,15 +152,16 @@ def css_tooltip():
     </style>
     """, unsafe_allow_html=True)
 
-# ✅ Tooltip Component
+
+# ✅ Komponen Tooltip
 def tooltip(tajuk, keterangan, size="h4"):
     st.markdown(f"""
     <div style='display:flex; align-items:center; gap:6px;'>
         <{size} style='margin:0;'>{tajuk}</{size}>
         <div class="tooltip">🛈
-          <span class="tooltiptext">
+          <div class="tooltiptext">
             {keterangan}
-          </span>
+          </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
