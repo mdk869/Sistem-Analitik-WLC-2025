@@ -350,7 +350,6 @@ with tab4:
     # Susun semula kolum - NoStaf di depan, buang Nama
     kolum_order = ["NoStaf"] + [col for col in df_status.columns if col != "Nama"]
     df_display = df_merge[kolum_order]
-    df_display = df_display.rename(columns={"NoStaf": "ID Peserta"})
 
     df_display.index = range(1, len(df_display) + 1)
     st.dataframe(df_display, use_container_width=True)
