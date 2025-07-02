@@ -68,7 +68,7 @@ warna = warna_mapping.get(kategori, "#808080")  # Default grey jika tak jumpa
 st.markdown(f"""
 <div style="
     background-color: {warna};
-    padding: 10px 105px;
+    padding: 10px 16px;
     border-radius: 8px;
     color: white;
     display: inline-block;
