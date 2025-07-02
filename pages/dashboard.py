@@ -184,54 +184,10 @@ with tab3:
 # ✅ Tab 4: Analitik BMI
 # =========================================
 with tab4:
-    st.markdown("""
-<style>
-.tooltip {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 420px;
-    background-color: #333;
-    color: #fff;
-    text-align: left;
-    border-radius: 6px;
-    padding: 12px;
-    position: absolute;
-    z-index: 999;
-    top: 0;
-    left: 105%;
-    white-space: normal;
-    word-wrap: break-word;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-    border: 1px solid #999;
-}
-
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* Arrow */
-.tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 10px;
-    right: 100%;
-    margin-top: -5px;
-    border-width: 6px;
-    border-style: solid;
-    border-color: transparent #333 transparent transparent;
-}
-</style>
-
-<div style='display:flex; align-items:center; gap:8px;'>
-    <h3 style='margin:0;'>📊 Analisis BMI Peserta</h3>
-    <div class="tooltip">🛈
-      <span class="tooltiptext">
+    # ✅ Tajuk dengan Tooltip
+    tooltip(
+        "📊 Analisis BMI Peserta",
+        """
         <b>Kategori BMI Asia:</b><br><br>
         • <b>Kurang Berat Badan:</b> BMI &lt; 18.5<br>
         • <b>Normal:</b> BMI 18.5 - 24.9<br>
@@ -242,14 +198,9 @@ with tab4:
         <i>Nota:</i><br>
         BMI adalah indikator berat badan sihat berdasarkan ketinggian.<br>
         Populasi Asia menggunakan julat ini kerana risiko penyakit metabolik seperti diabetes dan jantung berlaku pada BMI lebih rendah berbanding populasi Barat.
-      </span>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-
-
-
+        """,
+        size="h3"
+    )
 
     # =========================================
     # ✅ Pilihan Filter Jantina
