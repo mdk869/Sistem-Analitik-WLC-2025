@@ -71,8 +71,8 @@ st.divider()
 st.subheader("📞 Hubungi Penganjur")
 
 st.markdown("""
-- 📧 Email: wlc2025@domain.com
-- ☎️ Telefon: 012-3456789
+- 📧 Email: irwan.zon@airselangor.com
+- ☎️ Telefon: 03-3280 5485
 - 🏢 Unit HSE, Wilayah Kuala Selangor
 """)
 
