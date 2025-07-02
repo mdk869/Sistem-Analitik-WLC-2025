@@ -94,30 +94,6 @@ with tab1:
             ),
             use_container_width=True
         )
-with st.expander("🩺 Semakan Kiraan BMI Peserta"):
-    df_check = data_peserta.copy()
-
-    # Kiraan semula BMI dan Kategori
-    df_check["BMI Semakan"] = df_check.apply(
-        lambda x: kira_bmi(x["BeratTerkini"], x["Tinggi"]), axis=1
-    )
-    df_check["Kategori Semakan"] = df_check["BMI Semakan"].apply(kategori_bmi_asia)
-
-    # Cari perbezaan
-    df_check["BMI Berbeza"] = df_check["BMI"] != df_check["BMI Semakan"]
-    df_check["Kategori Berbeza"] = df_check["Kategori"] != df_check["Kategori Semakan"]
-
-    # Paparkan peserta yang ada perbezaan
-    df_salah = df_check[(df_check["BMI Berbeza"]) | (df_check["Kategori Berbeza"])]
-
-    if not df_salah.empty:
-        st.error(f"❌ {len(df_salah)} peserta ada isu kiraan BMI atau Kategori.")
-        st.dataframe(df_salah[
-            ["Nama", "BMI", "BMI Semakan", "Kategori", "Kategori Semakan"]
-        ], use_container_width=True)
-    else:
-        st.success("✅ Semua peserta tiada isu kiraan BMI dan Kategori.")
-
 
 if st.button("♻️ Auto Betulkan BMI & Kategori"):
     data_peserta["BMI"] = data_peserta.apply(
