@@ -74,32 +74,37 @@ def kira_bmi(berat, tinggi):
 # ✅ Kategori BMI Asia
 # =========================================
 def kategori_bmi_asia(bmi):
-        if bmi < 18.5:
-            return "Kurang Berat Badan"
-        elif 18.5 <= bmi <= 24.9:
-            return "Normal"
-        elif 25 <= bmi <= 29.9:
-            return "Lebih Berat Badan"
-        elif 30 <= bmi <= 34.9:
-            return "Obesiti Tahap 1"
-        elif 35 <= bmi <= 39.9:
-            return "Obesiti Tahap 2"
-        else:
-            return "Obesiti Morbid"
+    try:
+        bmi = float(bmi)
+    except:
+        return "Tidak Sah"     
+    
+    if bmi < 18.5:
+        return "Kurang Berat Badan"
+    elif 18.5 <= bmi <= 24.9:
+        return "Normal"
+    elif 25 <= bmi <= 29.9:
+        return "Lebih Berat Badan"
+    elif 30 <= bmi <= 34.9:
+        return "Obesiti Tahap 1"
+    elif 35 <= bmi <= 39.9:
+        return "Obesiti Tahap 2"
+    else:
+        return "Obesiti Morbid"
 
 
 # =========================================
 # ✅ Formula BMI
 # =========================================
 def kira_bmi(berat, tinggi):
-    """
-    BMI = berat (kg) / (tinggi (m))^2
-    """
     try:
-        tinggi_meter = tinggi / 100
-        bmi = berat / (tinggi_meter ** 2)
+        tinggi_m = float(tinggi) / 100
+        berat = float(berat)
+        if tinggi_m <= 0:
+            return 0
+        bmi = berat / (tinggi_m ** 2)
         return round(bmi, 2)
-    except Exception:
+    except:
         return 0
 
 
