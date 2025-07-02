@@ -95,13 +95,13 @@ with tab1:
             use_container_width=True
         )
 
-if st.button("♻️ Auto Betulkan BMI & Kategori"):
-    data_peserta["BMI"] = data_peserta.apply(
-        lambda x: kira_bmi(x["BeratTerkini"], x["Tinggi"]), axis=1
-    )
-    data_peserta["Kategori"] = data_peserta["BMI"].apply(kategori_bmi_asia)
+    if st.button("♻️ Auto Betulkan BMI & Kategori"):
+        data_peserta["BMI"] = data_peserta.apply(
+            lambda x: kira_bmi(x["BeratTerkini"], x["Tinggi"]), axis=1
+        )
+        data_peserta["Kategori"] = data_peserta["BMI"].apply(kategori_bmi_asia)
 
-    st.success("✅ Semua BMI dan Kategori telah dikemaskini.")
+        st.success("✅ Semua BMI dan Kategori telah dikemaskini.")
 
 
 # =========================================
