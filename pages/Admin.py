@@ -324,9 +324,4 @@ with tab5:
 # =========================================
 # ✅ Footer
 # =========================================
-papar_footer(
-    owner="MKR Dev Team",
-    version="v4.3.0",
-    last_update="2025-06-30",
-    tagline="Empowering Data-Driven Decisions."
-)
+papar_footer()
