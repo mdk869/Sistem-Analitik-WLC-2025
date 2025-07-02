@@ -315,7 +315,7 @@ with tab4:
 
     # ✅ Expander dengan tajuk ringkas sahaja
     with st.expander("Lihat Status Berat & Target"):
-        df_status = dataframe_status_berat(data_peserta)
+        df_status = df_filter[["NoStaf", "BMI", "Kategori"]].dataframe_status_berat(data_peserta)
         df_status.index = range(1, len(df_status) + 1)
         st.dataframe(df_status, use_container_width=True)
 
@@ -325,7 +325,7 @@ with tab4:
     # ✅ Senarai Data Mengikut Filter
     # =========================================
     with st.expander(f"📋 Lihat Senarai Peserta ({filter_jantina}) Mengikut Kategori BMI"):
-        df_bmi = df_filter[["Nama", "NoStaf", "BMI", "Kategori"]].sort_values("Kategori")
+        df_bmi = df_filter[["NoStaf", "BMI", "Kategori"]].sort_values("Kategori")
         df_bmi.index = df_bmi.index + 1
         st.dataframe(df_bmi, use_container_width=True)
 
