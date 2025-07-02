@@ -81,13 +81,13 @@ def kategori_bmi_asia(bmi):
     
     if bmi < 18.5:
         return "Kurang Berat Badan"
-    elif 18.5 <= bmi <= 24.9:
+    elif 18.5 <= bmi <= 24.99:
         return "Normal"
-    elif 25 <= bmi <= 29.9:
+    elif 25 <= bmi <= 29.99:
         return "Lebih Berat Badan"
-    elif 30 <= bmi <= 34.9:
+    elif 30 <= bmi <= 34.99:
         return "Obesiti Tahap 1"
-    elif 35 <= bmi <= 39.9:
+    elif 35 <= bmi <= 39.99:
         return "Obesiti Tahap 2"
     else:
         return "Obesiti Morbid"
