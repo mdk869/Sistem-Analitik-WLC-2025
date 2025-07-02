@@ -1,5 +1,3 @@
-# logger.py
-
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
@@ -11,48 +9,47 @@ import requests
 # =========================================
 def get_visitor_info():
     try:
-        res = requests.get("https://ipinfo.io/json", timeout=5).json()
+        res = requests.get("https://ipinfo.io/json").json()
         ip = res.get("ip", "Unknown")
         location = f"{res.get('city', '')}, {res.get('region', '')}".strip(', ')
         org = res.get("org", "Unknown")
-    except Exception:
+    except:
         ip, location, org = "Unknown", "Unknown", "Unknown"
 
-    # Attempt to detect user agent from request headers
-    try:
-        user_agent = st.runtime.scriptrunner.get_script_run_ctx().request.headers.get("User-Agent", "Unknown")
-    except Exception:
-        user_agent = "Unknown"
-
+    user_agent = st.session_state.get("user_agent", "Unknown")
     return ip, location, org, user_agent
-
 
 # =========================================
 # ✅ Log Traffic to Google Sheet
 # =========================================
 def log_traffic_to_sheet():
     try:
-        # Setup scope
         scope = [
             "https://spreadsheets.google.com/feeds",
             "https://www.googleapis.com/auth/drive"
         ]
 
-        # Prepare credentials (read-only, not modifying secrets)
-        creds_dict = dict(st.secrets["gcp_service_account"])  # create a copy
+        # Credentials
+        creds_dict = st.secrets["gcp_service_account"]
         creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
         creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
         client = gspread.authorize(creds)
 
-        # Access specific sheet by name (lebih stabil dari .sheet1)
+        # Sheet Info
         sheet_id = st.secrets["gsheet"]["log_wlc_dev_id"]
-        sheet = client.open_by_key(sheet_id).worksheet("LogTraffic")  # Pastikan tab ini wujud
+        spreadsheet = client.open_by_key(sheet_id)
 
-        # Collect traffic info
+        try:
+            sheet = spreadsheet.worksheet("LogTraffic")
+        except gspread.exceptions.WorksheetNotFound:
+            sheet = spreadsheet.add_worksheet(title="LogTraffic", rows="1000", cols="5")
+            sheet.append_row(["Timestamp", "IP", "Location", "Org", "User Agent"])
+
+        # Visitor Info
         ip, location, org, user_agent = get_visitor_info()
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # Simpan log ke sheet
+        # Log to Sheet
         sheet.append_row([timestamp, ip, location, org, user_agent])
 
     except Exception as e:
