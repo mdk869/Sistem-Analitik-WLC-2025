@@ -1,5 +1,14 @@
 import streamlit as st
 from app.styles import papar_footer
+
+
+from app.logger import log_traffic_to_sheet
+log_traffic_to_sheet()
+
+if "logged" not in st.session_state:
+    log_traffic_to_sheet()
+    st.session_state["logged"] = True
+
 # ===========================
 # ✅ Formula Kiraan BMI
 # ===========================

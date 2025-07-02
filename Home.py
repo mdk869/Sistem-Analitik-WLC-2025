@@ -1,7 +1,7 @@
 import streamlit as st
 from app.styles import paparkan_tema, papar_header, papar_footer
 from app.settings import info_program
-
+from app.logger import log_traffic_to_sheet
 
 # ========================================
 # ✅ Layout & Header
@@ -14,6 +14,11 @@ st.markdown("Sistem ini direka untuk membantu penganjur memantau perkembangan pe
 
 st.divider()
 
+log_traffic_to_sheet()
+
+if "logged" not in st.session_state:
+    log_traffic_to_sheet()
+    st.session_state["logged"] = True
 
 # ========================================
 # ✅ Info Program
