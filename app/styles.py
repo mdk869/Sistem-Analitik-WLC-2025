@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit.components.v1 import html
 
 # ✅ Fungsi Apply CSS Global
 def apply_css():
@@ -108,7 +107,7 @@ def papar_footer(owner, version, last_update, tagline):
     </center>
     """, unsafe_allow_html=True)
 
-# ✅ CSS Tooltip
+# ✅ Tooltip
 def css_tooltip():
     st.markdown("""
     <style>
@@ -120,17 +119,18 @@ def css_tooltip():
 
     .tooltip .tooltiptext {
         visibility: hidden;
-        width: 340px;
+        width: 320px;
         background-color: #333;
         color: #fff;
         text-align: left;
         border-radius: 6px;
-        padding: 10px;
+        padding: 8px;
         position: absolute;
         z-index: 999;
         top: 0;
         left: 105%;
         white-space: normal;
+        word-wrap: break-word;
         box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
         border: 1px solid #999;
     }
@@ -153,16 +153,15 @@ def css_tooltip():
     </style>
     """, unsafe_allow_html=True)
 
-
-# ✅ Komponen Tooltip
+# ✅ Tooltip Component
 def tooltip(tajuk, keterangan, size="h4"):
     st.markdown(f"""
     <div style='display:flex; align-items:center; gap:6px;'>
         <{size} style='margin:0;'>{tajuk}</{size}>
         <div class="tooltip">🛈
-          <div class="tooltiptext">
+          <span class="tooltiptext">
             {keterangan}
-          </div>
+          </span>
         </div>
     </div>
     """, unsafe_allow_html=True)
