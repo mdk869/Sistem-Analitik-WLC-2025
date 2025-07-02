@@ -118,6 +118,16 @@ with st.expander("🩺 Semakan Kiraan BMI Peserta"):
     else:
         st.success("✅ Semua peserta tiada isu kiraan BMI dan Kategori.")
 
+
+if st.button("♻️ Auto Betulkan BMI & Kategori"):
+    data_peserta["BMI"] = data_peserta.apply(
+        lambda x: kira_bmi(x["BeratTerkini"], x["Tinggi"]), axis=1
+    )
+    data_peserta["Kategori"] = data_peserta["BMI"].apply(kategori_bmi_asia)
+
+    st.success("✅ Semua BMI dan Kategori telah dikemaskini.")
+
+
 # =========================================
 # ✅ Tab 2: Tambah Peserta
 # =========================================
