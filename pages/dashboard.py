@@ -284,20 +284,20 @@ with tab4:
     with col2:
         st.markdown("#### 👩 Perempuan")
     
-    # Pie Chart BMI Perempuan
-    df_female = data_peserta[data_peserta["Jantina"].str.lower() == "perempuan"]
-    df_female = tambah_kiraan_peserta(df_female)
+        # Pie Chart BMI Perempuan
+        df_female = data_peserta[data_peserta["Jantina"].str.lower() == "perempuan"]
+        df_female = tambah_kiraan_peserta(df_female)
 
-    kategori_female = df_female.groupby("Kategori").size().reset_index(name="Bilangan")
-    fig_female = px.pie(
-        kategori_female,
-        names="Kategori",
-        values="Bilangan",
-        title="BMI Perempuan",
-        color="Kategori",
-        color_discrete_map=warna_mapping
-    )
-    st.plotly_chart(fig_female, use_container_width=True)
+        kategori_female = df_female.groupby("Kategori").size().reset_index(name="Bilangan")
+        fig_female = px.pie(
+            kategori_female,
+            names="Kategori",
+            values="Bilangan",
+            title="BMI Perempuan",
+            color="Kategori",
+            color_discrete_map=warna_mapping
+        )
+        st.plotly_chart(fig_female, use_container_width=True)
 
  # ✅ Tajuk dengan Tooltip
     tooltip(
