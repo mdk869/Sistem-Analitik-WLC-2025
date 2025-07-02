@@ -186,21 +186,20 @@ with tab3:
 with tab4:
     # ✅ Tajuk dengan Tooltip
     tooltip(
-        "📊 Analisis BMI Peserta",
-        """
-        <b>Kategori BMI Asia:</b><br><br>
-        • <b>Kurang Berat Badan:</b> BMI &lt; 18.5<br>
-        • <b>Normal:</b> BMI 18.5 - 24.9<br>
-        • <b>Lebih Berat Badan:</b> BMI 25 - 29.9<br>
-        • <b>Obesiti Tahap 1:</b> BMI 30 - 34.9<br>
-        • <b>Obesiti Tahap 2:</b> BMI 35 - 39.9<br>
-        • <b>Obesiti Morbid:</b> BMI ≥ 40<br><br>
-        <i>Nota:</i><br>
-        BMI adalah indikator berat badan sihat berdasarkan ketinggian.<br>
-        Populasi Asia menggunakan julat ini kerana risiko penyakit metabolik seperti diabetes dan jantung berlaku pada BMI lebih rendah berbanding populasi Barat.
-        """,
-        size="h3"
-    )
+    "📊 Analisis BMI Peserta",
+    """
+    <b>Kategori BMI Asia:</b><br><br>
+    • <b>Kurang Berat Badan:</b> BMI &lt; 18.5<br>
+    • <b>Normal:</b> BMI 18.5 - 24.9<br>
+    • <b>Lebih Berat Badan:</b> BMI 25 - 29.9<br>
+    • <b>Obesiti Tahap 1:</b> BMI 30 - 34.9<br>
+    • <b>Obesiti Tahap 2:</b> BMI 35 - 39.9<br>
+    • <b>Obesiti Morbid:</b> BMI ≥ 40<br><br>
+    <i>Nota:</i><br>
+    BMI adalah indikator berat badan sihat berdasarkan ketinggian.<br>
+    Populasi Asia menggunakan julat ini kerana risiko penyakit metabolik seperti diabetes dan jantung berlaku pada BMI lebih rendah berbanding populasi Barat.
+    """
+)
 
     # =========================================
     # ✅ Pilihan Filter Jantina
