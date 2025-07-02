@@ -38,26 +38,38 @@ HEADER_PESERTA = [
 
 
 def papar_disclaimer():
-    with st.expander("⚠️ Penting! Sila baca sebelum teruskan.", expanded=True):
-        st.markdown("""
-        ## ⚠️ **Disclaimer Sistem WLC**
+    if "show_disclaimer" not in st.session_state:
+        st.session_state.show_disclaimer = True
 
-        Sistem ini adalah alat pemantauan untuk tujuan informasi bagi program Weight Loss Challenge (WLC) sahaja.
+    if st.session_state.show_disclaimer:
+        with st.expander("⚠️ Penting! Sila baca sebelum teruskan.", expanded=True):
+            st.markdown("""
+            ## ⚠️ **Disclaimer Sistem WLC**
 
-        - **Bukan alat diagnostik atau pengganti nasihat perubatan.**
-        - Semua kiraan dan info adalah anggaran berdasarkan formula BMI piawai dan mungkin tidak tepat untuk semua individu.
-        - Sila dapatkan nasihat doktor atau pakar pemakanan untuk penilaian kesihatan yang lengkap.
+            Sistem ini adalah alat pemantauan untuk tujuan informasi bagi program Weight Loss Challenge (WLC) sahaja.
 
-        **Dengan meneruskan, anda faham dan bersetuju dengan terma ini.**
-        """)
-        return st.checkbox("✔️ Saya faham dan bersetuju dengan Disclaimer di atas.")
+            - **Bukan alat diagnostik atau pengganti nasihat perubatan.**
+            - Semua kiraan dan info adalah anggaran berdasarkan formula BMI piawai dan mungkin tidak tepat untuk semua individu.
+            - Sila dapatkan nasihat doktor atau pakar pemakanan untuk penilaian kesihatan yang lengkap.
+
+            **Dengan meneruskan, anda faham dan bersetuju dengan terma ini.**
+            """)
+
+            setuju = st.checkbox(
+                "✔️ Saya faham dan bersetuju dengan Disclaimer di atas.",
+                key="disclaimer_agree"
+            )
+
+            if setuju:
+                st.session_state.show_disclaimer = False
+
+    return st.session_state.get("disclaimer_agree", False)
 
 
-# Contoh penggunaan
+# ✅ Cara penggunaan
 if not papar_disclaimer():
     st.warning("❌ Anda perlu bersetuju dengan disclaimer sebelum meneruskan.")
     st.stop()
-
 
 # ===== Tabs =====
 tab1, tab2, tab3, tab4 = st.tabs([
