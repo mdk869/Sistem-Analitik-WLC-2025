@@ -1,5 +1,5 @@
 import streamlit as st
-
+from app.styles import papar_footer
 # ===========================
 # ✅ Formula Kiraan BMI
 # ===========================
@@ -86,3 +86,5 @@ with st.expander("ℹ️ Info Kategori BMI & Nasihat Kesihatan"):
     - Kanser
     - Kematian pramatang
     """)
+
+papar_footer()
