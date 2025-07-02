@@ -7,3 +7,8 @@ info_program = {
     "tarikh_tamat": datetime(2025, 8, 20),
     "versi": "v3.3.0"
 }
+
+version = "v4.3.1"
+last_update = "2025-07-02"
+owner = "MKR Dev Team"
+tagline = "Empowering Data-Driven Decisions."

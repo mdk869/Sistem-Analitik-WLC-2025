@@ -1,4 +1,5 @@
 import streamlit as st
+from app.settings import version, last_update, owner, tagline
 
 # ✅ Fungsi Apply CSS Global
 def apply_css():
@@ -95,7 +96,12 @@ def papar_header(title):
 
 
 # ✅ Footer Page
-def papar_footer(owner, version, last_update, tagline):
+def papar_footer(
+    owner=owner,
+    version=version,
+    last_update=last_update,
+    tagline=tagline
+    ):
     st.markdown(f"""
         <style>
         .footer {{
