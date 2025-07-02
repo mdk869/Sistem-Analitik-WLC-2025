@@ -45,11 +45,37 @@ berat = st.number_input("Berat (kg)", min_value=30.0, max_value=300.0, value=70.
 # ===========================
 # ✅ Output BMI
 # ===========================
+# ✅ Warna mapping kategori BMI
+warna_mapping = {
+    "Kurang Berat Badan": "#00BFFF",   # Biru
+    "Normal": "#32CD32",               # Hijau
+    "Lebih Berat Badan": "#FFD700",    # Kuning
+    "Obesiti Tahap 1": "#FF8C00",      # Oren
+    "Obesiti Tahap 2": "#FF4500",      # Merah
+    "Obesiti Morbid": "#8B0000"        # Merah Gelap
+}
+
+# ✅ Kiraan BMI
 bmi = kira_bmi(berat, tinggi)
 kategori = kategori_bmi_asia(bmi)
 
+# ✅ Papar BMI
 st.info(f"**BMI anda ialah:** `{bmi}`")
-st.success(f"**Kategori BMI:** `{kategori}`")
+
+# ✅ Papar Status Kategori dengan warna
+warna = warna_mapping.get(kategori, "#808080")  # Default grey jika tak jumpa
+
+st.markdown(f"""
+<div style="
+    background-color: {warna};
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: white;
+    display: inline-block;
+">
+    <b>Kategori BMI:</b> {kategori}
+</div>
+""", unsafe_allow_html=True)
 
 # ===========================
 # ✅ Info Panduan
