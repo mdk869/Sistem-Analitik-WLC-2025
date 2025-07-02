@@ -314,10 +314,24 @@ with tab4:
 
 
     # ✅ Expander dengan tajuk ringkas sahaja
-    with st.expander("Lihat Status Berat & Target"):
+    with st.expander("📊 Lihat Status Berat & Target"):
         df_status = dataframe_status_berat(data_peserta)
-        df_status.index = range(1, len(df_status) + 1)
-        st.dataframe(df_status, use_container_width=True)
+
+        # Gabung NoStaf ke df_status ikut Nama sebagai key
+        df_merge = df_status.merge(
+            data_peserta[["Nama", "NoStaf"]],
+            on="Nama",
+            how="left"
+        )
+
+    # Susun semula kolum - NoStaf di depan, buang Nama
+    kolum_order = ["NoStaf"] + [col for col in df_status.columns if col != "Nama"]
+    df_display = df_merge[kolum_order]
+
+    df_display.index = range(1, len(df_display) + 1)
+    st.dataframe(df_display, use_container_width=True)
+
+    df_display = df_display.rename(columns={"NoStaf": "ID Peserta"})
 
 
 
