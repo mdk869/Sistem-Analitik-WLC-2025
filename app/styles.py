@@ -97,14 +97,26 @@ def papar_header(title):
 # ✅ Footer Page
 def papar_footer(owner, version, last_update, tagline):
     st.markdown(f"""
-    <hr>
-    <center>
-    <small>
-    {tagline} <br>
-    Versi {version} | Dikemaskini {last_update} <br>
-    &copy; {owner}
-    </small>
-    </center>
+        <style>
+        .footer {{
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #f9f9f9;
+            color: #777;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.8rem;
+            border-top: 1px solid #eaeaea;
+        }}
+        </style>
+
+        <div class="footer">
+            🚀 <i>{tagline}</i><br>
+            Versi <b>{version}</b> | Dikemaskini <b>{last_update}</b><br>
+            &copy; {owner} • All Rights Reserved
+        </div>
     """, unsafe_allow_html=True)
 
 # ✅ Tooltip
