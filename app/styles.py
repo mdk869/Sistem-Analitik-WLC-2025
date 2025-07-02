@@ -154,15 +154,15 @@ def css_tooltip():
     """, unsafe_allow_html=True)
 
 
-# ✅ Tooltip Component
-def tooltip(tajuk, keterangan_html, size="h4"):
-    html(f"""
+# ✅ Komponen Tooltip
+def tooltip(tajuk, keterangan, size="h4"):
+    st.markdown(f"""
     <div style='display:flex; align-items:center; gap:6px;'>
         <{size} style='margin:0;'>{tajuk}</{size}>
         <div class="tooltip">🛈
           <div class="tooltiptext">
-            {keterangan_html}
+            {keterangan}
           </div>
         </div>
     </div>
-    """, height=100)
+    """, unsafe_allow_html=True)
