@@ -29,8 +29,9 @@ def log_traffic_to_sheet():
             "https://www.googleapis.com/auth/drive"
         ]
 
-        # Credentials
-        creds_dict = st.secrets["gcp_service_account"]
+        # Credentials (make editable copy)
+        creds_dict_raw = st.secrets["gcp_service_account"]
+        creds_dict = dict(creds_dict_raw)
         creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
         creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
         client = gspread.authorize(creds)
