@@ -161,7 +161,5 @@ def tooltip(tajuk, keterangan, size="h4"):
         <div class="tooltip">🛈
           <span class="tooltiptext">
             {keterangan}
-          </span>
-        </div>
     </div>
     """, unsafe_allow_html=True)
