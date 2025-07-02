@@ -95,4 +95,4 @@ with st.expander("ℹ️ Info Kategori BMI & Nasihat Kesihatan"):
     - Kegagalan buah pinggang
     - Kanser
     - Kematian pramatang
-        """)
+    """)
